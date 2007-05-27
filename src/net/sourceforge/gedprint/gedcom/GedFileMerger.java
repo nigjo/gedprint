@@ -11,7 +11,7 @@ import net.sourceforge.gedprint.core.Renumberer;
  */
 public class GedFileMerger
 {
-  private GedFile master;
+  //private GedFile master;
   private GedFile result;
 
   LinkedList check;
@@ -36,8 +36,8 @@ public class GedFileMerger
     while(recs.hasMoreElements())
     {
       Record rec = (Record) recs.nextElement();
-      if(!"HEAD".equals(rec.getType()) &&
-          !"TRLR".equals(rec.getType()))
+      if(!"HEAD".equals(rec.getType()) && //$NON-NLS-1$
+          !"TRLR".equals(rec.getType())) //$NON-NLS-1$
       {
         result.records.addSubRecord(rec);
       }
@@ -93,8 +93,8 @@ public class GedFileMerger
 
   private void setMasterFile(GedFile master)
   {
-    this.master = master;
-    result = (GedFile) master.clone();
+    //this.master = master;
+    //result = (GedFile) master.clone();
   }
 
   public static GedFile merge(GedFile master, GedFile addon)
