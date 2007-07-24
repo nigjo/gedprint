@@ -5,6 +5,7 @@ import java.awt.Graphics;
 
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Record;
+import net.sourceforge.gedprint.gedcom.Tag;
 import net.sourceforge.gedprint.print.book.standard.properties.Messages;
 
 /**
@@ -57,10 +58,10 @@ public class WeddingElement extends Element
     
     g.setFont(FONT_DATA);
 
-    Record main = record.getSubRecord("MARR"); //$NON-NLS-1$
+    Record main = record.getSubRecord(Tag.MARRIAGE);
     if(main != null)
     {
-      sub = main.getSubRecord(Record.RECORD_DATE);
+      sub = main.getSubRecord(Tag.DATE);
       if(sub != null)
       {
         content = sub.getContent();

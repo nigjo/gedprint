@@ -22,13 +22,15 @@ public class GedFrame extends JFrame
 
   private GedFile ged;
 
+  private DrawPanel drawPanel;
+
   public GedFrame()
   {
     super("GEDFrame");
     setSize(800, 600);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    JPanel drawPanel = new DrawPanel();
+    drawPanel = new DrawPanel();
     getContentPane().add(new JScrollPane(drawPanel));
   }
 
@@ -52,7 +54,12 @@ public class GedFrame extends JFrame
     {
       Individual indi = (Individual) r;
       System.out.println(indi.getClearedFullName());
-      System.out.println("Age: " + indi.getAge());
+      System.out.println("Age: " + indi.getAge()); //$NON-NLS-1$
+      
+      indi.getDataFather();
+      indi.getDataMother();
+      indi.getDataChildFamily();
+      indi.getDataSpouceFamilies();
     }
   }
 

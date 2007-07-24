@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
+import net.sourceforge.gedprint.gedcom.Tag;
 import net.sourceforge.gedprint.print.book.standard.properties.Messages;
 
 public class ParentElement extends Element
@@ -163,7 +164,7 @@ public class ParentElement extends Element
     //
     // weitere Ehen
     //
-    if(record.getSubRecordCount(Record.RECORD_FAM_SPOUSE) > 1)
+    if(record.getSubRecordCount(Tag.FAM_SPOUSE) > 1)
     {
       g.setFont(FONT_TITLE);
       fontline = getFontline(g);
