@@ -15,7 +15,7 @@ public class Family extends Record
 {
   public Family(String id)
   {
-    super(RECORD_FAM, id);
+    super(Tag.FAM, id);
   }
 
   /**
@@ -27,7 +27,7 @@ public class Family extends Record
   {
     this(rec.getID());
 
-    if(!rec.getType().equals(RECORD_FAM))
+    if(!rec.getType().equals(Tag.FAM))
       throw new InvalidDataException("not a Family"); //$NON-NLS-1$
 
     setLevel(rec.getLevel());
@@ -37,7 +37,7 @@ public class Family extends Record
 
   public Individual getHusband()
   {
-    Record husb = getSubRecord(RECORD_HUSBAND);
+    Record husb = getSubRecord(Tag.HUSBAND);
     if(husb != null)
       return (Individual) findID(husb.getContent());
     return null;
@@ -45,7 +45,7 @@ public class Family extends Record
 
   public Individual getWife()
   {
-    Record husb = getSubRecord(RECORD_WIFE);
+    Record husb = getSubRecord(Tag.WIFE);
     if(husb != null)
       return (Individual) findID(husb.getContent());
     return null;
@@ -58,7 +58,7 @@ public class Family extends Record
    */
   public Enumeration getChildren()
   {
-    final Record[] children = getSubRecords(RECORD_CHILDREN);
+    final Record[] children = getSubRecords(Tag.CHILDREN);
     if(children.length > 0)
     {
       return new AbstractEnumeration() {
@@ -85,7 +85,7 @@ public class Family extends Record
    */
   public int getChildrenCount()
   {
-    return getSubRecordCount(RECORD_CHILDREN);
+    return getSubRecordCount(Tag.CHILDREN);
   }
 
   public Vector<Family> getChildFamilies()
@@ -101,7 +101,7 @@ public class Family extends Record
     while(children.hasMoreElements())
     {
       Record child = (Record) children.nextElement();
-      Record[] spouseFamilies = child.getSubRecords(RECORD_FAM_SPOUSE);
+      Record[] spouseFamilies = child.getSubRecords(Tag.FAM_SPOUSE);
       for(int i = 0; i < spouseFamilies.length; i++)
       {
         harvester.add((Family) findID(spouseFamilies[i].getContent()));

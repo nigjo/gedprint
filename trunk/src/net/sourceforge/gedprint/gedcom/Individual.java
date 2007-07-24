@@ -12,7 +12,7 @@ public class Individual extends Record
 
   public Individual(String id)
   {
-    super(RECORD_INDI, id);
+    super(Tag.INDI, id);
   }
 
   /** erstellt ein Individuum anhand eines vorhandenen Records.
@@ -23,7 +23,7 @@ public class Individual extends Record
   {
     this(rec.getID());
 
-    if (!rec.getType().equals(RECORD_INDI))
+    if (!rec.getType().equals(Tag.INDI))
       throw new InvalidDataException("not an Individual"); //$NON-NLS-1$
 
     setLevel(rec.getLevel());
@@ -33,27 +33,27 @@ public class Individual extends Record
 
   public String getFullName()
   {
-    Record name = getSubRecord(RECORD_NAME);
+    Record name = getSubRecord(Tag.NAME);
 
     if (name.getContent() != null)
       return name.getContent();
 
     StringBuffer buf = new StringBuffer();
 
-    if (name.getSubRecord(RECORD_NAME_PREFIX) != null)
-      buf.append(name.getSubRecord(RECORD_NAME_PREFIX));
+    if (name.getSubRecord(Tag.NAME_PREFIX) != null)
+      buf.append(name.getSubRecord(Tag.NAME_PREFIX));
 
-    if (name.getSubRecord(RECORD_GIVEN_NAME) != null)
+    if (name.getSubRecord(Tag.GIVEN_NAME) != null)
     {
       if (buf.length() > 0)
         buf.append(' ');
-      buf.append(name.getSubRecord(RECORD_GIVEN_NAME));
+      buf.append(name.getSubRecord(Tag.GIVEN_NAME));
     }
-    if (name.getSubRecord(RECORD_SURNAME) != null)
+    if (name.getSubRecord(Tag.SURNAME) != null)
     {
       if (buf.length() > 0)
         buf.append(' ');
-      buf.append('/' + name.getSubRecord(RECORD_SURNAME).toString() + '/');
+      buf.append('/' + name.getSubRecord(Tag.SURNAME).toString() + '/');
     }
     if (buf.length() > 0)
       return buf.toString();
@@ -68,7 +68,7 @@ public class Individual extends Record
 
   public boolean isDead()
   {
-    if (getSubRecord(RECORD_DEAT) != null)
+    if (getSubRecord(Tag.DEAT) != null)
       return true;
 
     return getAge() > MAX_LIVING_AGE;
@@ -77,19 +77,19 @@ public class Individual extends Record
   public int getAge()
   {
     int age = -1;
-    Record birth = getSubRecord(RECORD_BIRT);
+    Record birth = getSubRecord(Tag.BIRTH);
 
     if (birth != null)
     {
       Calendar bDate = null;
       Calendar dDate = null;
-      if (birth.getSubRecord(RECORD_DATE) != null)
-        bDate = parseDate(birth.getSubRecord(RECORD_DATE).getContent());
-      if (getSubRecord(RECORD_DEAT) != null)
+      if (birth.getSubRecord(Tag.DATE) != null)
+        bDate = parseDate(birth.getSubRecord(Tag.DATE).getContent());
+      if (getSubRecord(Tag.DEAT) != null)
       {
-        Record death = getSubRecord(RECORD_DEAT);
-        if (death.getSubRecord(RECORD_DATE) != null)
-          dDate = parseDate(death.getSubRecord(RECORD_DATE).getContent());
+        Record death = getSubRecord(Tag.DEAT);
+        if (death.getSubRecord(Tag.DATE) != null)
+          dDate = parseDate(death.getSubRecord(Tag.DATE).getContent());
       }
 
       if (bDate != null)
@@ -124,7 +124,7 @@ public class Individual extends Record
    */
   public String getUID()
   {
-    Record uid = getSubRecord(RECORD_UID);
+    Record uid = getSubRecord(Tag.UID);
     if (uid != null)
       return uid.getContent();
     return null;
@@ -152,5 +152,18 @@ public class Individual extends Record
       age--;
     //    echo $age;
     return age;
+  }
+
+  public void getDataFather()
+  {
+//    getchil
+//    return (Individual)gets
+    
+  }
+
+  public Family getDataChildFamily()
+  {
+    return (Family)getSubRecord(Tag.FAMC);
+    
   }
 }

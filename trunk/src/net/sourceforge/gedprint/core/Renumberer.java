@@ -7,6 +7,7 @@ import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
+import net.sourceforge.gedprint.gedcom.Tag;
 
 public class Renumberer
 {
@@ -35,8 +36,8 @@ public class Renumberer
       in.setID(neu);
 
       // als Kind
-      changeIDs(in.getSubRecords(Record.RECORD_FAM_CHILD), famNum);
-      changeIDs(in.getSubRecords(Record.RECORD_FAM_SPOUSE), famNum);
+      changeIDs(in.getSubRecords(Tag.FAM_CHILD), famNum);
+      changeIDs(in.getSubRecords(Tag.FAM_SPOUSE), famNum);
     }
 
     //
@@ -51,9 +52,9 @@ public class Renumberer
       fam.setID(neu);
 
       // als Kind
-      changeIDs(fam.getSubRecords(Record.RECORD_HUSBAND), indiNum);
-      changeIDs(fam.getSubRecords(Record.RECORD_WIFE), indiNum);
-      changeIDs(fam.getSubRecords(Record.RECORD_CHILDREN), indiNum);
+      changeIDs(fam.getSubRecords(Tag.HUSBAND), indiNum);
+      changeIDs(fam.getSubRecords(Tag.WIFE), indiNum);
+      changeIDs(fam.getSubRecords(Tag.CHILDREN), indiNum);
     }
 
     //

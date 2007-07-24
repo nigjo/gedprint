@@ -19,28 +19,6 @@ import java.util.Vector;
  */
 public class Record implements Cloneable, Comparable<Record>
 {
-  public static final String RECORD_HEAD = "HEAD"; //$NON-NLS-1$
-  public static final String RECORD_DATE = "DATE"; //$NON-NLS-1$
-
-  public static final String RECORD_INDI = "INDI"; //$NON-NLS-1$
-  public static final String RECORD_NAME = "NAME"; //$NON-NLS-1$
-  public static final String RECORD_NAME_PREFIX = "NPFX"; //$NON-NLS-1$
-  public static final String RECORD_GIVEN_NAME = "GIVN"; //$NON-NLS-1$
-  public static final String RECORD_SURNAME = "SURN"; //$NON-NLS-1$
-  public static final String RECORD_BIRT = "BIRT"; //$NON-NLS-1$
-  public static final String RECORD_DEAT = "DEAT"; //$NON-NLS-1$
-  public static final String RECORD_UID = "_UID"; //$NON-NLS-1$
-
-  public static final String RECORD_FAM_SPOUSE = "FAMS"; //$NON-NLS-1$
-  public static final String RECORD_FAM_CHILD = "FAMC"; //$NON-NLS-1$
-
-  public static final String RECORD_FAM = "FAM"; //$NON-NLS-1$
-  public static final String RECORD_WIFE = "WIFE"; //$NON-NLS-1$
-  public static final String RECORD_HUSBAND = "HUSB"; //$NON-NLS-1$
-  public static final String RECORD_CHILDREN = "CHIL"; //$NON-NLS-1$
-
-  public static final String RECORD_TRLR = "TRLR"; //$NON-NLS-1$
-  
   private static String[] months;
 
   private Record parent;
@@ -58,6 +36,11 @@ public class Record implements Cloneable, Comparable<Record>
   public Record()
   {
     super();
+  }
+
+  protected Record(Tag type, String id)
+  {
+    this(type.toString(), id);
   }
 
   protected Record(String type, String id)
@@ -89,6 +72,10 @@ public class Record implements Cloneable, Comparable<Record>
    * 
    * @return <code>null</code>, falls kein Record gefunden wurde.
    */
+  public Record getSubRecord(Tag tag)
+  {
+    return getSubRecord(tag.toString());
+  }
   public Record getSubRecord(String type)
   {
     if(type.indexOf('/') > 0)
@@ -118,6 +105,10 @@ public class Record implements Cloneable, Comparable<Record>
    *         Record keine Untereintraege vom gesuchten Typ hat das Feld die
    *         Laenge 0.
    */
+  public Record[] getSubRecords(Tag tag)
+  {
+    return getSubRecords(tag.toString());
+  }
   public Record[] getSubRecords(String type)
   {
     Vector<Record> found = new Vector<Record>();
@@ -129,6 +120,11 @@ public class Record implements Cloneable, Comparable<Record>
         found.add(r);
     }
     return found.toArray(new Record[found.size()]);
+  }
+
+  public int getSubRecordCount(Tag tag)
+  {
+    return getSubRecordCount(tag.toString());
   }
 
   public int getSubRecordCount(String string)
@@ -503,6 +499,16 @@ public class Record implements Cloneable, Comparable<Record>
   public String getClearedID()
   {
     return getIDCleared();
+  }
+
+  public Tag getTag()
+  {
+    String type = getType();
+    for(Tag tag:Tag.values()){
+      if(type.equals(tag.toString()))
+        return tag;
+    }
+    return null;
   }
 
 }
