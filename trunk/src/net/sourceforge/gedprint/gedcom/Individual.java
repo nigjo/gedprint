@@ -23,7 +23,7 @@ public class Individual extends Record
   {
     this(rec.getID());
 
-    if (!rec.getType().equals(Tag.INDI))
+    if (!rec.isTag(Tag.INDI))
       throw new InvalidDataException("not an Individual"); //$NON-NLS-1$
 
     setLevel(rec.getLevel());
@@ -154,16 +154,30 @@ public class Individual extends Record
     return age;
   }
 
-  public void getDataFather()
+  public Individual getDataFather()
   {
-//    getchil
-//    return (Individual)gets
-    
+    Family famc = getDataChildFamily();
+    return famc.getHusband();
   }
 
+  public Individual getDataMother()
+  {
+    Family famc = getDataChildFamily();
+    return famc.getWife();
+  }
+
+  /**
+   * liefert die Familie als Kind.
+   */
   public Family getDataChildFamily()
   {
     return (Family)getSubRecord(Tag.FAMC);
     
+  }
+
+  public Family[] getDataSpouceFamilies()
+  {
+    Record[] subRecords = getSubRecords(Tag.FAM_SPOUSE);
+    return (Family[]) subRecords;
   }
 }
