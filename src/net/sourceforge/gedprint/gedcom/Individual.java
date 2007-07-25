@@ -171,13 +171,19 @@ public class Individual extends Record
    */
   public Family getDataChildFamily()
   {
-    return (Family)getSubRecord(Tag.FAMC);
+    Record subRecord = getSubRecord(Tag.FAMC);
+    subRecord = findID(subRecord.getContent());
+    return (Family)subRecord;
     
   }
 
   public Family[] getDataSpouceFamilies()
   {
     Record[] subRecords = getSubRecords(Tag.FAM_SPOUSE);
-    return (Family[]) subRecords;
+    Family[] fams = new Family[subRecords.length];
+    for(int i=0;i<subRecords.length;i++){
+      fams[i]=(Family) findID(subRecords[i].getContent());
+    }
+    return fams;
   }
 }
