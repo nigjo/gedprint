@@ -76,6 +76,7 @@ public class Record implements Cloneable, Comparable<Record>
   {
     return getSubRecord(tag.toString());
   }
+
   public Record getSubRecord(String type)
   {
     if(type.indexOf('/') > 0)
@@ -109,6 +110,7 @@ public class Record implements Cloneable, Comparable<Record>
   {
     return getSubRecords(tag.toString());
   }
+
   public Record[] getSubRecords(String type)
   {
     Vector<Record> found = new Vector<Record>();
@@ -148,10 +150,9 @@ public class Record implements Cloneable, Comparable<Record>
    * weitergereicht. So wird auf jeden Fall die Struktur der GEDCOM-Datei
    * erhalten.
    * 
-   * @throws InvalidDataException
-   *           falls der Level des Untereintrags um mehr als ein Level hoeher
-   *           ist als der Basisrecord. Man kann kein Record mit dem Level 4 zu
-   *           einem Record mit dem Level 2 hinzufuegen.
+   * @throws InvalidDataException falls der Level des Untereintrags um mehr als
+   *           ein Level hoeher ist als der Basisrecord. Man kann kein Record
+   *           mit dem Level 4 zu einem Record mit dem Level 2 hinzufuegen.
    * @return Eingetragener Record. Dies muss nicht zwangslaeufig das gleiche
    *         Objekt sein, wie <tt>rec</tt>.
    */
@@ -187,8 +188,7 @@ public class Record implements Cloneable, Comparable<Record>
   /**
    * sucht eine bestimmte ID in der zugehoerigen Gedcom-Datei.
    * 
-   * @param id
-   *          gesuchte ID. Es wird nicht nach Individuum-, Familien- oder
+   * @param id gesuchte ID. Es wird nicht nach Individuum-, Familien- oder
    *          sonstiger ID unterschieden. Der Parameter kann mit und auch ohne
    *          die umschliessenden "@"-Zeichen uebergeben werden. Sie werden bei
    *          bedarf hinzugefuegt.
@@ -215,7 +215,7 @@ public class Record implements Cloneable, Comparable<Record>
   public GedFile getFile()
   {
     Record parent = getParent();
-    if(parent==null)
+    if(parent == null)
       return null;
     return parent.getFile();
   }
@@ -326,8 +326,7 @@ public class Record implements Cloneable, Comparable<Record>
   /**
    * schreibt den Record und alle seine Untereintraege in eine GEDCOM-Datei.
    * 
-   * @param out
-   *          Ausgabestrom der GEDCOM-Datei.
+   * @param out Ausgabestrom der GEDCOM-Datei.
    */
   public void print(PrintStream out)
   {
@@ -381,7 +380,7 @@ public class Record implements Cloneable, Comparable<Record>
 
       return r;
     }
-    catch (CloneNotSupportedException e)
+    catch(CloneNotSupportedException e)
     {
       return null;
     }
@@ -400,7 +399,7 @@ public class Record implements Cloneable, Comparable<Record>
 
           return i1 - i2;
         }
-        catch (Exception e)
+        catch(Exception e)
         {
           String id1 = getID();
           String id2 = o.getID();
@@ -427,18 +426,18 @@ public class Record implements Cloneable, Comparable<Record>
     if(geddate.matches("(((\\d{1,2})\\.?)? ([A-Za-z]{3})? (\\d{3,4}))")) //$NON-NLS-1$
     {
       String[] date = geddate.split(" "); //$NON-NLS-1$
-      if(months==null)
+      if(months == null)
       {
         DateFormatSymbols symbols = new DateFormatSymbols(Locale.ENGLISH);
         String[] shortMonths = symbols.getShortMonths();
-  
+
         String mString = Arrays.toString(shortMonths);
         String upper = mString.toUpperCase();
         months = upper.substring(1).split("[], ]+"); //$NON-NLS-1$
       }
-      
+
       boolean found = false;
-      switch (date.length)
+      switch(date.length)
       {
       case 1:
         c.set(Calendar.YEAR, Integer.parseInt(date[0]));
@@ -474,7 +473,7 @@ public class Record implements Cloneable, Comparable<Record>
       if(!found)
         System.out.println(geddate);
     }
-    
+
     return c;
   }
 
@@ -504,11 +503,20 @@ public class Record implements Cloneable, Comparable<Record>
   public Tag getTag()
   {
     String type = getType();
-    for(Tag tag:Tag.values()){
+    for(Tag tag : Tag.values())
+    {
       if(type.equals(tag.toString()))
         return tag;
     }
     return null;
+  }
+
+  public boolean isTag(Tag tag)
+  {
+    String type = getType();
+    if(type == null || tag == null)
+      return false;
+    return tag.toString().equals(type);
   }
 
 }

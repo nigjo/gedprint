@@ -27,7 +27,7 @@ public class Family extends Record
   {
     this(rec.getID());
 
-    if(!rec.getType().equals(Tag.FAM))
+    if(!rec.isTag(Tag.FAM))
       throw new InvalidDataException("not a Family"); //$NON-NLS-1$
 
     setLevel(rec.getLevel());
