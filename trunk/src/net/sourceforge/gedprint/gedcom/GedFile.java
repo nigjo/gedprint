@@ -513,6 +513,7 @@ public class GedFile implements Cloneable
       case INDI:
         individualCount++;
         rec = new Individual(rec);
+        break;
 
       default:
         otherCount++;
