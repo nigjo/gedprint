@@ -500,6 +500,15 @@ public class Record implements Cloneable, Comparable<Record>
     return getIDCleared();
   }
 
+  /**
+   * liefert den Tag des Records.
+   * 
+   * @return liefert <code>null</code>, falls der Tag nicht definiert ist.
+   *         Das bedeutet aber nicht, dass der Record keinen Typ hat. Es sollte
+   *         dann {@link #getType()} verwendet werden um den Record zu
+   *         identifizieren.
+   * @see #getType()
+   */
   public Tag getTag()
   {
     String type = getType();
