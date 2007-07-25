@@ -165,7 +165,7 @@ public class GedFile implements Cloneable
     in.close();
 
     // Dateiende pruefen
-    if(!Tag.TRLR.equals(lastRecord.getType()))
+    if(!lastRecord.isTag(Tag.TRLR))
     {
       throw new InvalidSyntaxException("missing trailer"); //$NON-NLS-1$
     }
