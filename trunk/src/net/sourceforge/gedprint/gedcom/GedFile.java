@@ -426,11 +426,13 @@ public class GedFile implements Cloneable
   private Enumeration getRecordsExcluded(Tag[] exclude)
   {
     String[] types = new String[exclude.length];
-    for(int i=0;i<exclude.length;i++){
-      types[i]=exclude[i].toString();
+    for(int i = 0; i < exclude.length; i++)
+    {
+      types[i] = exclude[i].toString();
     }
     return getRecordsExcluded(types);
   }
+
   private Enumeration getRecordsExcluded(final String[] exclude)
   {
     if(records == null)
@@ -503,20 +505,29 @@ public class GedFile implements Cloneable
 
     public Record addSubRecord(Record rec)
     {
-      switch(rec.getTag())
+      Tag tag = rec.getTag();
+      if(tag == null)
       {
-      case FAM:
-        familyCount++;
-        rec = new Family(rec);
-        break;
-
-      case INDI:
-        individualCount++;
-        rec = new Individual(rec);
-        break;
-
-      default:
+        // Tag ist nicht definiert. Macht hier aber nichts.
         otherCount++;
+      }
+      else
+      {
+        switch(tag)
+        {
+        case FAM:
+          familyCount++;
+          rec = new Family(rec);
+          break;
+
+        case INDI:
+          individualCount++;
+          rec = new Individual(rec);
+          break;
+
+        default:
+          otherCount++;
+        }
       }
       return super.addSubRecord(rec);
     }
@@ -531,7 +542,7 @@ public class GedFile implements Cloneable
 
   }
 
-  /*****************************************************************************
+  /*
    * ==================================================
    * 
    * IDs
@@ -634,7 +645,7 @@ public class GedFile implements Cloneable
     f.apply(records);
   }
 
-  /*****************************************************************************
+  /*
    * ==================================================
    * 
    * D E P R E C A T E D
@@ -642,9 +653,3 @@ public class GedFile implements Cloneable
    * ==================================================
    */
 }
-
-//
-// CVS-Protokoll
-//
-// $Log$
-//
