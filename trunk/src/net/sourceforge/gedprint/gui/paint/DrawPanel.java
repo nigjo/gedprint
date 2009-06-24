@@ -19,7 +19,7 @@ public class DrawPanel extends JPanel
   Vector<DrawingObject> objects;
   public DrawPanel()
   {
-    setPreferredSize(new Dimension(800, 800));
+    setPreferredSize(new Dimension(800, 600));
 
     setDoubleBuffered(true);
 
