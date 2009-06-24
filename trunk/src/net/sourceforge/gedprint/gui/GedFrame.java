@@ -1,10 +1,9 @@
 package net.sourceforge.gedprint.gui;
 
 import java.awt.Dimension;
-import java.awt.Toolkit;
 
+import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.sourceforge.gedprint.gedcom.GedFile;
@@ -27,8 +26,9 @@ public class GedFrame extends JFrame
   public GedFrame()
   {
     super("GEDFrame");
-    setSize(800, 600);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setSize(new Dimension(1024, 768));
+    setLocationByPlatform(true);
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
     drawPanel = new DrawPanel();
     getContentPane().add(new JScrollPane(drawPanel));
@@ -63,16 +63,20 @@ public class GedFrame extends JFrame
     }
   }
 
-  /**
-   * 
-   */
-  public void center()
+  @Override
+  public void dispose()
   {
-    Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-    Dimension frame = getSize();
-
-    this.setLocation(
-      (screen.width - frame.width) / 2,
-      (screen.height - frame.height) / 2);
+    if(isReadyToExit())
+    {
+      super.dispose();
+    }
   }
+
+  private boolean isReadyToExit()
+  {
+    Logger.getLogger(getClass().getName()).fine("is ready?");
+
+    return true;
+  }
+
 }
