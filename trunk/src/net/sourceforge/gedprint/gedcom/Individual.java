@@ -1,6 +1,7 @@
 package net.sourceforge.gedprint.gedcom;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /** Ein Individuum.
  * 
@@ -23,7 +24,7 @@ public class Individual extends Record
   {
     this(rec.getID());
 
-    if (!rec.isTag(Tag.INDI))
+    if(!rec.isTag(Tag.INDI))
       throw new InvalidDataException("not an Individual"); //$NON-NLS-1$
 
     setLevel(rec.getLevel());
@@ -35,27 +36,27 @@ public class Individual extends Record
   {
     Record name = getSubRecord(Tag.NAME);
 
-    if (name.getContent() != null)
+    if(name.getContent() != null)
       return name.getContent();
 
     StringBuffer buf = new StringBuffer();
 
-    if (name.getSubRecord(Tag.NAME_PREFIX) != null)
+    if(name.getSubRecord(Tag.NAME_PREFIX) != null)
       buf.append(name.getSubRecord(Tag.NAME_PREFIX));
 
-    if (name.getSubRecord(Tag.GIVEN_NAME) != null)
+    if(name.getSubRecord(Tag.GIVEN_NAME) != null)
     {
-      if (buf.length() > 0)
+      if(buf.length() > 0)
         buf.append(' ');
       buf.append(name.getSubRecord(Tag.GIVEN_NAME));
     }
-    if (name.getSubRecord(Tag.SURNAME) != null)
+    if(name.getSubRecord(Tag.SURNAME) != null)
     {
-      if (buf.length() > 0)
+      if(buf.length() > 0)
         buf.append(' ');
       buf.append('/' + name.getSubRecord(Tag.SURNAME).toString() + '/');
     }
-    if (buf.length() > 0)
+    if(buf.length() > 0)
       return buf.toString();
     return "?"; //$NON-NLS-1$
   }
@@ -68,7 +69,7 @@ public class Individual extends Record
 
   public boolean isDead()
   {
-    if (getSubRecord(Tag.DEAT) != null)
+    if(getSubRecord(Tag.DEAT) != null)
       return true;
 
     return getAge() > MAX_LIVING_AGE;
@@ -79,24 +80,47 @@ public class Individual extends Record
     int age = -1;
     Record birth = getSubRecord(Tag.BIRTH);
 
-    if (birth != null)
+    if(birth != null)
     {
       Calendar bDate = null;
       Calendar dDate = null;
-      if (birth.getSubRecord(Tag.DATE) != null)
+      if(birth.getSubRecord(Tag.DATE) != null)
         bDate = parseDate(birth.getSubRecord(Tag.DATE).getContent());
-      if (getSubRecord(Tag.DEAT) != null)
+      if(getSubRecord(Tag.DEAT) != null)
       {
         Record death = getSubRecord(Tag.DEAT);
-        if (death.getSubRecord(Tag.DATE) != null)
+        if(death.getSubRecord(Tag.DATE) != null)
           dDate = parseDate(death.getSubRecord(Tag.DATE).getContent());
       }
 
-      if (bDate != null)
+      if(bDate != null)
         age = calcYears(bDate, dDate);
     }
 
     return age;
+  }
+
+  public Date getBirthDate()
+  {
+    return getDate(Tag.BIRTH);
+  }
+
+  public Date getDeathDate()
+  {
+    return getDate(Tag.DEAT);
+  }
+
+  private Date getDate(Tag tag)
+  {
+    Record birth = getSubRecord(tag);
+    if(birth == null)
+      return null;
+    Calendar bDate = null;
+    if(birth.getSubRecord(Tag.DATE) != null)
+      bDate = parseDate(birth.getSubRecord(Tag.DATE).getContent());
+    if(bDate == null)
+      return null;
+    return bDate.getTime();
   }
 
   /** prueft, ob es sich um zwei gleiche Individuen handelt.
@@ -105,10 +129,10 @@ public class Individual extends Record
    */
   public boolean equals(Object obj)
   {
-    if (obj instanceof Individual)
+    if(obj instanceof Individual)
     {
-      Individual i = (Individual) obj;
-      if (getUID() != null && i.getUID() != null)
+      Individual i = (Individual)obj;
+      if(getUID() != null && i.getUID() != null)
       {
         return getUID().equals(i.getUID());
       }
@@ -125,7 +149,7 @@ public class Individual extends Record
   public String getUID()
   {
     Record uid = getSubRecord(Tag.UID);
-    if (uid != null)
+    if(uid != null)
       return uid.getContent();
     return null;
   }
@@ -141,13 +165,13 @@ public class Individual extends Record
   {
     int age = 0;
     //    $birthday=date("U",strtotime($month."/".$day."/".$year));
-    if (dDate == null)
+    if(dDate == null)
       dDate = Calendar.getInstance();
     //    $age=date("Y",time())-date("Y",$birthday);
     age = dDate.get(Calendar.YEAR) - bDate.get(Calendar.YEAR);
     // Checks to see if birthday has occured this year. If not subtract 1 from age
     //    if(date("z",time())<date("z",$birthday)) 
-    if (dDate.get(Calendar.DAY_OF_YEAR) < bDate.get(Calendar.DAY_OF_YEAR))
+    if(dDate.get(Calendar.DAY_OF_YEAR) < bDate.get(Calendar.DAY_OF_YEAR))
       // $age-=1; 
       age--;
     //    echo $age;
@@ -174,16 +198,18 @@ public class Individual extends Record
     Record subRecord = getSubRecord(Tag.FAMC);
     subRecord = findID(subRecord.getContent());
     return (Family)subRecord;
-    
+
   }
 
   public Family[] getDataSpouceFamilies()
   {
     Record[] subRecords = getSubRecords(Tag.FAM_SPOUSE);
     Family[] fams = new Family[subRecords.length];
-    for(int i=0;i<subRecords.length;i++){
-      fams[i]=(Family) findID(subRecords[i].getContent());
+    for(int i = 0; i < subRecords.length; i++)
+    {
+      fams[i] = (Family)findID(subRecords[i].getContent());
     }
     return fams;
   }
+
 }
