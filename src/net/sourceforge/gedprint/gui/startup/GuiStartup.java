@@ -3,6 +3,7 @@ package net.sourceforge.gedprint.gui.startup;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.GedFrame;
 import net.sourceforge.gedprint.gui.GedPrintGui;
 
@@ -62,7 +64,6 @@ public class GuiStartup implements Runnable
     arguments = new Properties(defaults);
   }
 
-
   public void run()
   {
     // DEBUG start
@@ -73,6 +74,26 @@ public class GuiStartup implements Runnable
     // DEBUG end
 
     GedFrame frame = new GedFrame();
+
+    String file = arguments.getProperty(ARG_FILENAME);
+    if(file != null && file.length() > 0)
+    {
+      try
+      {
+        frame.setGedFile(new GedFile(file));
+      }
+      catch(FileNotFoundException ex)
+      {
+        illegalArg(Messages.getString("err.filenotfound"), file);
+        return;
+      }
+      catch(IOException ex)
+      {
+        illegalArg(Messages.getString("err.ioerror"), file);
+        return;
+      }
+    }
+    frame.setStartID('@' + arguments.getProperty(ARG_INDIVIDUAL) + '@');
 
     frame.setVisible(true);
   }
@@ -89,7 +110,7 @@ public class GuiStartup implements Runnable
 
   private void illegalArg(String pattern, String arg)
   {
-    String title = Messages.getString("frame.title");
+    String title = Messages.getString(GedPrintGui.class, "frame.title");
     String message = MessageFormat.format(pattern, new Object[]
         {
           arg
