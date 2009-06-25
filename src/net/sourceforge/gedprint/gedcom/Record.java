@@ -214,10 +214,10 @@ public class Record implements Cloneable, Comparable<Record>
    */
   public GedFile getFile()
   {
-    Record parent = getParent();
-    if(parent == null)
+    Record rec = getParent();
+    if(rec == null)
       return null;
-    return parent.getFile();
+    return rec.getFile();
   }
 
   public Record getParent()
@@ -314,6 +314,7 @@ public class Record implements Cloneable, Comparable<Record>
   }
 
   /** liefert den Typ und die ID des Records */
+  @Override
   public String toString()
   {
     StringBuffer buf = new StringBuffer();
@@ -353,6 +354,7 @@ public class Record implements Cloneable, Comparable<Record>
   /**
    * erstellt eine Kopie des Records und aller seiner Untereintraege.
    */
+  @Override
   public Object clone()
   {
     try
@@ -511,10 +513,10 @@ public class Record implements Cloneable, Comparable<Record>
    */
   public Tag getTag()
   {
-    String type = getType();
+    String rtype = getType();
     for(Tag tag : Tag.values())
     {
-      if(type.equals(tag.toString()))
+      if(rtype.equals(tag.toString()))
         return tag;
     }
     return null;
@@ -522,10 +524,10 @@ public class Record implements Cloneable, Comparable<Record>
 
   public boolean isTag(Tag tag)
   {
-    String type = getType();
-    if(type == null || tag == null)
+    String rtype = getType();
+    if(rtype == null || tag == null)
       return false;
-    return tag.toString().equals(type);
+    return tag.toString().equals(rtype);
   }
 
 }
