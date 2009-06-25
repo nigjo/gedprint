@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 
 import java.text.DateFormat;
 import java.util.Date;
+import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.Individual;
 
 /** Neue Klasse erstellt am 07.02.2005.
@@ -32,12 +33,16 @@ public class Person extends BasicObject
     builder.append('\n');
     if(d != null)
     {
+      builder.append(Messages.getString("BIRT.title"));
+      builder.append(' ');
       builder.append(fmt.format(d));
     }
     d = indi.getDeathDate();
     builder.append('\n');
     if(d != null)
     {
+      builder.append(Messages.getString("DEAT.title"));
+      builder.append(' ');
       builder.append(fmt.format(d));
     }
     contentString = builder.toString();
