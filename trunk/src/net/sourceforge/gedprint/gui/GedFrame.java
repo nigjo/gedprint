@@ -74,6 +74,12 @@ public class GedFrame extends JFrame
       Logger.getLogger(getClass().getName()).fine(fam.toString());
 
       drawPanel.add(new FamilyTree(fam));
+      if(fam.getChildrenCount()>0){
+        for(Family family : fam.getChildFamilies())
+        {
+          drawPanel.add(new FamilyTree(family));
+        }
+      }
     }
     else if(r == null)
     {
