@@ -93,7 +93,10 @@ public class GuiStartup implements Runnable
         return;
       }
     }
-    frame.setStartID('@' + arguments.getProperty(ARG_INDIVIDUAL) + '@');
+    String startid = arguments.getProperty(ARG_INDIVIDUAL);
+    if(startid == null)
+      startid = arguments.getProperty(ARG_FAMILY);
+    frame.setStartID('@' + startid + '@');
 
     frame.setVisible(true);
   }
@@ -143,6 +146,9 @@ public class GuiStartup implements Runnable
         {
           case 'i':
             status = CMD_INDI;
+            break;
+          case 'f':
+            status = CMD_FAM;
             break;
           default:
             illegalArg(Messages.getString("err.unknownoption"), arg);
