@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-import javax.swing.SwingUtilities;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.GedFile;
@@ -121,17 +120,6 @@ public class GedFrame extends JFrame
     Logger.getLogger(getClass().getName()).fine("is ready?");
 
     return true;
-  }
-
-  @Override
-  public void setVisible(boolean b)
-  {
-    super.setVisible(b);
-    if(isVisible())
-    {
-      // Dafuer sorgen, dass die Scrollbalken da sind, wenn man sie braucht.
-      SwingUtilities.updateComponentTreeUI(this);
-    }
   }
 
 }
