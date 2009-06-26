@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 /** Neue Klasse erstellt am 07.02.2005.
@@ -61,15 +62,24 @@ public class DrawPanel extends JPanel
 
   private void arrangeObjects(Graphics g)
   {
-    int nextx = BasicObject.BORDER;
+    int nextx = BasicObject.BORDER * 10;
+    int nexty = BasicObject.BORDER * 5;
     for(DrawingObject object : objects)
     {
       if(object instanceof BasicObject)
       {
         BasicObject bo = (BasicObject)object;
-        bo.setLocation(new Point(nextx, BasicObject.BORDER));
+        bo.setLocation(new Point(nextx, nexty));
         Dimension size = bo.getSize(g);
-        nextx += BasicObject.BORDER + size.width;
+        if(size == null)
+        {
+          Logger.getLogger(getClass().getName()).info(
+              "no size for " + bo.toString());
+        }
+        else
+        {
+          nextx += BasicObject.BORDER + size.width;
+        }
       }
     }
     hasArrangedObjects = true;
