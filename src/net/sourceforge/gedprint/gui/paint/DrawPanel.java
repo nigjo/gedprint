@@ -33,34 +33,32 @@ public class DrawPanel extends JPanel
   }
 
   @Override
-  public Dimension getSize()
-  {
-    return super.getSize();
-  }
-
-  @Override
-  public Dimension getPreferredSize()
-  {
-    return super.getPreferredSize();
-  }
-
-  @Override
   protected void paintComponent(Graphics g)
   {
     super.paintComponent(g);
     if(buffer == null)
     {
+      // Objekte ausrichten
       Dimension bufsize = arrangeObjects(g, objects);
-      setPreferredSize(bufsize);
 
+      // Groesse des Panel neu definieren
+      setPreferredSize(bufsize);
+      // und ggf. die Scrollbalken erzwingen
+      invalidate();
+      getParent().validate();
+
+      // Puffer erstellen mit aktueller Groesse.
+      // Es wird nur in Graustufen gezeichnet, deswegen sollte hier nichts
+      // anderes verwendet werden.
       buffer = new BufferedImage(bufsize.width, bufsize.height,
-          BufferedImage.TYPE_INT_ARGB);
+          BufferedImage.TYPE_BYTE_GRAY);
 
       Graphics bg = buffer.getGraphics();
       bg.setColor(getBackground());
       bg.fillRect(0, 0, bufsize.width, bufsize.height);
       bg.setFont(g.getFont());
 
+      // alle Objekte zeichnen
       if(objects != null)
       {
         Enumeration e = objects.elements();
@@ -91,6 +89,8 @@ public class DrawPanel extends JPanel
     int nextx = frameborder.x;
     int nexty = frameborder.y;
     Dimension psize = new Dimension();
+    if(dobjects == null)
+      return psize;
     for(DrawingObject object : dobjects)
     {
       if(object instanceof BasicObject)
