@@ -129,12 +129,17 @@ public class Individual extends Record
    */
   public boolean equals(Object obj)
   {
+    if(super.equals(obj))
+      return true;
     if(obj instanceof Individual)
     {
       Individual i = (Individual)obj;
       if(getUID() != null && i.getUID() != null)
       {
         return getUID().equals(i.getUID());
+      }
+      else if(getID()!=null && i.getID()!=null){
+        return getID().equals(i.getID());
       }
     }
 
