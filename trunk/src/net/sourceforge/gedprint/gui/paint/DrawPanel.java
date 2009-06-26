@@ -74,7 +74,7 @@ public class DrawPanel extends JPanel
         }
         else
         {
-          nextx += BasicObject.BORDER + size.width;
+          nexty += BasicObject.BORDER + size.height;
         }
       }
     }
