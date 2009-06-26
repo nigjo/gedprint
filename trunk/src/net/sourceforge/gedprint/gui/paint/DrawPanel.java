@@ -40,10 +40,6 @@ public class DrawPanel extends JPanel
 
     Dimension d = getSize();
 
-    g.setColor(Color.LIGHT_GRAY);
-    g.drawLine(0, 0, d.width, d.height);
-    g.drawLine(0, d.height, d.width, 0);
-
     if(objects != null)
     {
       Enumeration e = objects.elements();
