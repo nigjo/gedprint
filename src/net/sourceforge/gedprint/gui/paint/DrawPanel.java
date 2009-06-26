@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -17,8 +18,8 @@ import javax.swing.JPanel;
 public class DrawPanel extends JPanel
 {
   private static final long serialVersionUID = 1601760105575908398L;
-  private boolean hasArrangedObjects;
   Vector<DrawingObject> objects;
+  BufferedImage buffer;
 
   public DrawPanel()
   {
@@ -28,24 +29,49 @@ public class DrawPanel extends JPanel
 
     setBackground(Color.WHITE);
 
-    hasArrangedObjects = true;
+    buffer = null;
+  }
+
+  @Override
+  public Dimension getSize()
+  {
+    return super.getSize();
+  }
+
+  @Override
+  public Dimension getPreferredSize()
+  {
+    return super.getPreferredSize();
   }
 
   @Override
   protected void paintComponent(Graphics g)
   {
     super.paintComponent(g);
-    if(!hasArrangedObjects)
-      arrangeObjects(g);
-
-    Dimension d = getSize();
-
-    if(objects != null)
+    if(buffer == null)
     {
-      Enumeration e = objects.elements();
-      while(e.hasMoreElements())
-        ((DrawingObject)e.nextElement()).paint(g);
+      Dimension bufsize = arrangeObjects(g, objects);
+      setPreferredSize(bufsize);
+
+      buffer = new BufferedImage(bufsize.width, bufsize.height,
+          BufferedImage.TYPE_INT_ARGB);
+
+      Graphics bg = buffer.getGraphics();
+      bg.setColor(getBackground());
+      bg.fillRect(0, 0, bufsize.width, bufsize.height);
+      bg.setFont(g.getFont());
+
+      if(objects != null)
+      {
+        Enumeration e = objects.elements();
+        while(e.hasMoreElements())
+        {
+          ((DrawingObject)e.nextElement()).paint(bg);
+        }
+      }
     }
+
+    g.drawImage(buffer, 0, 0, this);
   }
 
   public void add(DrawingObject obj)
@@ -53,18 +79,19 @@ public class DrawPanel extends JPanel
     if(objects == null)
       objects = new Vector<DrawingObject>();
     objects.add(obj);
-    hasArrangedObjects = false;
+    buffer = null;
   }
 
-  private void arrangeObjects(Graphics g)
+  private Dimension arrangeObjects(Graphics g,
+      Iterable<DrawingObject> dobjects)
   {
-    Point frameborder = new Point(BasicObject.BORDER * 6,
+    Point frameborder = new Point(BasicObject.BORDER * 4,
         BasicObject.BORDER * 3);
 
     int nextx = frameborder.x;
     int nexty = frameborder.y;
     Dimension psize = new Dimension();
-    for(DrawingObject object : objects)
+    for(DrawingObject object : dobjects)
     {
       if(object instanceof BasicObject)
       {
@@ -73,7 +100,7 @@ public class DrawPanel extends JPanel
         Dimension size = bo.getSize(g);
         if(size == null)
         {
-          Logger.getLogger(getClass().getName()).info(
+          Logger.getLogger(DrawPanel.class.getName()).info(
               "no size for " + bo.toString());
         }
         else
@@ -87,10 +114,9 @@ public class DrawPanel extends JPanel
         }
       }
     }
-    psize.width+= 2*frameborder.x;
+    psize.width += 2 * frameborder.x;
     psize.height += frameborder.y;
-    setPreferredSize(psize);
-    hasArrangedObjects = true;
+    return psize;
   }
 
 }
