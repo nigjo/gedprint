@@ -15,6 +15,7 @@ import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.paint.DrawPanel;
+import net.sourceforge.gedprint.gui.paint.FamilyTree;
 import net.sourceforge.gedprint.gui.paint.Person;
 
 /** Neue Klasse erstellt am 07.02.2005.
@@ -66,6 +67,21 @@ public class GedFrame extends JFrame
       Individual mother = indi.getDataMother();
       Family family = indi.getDataChildFamily();
       Family[] faminlaw = indi.getDataSpouceFamilies();
+    }
+    else if(r instanceof Family)
+    {
+      Family fam = (Family)r;
+      Logger.getLogger(getClass().getName()).fine(fam.toString());
+
+      drawPanel.add(new FamilyTree(fam));
+    }
+    else if(r == null)
+    {
+      Logger.getLogger(getClass().getName()).fine("no record found");
+    }
+    else
+    {
+      Logger.getLogger(getClass().getName()).fine(r.toString());
     }
   }
 
