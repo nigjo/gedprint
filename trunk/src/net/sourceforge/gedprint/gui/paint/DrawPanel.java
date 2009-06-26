@@ -58,8 +58,12 @@ public class DrawPanel extends JPanel
 
   private void arrangeObjects(Graphics g)
   {
-    int nextx = BasicObject.BORDER * 10;
-    int nexty = BasicObject.BORDER * 5;
+    Point frameborder = new Point(BasicObject.BORDER * 6,
+        BasicObject.BORDER * 3);
+
+    int nextx = frameborder.x;
+    int nexty = frameborder.y;
+    Dimension psize = new Dimension();
     for(DrawingObject object : objects)
     {
       if(object instanceof BasicObject)
@@ -75,9 +79,17 @@ public class DrawPanel extends JPanel
         else
         {
           nexty += BasicObject.BORDER + size.height;
+
+          if(psize.height < nexty)
+            psize.height = nexty;
+          if(psize.width < size.width)
+            psize.width = size.width;
         }
       }
     }
+    psize.width+= 2*frameborder.x;
+    psize.height += frameborder.y;
+    setPreferredSize(psize);
     hasArrangedObjects = true;
   }
 
