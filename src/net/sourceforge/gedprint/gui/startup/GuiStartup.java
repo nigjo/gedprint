@@ -1,27 +1,16 @@
 package net.sourceforge.gedprint.gui.startup;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.GedFrame;
@@ -41,9 +30,9 @@ public class GuiStartup implements Runnable
   private static final int CMD_INDI = 2;
   private static final int CMD_FAM = 3;
   //File infile;
-  private static final String ARG_FILENAME = "filename";
-  private static final String ARG_INDIVIDUAL = "individual";
-  private static final String ARG_FAMILY = "family";
+  private static final String ARG_FILENAME = "filename"; //$NON-NLS-1$
+  private static final String ARG_INDIVIDUAL = "individual"; //$NON-NLS-1$
+  private static final String ARG_FAMILY = "family"; //$NON-NLS-1$
   Properties arguments;
 
   public GuiStartup()
@@ -84,12 +73,12 @@ public class GuiStartup implements Runnable
       }
       catch(FileNotFoundException ex)
       {
-        illegalArg(Messages.getString("err.filenotfound"), file);
+        illegalArg(Messages.getString("err.filenotfound"), file); //$NON-NLS-1$
         return;
       }
       catch(IOException ex)
       {
-        illegalArg(Messages.getString("err.ioerror"), file);
+        illegalArg(Messages.getString("err.ioerror"), file); //$NON-NLS-1$
         return;
       }
       
@@ -115,7 +104,7 @@ public class GuiStartup implements Runnable
 
   private void illegalArg(String pattern, String arg)
   {
-    String title = Messages.getString(GedPrintGui.class, "frame.title");
+    String title = Messages.getString(GedPrintGui.class, "frame.title"); //$NON-NLS-1$
     String message = MessageFormat.format(pattern, new Object[]
         {
           arg
@@ -135,12 +124,12 @@ public class GuiStartup implements Runnable
       {
         if(status != CMD_OK)
         {
-          illegalArg(Messages.getString("err.missingargument"), arg);
+          illegalArg(Messages.getString("err.missingargument"), arg); //$NON-NLS-1$
           return false;
         }
         else if(arg.length() == 1)
         {
-          illegalArg(Messages.getString("err.invalidarg"), arg);
+          illegalArg(Messages.getString("err.invalidarg"), arg); //$NON-NLS-1$
           return false;
         }
 
@@ -153,7 +142,7 @@ public class GuiStartup implements Runnable
             status = CMD_FAM;
             break;
           default:
-            illegalArg(Messages.getString("err.unknownoption"), arg);
+            illegalArg(Messages.getString("err.unknownoption"), arg); //$NON-NLS-1$
             return false;
         }
       }
@@ -172,7 +161,7 @@ public class GuiStartup implements Runnable
             String infile = arguments.getProperty(ARG_FILENAME);
             if(infile != null && infile.length() > 0)
             {
-              illegalArg(Messages.getString("err.unknownargument"), arg);
+              illegalArg(Messages.getString("err.unknownargument"), arg); //$NON-NLS-1$
               return false;
             }
             arguments.setProperty(ARG_FILENAME, arg);
