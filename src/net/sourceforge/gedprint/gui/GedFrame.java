@@ -30,7 +30,7 @@ public class GedFrame extends JFrame
 
   public GedFrame()
   {
-    super(Messages.getString("frame.title"));
+    super(Messages.getString("frame.title")); //$NON-NLS-1$
     setSize(new Dimension(1024, 768));
     setLocationByPlatform(true);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -63,10 +63,10 @@ public class GedFrame extends JFrame
 
       drawPanel.add(new Person(indi));
 
-      Individual father = indi.getDataFather();
-      Individual mother = indi.getDataMother();
-      Family family = indi.getDataChildFamily();
-      Family[] faminlaw = indi.getDataSpouceFamilies();
+//      Individual father = indi.getDataFather();
+//      Individual mother = indi.getDataMother();
+//      Family family = indi.getDataChildFamily();
+//      Family[] faminlaw = indi.getDataSpouceFamilies();
     }
     else if(r instanceof Family)
     {
@@ -84,7 +84,7 @@ public class GedFrame extends JFrame
     }
     else if(r == null)
     {
-      Logger.getLogger(getClass().getName()).fine("no record found");
+      Logger.getLogger(getClass().getName()).fine("no record found"); //$NON-NLS-1$
     }
     else
     {
@@ -109,15 +109,15 @@ public class GedFrame extends JFrame
 
       // wenn ich hier angekommen bin, ist kein Fenster mehr sichtbar.
       Logger logger = Logger.getLogger(GedPrintGui.class.getName());
-      logger.info("quit application");
+      logger.info("quit application"); //$NON-NLS-1$
       logger.info(new SimpleDateFormat().format(new Date()));
-      logger.info("------------------------------");
+      logger.info("------------------------------"); //$NON-NLS-1$
     }
   }
 
   private boolean isReadyToExit()
   {
-    Logger.getLogger(getClass().getName()).fine("is ready?");
+    Logger.getLogger(getClass().getName()).fine("is ready?"); //$NON-NLS-1$
 
     return true;
   }

@@ -11,7 +11,8 @@ import java.util.Vector;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 
-/** Neue Klasse erstellt am 07.02.2005.
+/**
+ * Neue Klasse erstellt am 07.02.2005.
  * 
  * @author nigjo
  */
@@ -64,7 +65,7 @@ public class DrawPanel extends JPanel
         Enumeration e = objects.elements();
         while(e.hasMoreElements())
         {
-          ((DrawingObject)e.nextElement()).paint(bg);
+          ((DrawingObject) e.nextElement()).paint(bg);
         }
       }
     }
@@ -80,28 +81,27 @@ public class DrawPanel extends JPanel
     buffer = null;
   }
 
-  private Dimension arrangeObjects(Graphics g,
-      Iterable<DrawingObject> dobjects)
+  private Dimension arrangeObjects(Graphics g, Iterable<DrawingObject> dobjects)
   {
+    if(dobjects == null)
+      return null;
     Point frameborder = new Point(BasicObject.BORDER * 4,
         BasicObject.BORDER * 3);
 
     int nextx = frameborder.x;
     int nexty = frameborder.y;
     Dimension psize = new Dimension();
-    if(dobjects == null)
-      return psize;
     for(DrawingObject object : dobjects)
     {
       if(object instanceof BasicObject)
       {
-        BasicObject bo = (BasicObject)object;
+        BasicObject bo = (BasicObject) object;
         bo.setLocation(new Point(nextx, nexty));
         Dimension size = bo.getSize(g);
         if(size == null)
         {
           Logger.getLogger(DrawPanel.class.getName()).info(
-              "no size for " + bo.toString());
+              "no size for " + bo.toString()); //$NON-NLS-1$
         }
         else
         {
