@@ -92,11 +92,13 @@ public class GuiStartup implements Runnable
         illegalArg(Messages.getString("err.ioerror"), file);
         return;
       }
+      
+      // StartID setzen, wenn Datei gelesen wurde
+      String startid = arguments.getProperty(ARG_INDIVIDUAL);
+      if(startid == null)
+	  startid = arguments.getProperty(ARG_FAMILY);
+      frame.setStartID('@' + startid + '@');
     }
-    String startid = arguments.getProperty(ARG_INDIVIDUAL);
-    if(startid == null)
-      startid = arguments.getProperty(ARG_FAMILY);
-    frame.setStartID('@' + startid + '@');
 
     frame.setVisible(true);
   }

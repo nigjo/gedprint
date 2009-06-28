@@ -23,7 +23,7 @@ public class GedPrintGui
 
     // Programmstart in die Protokolldatei mit Zeitstempel
     Logger logger = Logger.getLogger(GedPrintGui.class.getName());
-    logger.info("------------------------------");
+    logger.info("------------------------------"); //$NON-NLS-1$
     logger.info(new SimpleDateFormat().format(new Date()));
 
     GuiStartup gui = new GuiStartup();
