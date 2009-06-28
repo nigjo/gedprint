@@ -21,7 +21,7 @@ public class GuiThreadGroup extends ThreadGroup
 
   public GuiThreadGroup()
   {
-    super("gedprint");
+    super("gedprint"); //$NON-NLS-1$
   }
 
   @Override

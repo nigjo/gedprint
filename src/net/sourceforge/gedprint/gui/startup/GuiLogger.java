@@ -33,7 +33,7 @@ public class GuiLogger
     logger.setLevel(Level.ALL);
     Formatter formatter = new Formatter()
     {
-      String NL = System.getProperty("line.separator");
+      String NL = System.getProperty("line.separator"); //$NON-NLS-1$
 
       @Override
       public String format(LogRecord record)
@@ -41,7 +41,7 @@ public class GuiLogger
         StringBuilder builder = new StringBuilder();
         String clname = record.getSourceClassName();
         builder.append(clname.substring(clname.lastIndexOf('.') + 1));
-        builder.append(": ");
+        builder.append(": "); //$NON-NLS-1$
         String prefix = builder.toString();
         // bisheriges loeschen
         builder.setLength(0);
@@ -82,7 +82,7 @@ public class GuiLogger
     // Protokollausgabe auch in Datei
     try
     {
-      File logfile = new File("GedPrint.log");
+      File logfile = new File("GedPrint.log"); //$NON-NLS-1$
 
       ensureMaxSize(logfile, 1024 * 1024l);
 
@@ -102,7 +102,7 @@ public class GuiLogger
     if(!logfile.exists() || logfile.length() < maxlength)
       return;
 
-    File tempFile = File.createTempFile("~prune", ".log");
+    File tempFile = File.createTempFile("~prune", ".log"); //$NON-NLS-1$ //$NON-NLS-2$
     BufferedReader in = new BufferedReader(new FileReader(logfile));
     try
     {
