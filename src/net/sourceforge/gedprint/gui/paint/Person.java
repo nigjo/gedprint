@@ -33,7 +33,7 @@ public class Person extends BasicObject
     builder.append('\n');
     if(d != null)
     {
-      builder.append(Messages.getString("BIRT.title"));
+      builder.append(Messages.getString("BIRT.title")); //$NON-NLS-1$
       builder.append(' ');
       builder.append(fmt.format(d));
     }
@@ -41,7 +41,7 @@ public class Person extends BasicObject
     builder.append('\n');
     if(d != null)
     {
-      builder.append(Messages.getString("DEAT.title"));
+      builder.append(Messages.getString("DEAT.title")); //$NON-NLS-1$
       builder.append(' ');
       builder.append(fmt.format(d));
     }
@@ -62,7 +62,7 @@ public class Person extends BasicObject
     g.drawRect(pos.x, pos.y, s.width, s.height);
 
     int lineheight = g.getFontMetrics().getHeight();
-    String[] lines = contentString.split("[\\n\\r]+");
+    String[] lines = contentString.split("[\\n\\r]+"); //$NON-NLS-1$
     int ypos = pos.y;
     for(String line : lines)
     {
@@ -79,7 +79,7 @@ public class Person extends BasicObject
     int width = 0;
     int height = 0;
 
-    String[] lines = contentString.split("[\\n\\r]+");
+    String[] lines = contentString.split("[\\n\\r]+"); //$NON-NLS-1$
     for(String line : lines)
     {
       Rectangle bounds = fm.getStringBounds(line, g).getBounds();
@@ -91,4 +91,8 @@ public class Person extends BasicObject
     return new Dimension(width + 2 * BORDER, height + BORDER);
   }
 
+  public Individual getIndividual()
+  {
+    return indi;
+  }
 }
