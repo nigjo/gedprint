@@ -4,12 +4,18 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import java.util.logging.Logger;
+
 import javax.swing.JPanel;
+
+import net.sourceforge.gedprint.gedcom.Individual;
+import net.sourceforge.gedprint.gedcom.Record;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.
@@ -18,6 +24,7 @@ import javax.swing.JPanel;
  */
 public class DrawPanel extends JPanel
 {
+  public static final String PROPERTY_RECORD = "Record"; //$NON-NLS-1$
   private static final long serialVersionUID = 1601760105575908398L;
   Vector<DrawingObject> objects;
   BufferedImage buffer;
@@ -31,6 +38,69 @@ public class DrawPanel extends JPanel
     setBackground(Color.WHITE);
 
     buffer = null;
+
+    addMouseMotionListener(new MouseMotionAdapter() {
+
+      Record lastRecord = null;
+
+      @Override
+      public void mouseMoved(MouseEvent e)
+      {
+        Record rec = getRecord(e.getPoint());
+        if(rec != lastRecord)
+        {
+          firePropertyChange(PROPERTY_RECORD, lastRecord, rec);
+          lastRecord = rec;
+        }
+      }
+    });
+  }
+
+  protected Record getRecord(Point point)
+  {
+    if(objects == null)
+      return null;
+    for(DrawingObject obj : objects)
+    {
+      if(!(obj instanceof BasicObject))
+        continue;
+      BasicObject bobj = (BasicObject) obj;
+      Record record = checkObject(bobj, point);
+      if(record != null)
+        return record;
+    }
+    return null;
+  }
+
+  private Record checkObject(BasicObject bobj, Point point)
+  {
+    Point location = bobj.getLocation();
+    Dimension size = bobj.getSize(null);
+    if(location == null || size == null)
+      return null;
+    Rectangle boundingbox = new Rectangle(location, size);
+    if(boundingbox.contains(point))
+    {
+      if(bobj instanceof Person)
+        return ((Person) bobj).getIndividual();
+      else if(bobj instanceof FamilyTree)
+      {
+        FamilyTree famtree = (FamilyTree) bobj;
+        Record rec = null;
+        for(Individual indi : famtree.getIndividuals())
+        {
+          rec = checkObject(famtree.getObject(indi), point);
+          if(rec != null)
+            break;
+        }
+        if(rec == null)
+          rec = famtree.getFamily();
+        return rec;
+      }
+      else
+        throw new IllegalStateException("unknown object type"); //$NON-NLS-1$
+    }
+    return null;
   }
 
   @Override

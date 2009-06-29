@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -262,4 +263,19 @@ public class FamilyTree extends BasicObject
   {
     return fam;
   }
+
+  public Collection<Individual> getIndividuals()
+  {
+    if(elements == null)
+      return null;
+    return elements.keySet();
+  }
+
+  public BasicObject getObject(Individual indi)
+  {
+    if(elements == null)
+      return null;
+    return elements.get(indi);
+  }
+
 }
