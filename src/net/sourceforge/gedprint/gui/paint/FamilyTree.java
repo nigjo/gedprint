@@ -85,7 +85,7 @@ public class FamilyTree extends BasicObject
     {
       line.paint(g);
     }
-    
+
     for(Individual individual : elements.keySet())
     {
       BasicObject p = elements.get(individual);
@@ -165,9 +165,13 @@ public class FamilyTree extends BasicObject
     int childCount = fam.getChildrenCount();
     if(childCount == 0)
     {
-      int erx = er.getLocation().x + er.getSize(g).width;
+      Point fampos = getLocation();
+      int erx = er.getLocation().x + er.getSize(null).width;
       int siex = sie.getLocation().x;
-      famCenter = new Point((erx + siex) / 2, psize.height / 2);
+      int miny = er.getSize(null).height < sie.getSize(null).height ? er
+          .getSize(null).height : sie.getSize(null).height;
+      famCenter = new Point((erx + siex) / 2, miny / 2 + BORDER);
+      famCenter.translate(0, fampos.y);
     }
     else
     {
@@ -209,7 +213,7 @@ public class FamilyTree extends BasicObject
       {
         // Kinder zentrieren
         int left = (psize.width - csize.width - BORDER) / 2;
-        left += left%2;
+        left += left % 2;
         children = fam.getChildren();
         while(children.hasMoreElements())
         {
@@ -218,16 +222,18 @@ public class FamilyTree extends BasicObject
         }
       }
       Point fampos = getLocation();
-      famCenter = new Point(psize.width / 2, BORDER+ psize.height + (parentChildrenGap)
-          / 2);
+      famCenter = new Point(psize.width / 2, BORDER + psize.height
+          + (parentChildrenGap) / 2);
       famCenter.translate(fampos.x, fampos.y);
 
       // Alle Kinder mit dem Familienpunkt verbinden
       children = fam.getChildren();
-      while(children.hasMoreElements()){
+      while(children.hasMoreElements())
+      {
         Individual child = (Individual) children.nextElement();
         BasicObject bo = elements.get(child);
-        if(bo instanceof FamilyTree){
+        if(bo instanceof FamilyTree)
+        {
           FamilyTree subtree = (FamilyTree) bo;
           BasicObject parent = subtree.elements.get(child);
           bo = new Person(child);
@@ -237,7 +243,7 @@ public class FamilyTree extends BasicObject
         }
         lines.add(new RelationLine((Person) bo, famCenter));
       }
-      
+
       psize.height += csize.height + parentChildrenGap;
     }
 

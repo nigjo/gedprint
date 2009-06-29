@@ -32,7 +32,7 @@ public class RelationLine implements DrawingObject
     Point loc = (Point) origin.getLocation().clone();
     Dimension size = origin.getSize(null);
     // ermitteln, wo sich die beiden Personen befinden.
-    if(loc.y < endpoint.y)
+    if(loc.y+size.height < endpoint.y)
     {
       // Ursprung ist oberhalb von Endpunkt
       // also Unterkante Ursprung -> Endpunkt
@@ -54,15 +54,20 @@ public class RelationLine implements DrawingObject
       loc.x = endpoint.x;
       points.add((Point) loc.clone());
     }
-    else if(loc.x < endpoint.x)
+    else if(loc.x+size.width < endpoint.x)
     {
       // Ursprung ist links von Endpunkt
-      // also rechte Kante Ursprung -> links Kante Endpunkt
+      // also rechte Kante Ursprung -> Endpunkt
+      loc.translate(size.width, 0);
+      loc.y=endpoint.y;
+      points.add((Point) loc.clone());
     }
     else
     {
       // Ursprung ist rechts von Endpunkt
-      // also links Kante Ursprung -> rechts Kante Endpunkt
+      // also links Kante Ursprung -> Endpunkt
+      loc.y=endpoint.y;
+      points.add((Point) loc.clone());
     }
 
     // this.endpoint = endpoint;
