@@ -25,10 +25,11 @@ public class FrameTest extends TestCase
     GedFrame frame = new GedFrame();
     frame.setVisible(true);
 
-    frame.setGedFile(new GedFile("hofschroeer.ged"));
-    frame.setStartID("@I58@");
+    frame.setGedFile(new GedFile("hofschroeer.ged")); //$NON-NLS-1$
+    frame.setStartID("@F17@"); //$NON-NLS-1$
 
-    Thread.sleep(10 * SEC);
+    System.out.println("waiting 5 seconds"); //$NON-NLS-1$
+    Thread.sleep(5 * SEC);
     frame.dispose();
   }
 }
