@@ -1,12 +1,18 @@
 package net.sourceforge.gedprint.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 import java.awt.Frame;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.sourceforge.gedprint.core.Messages;
@@ -18,7 +24,8 @@ import net.sourceforge.gedprint.gui.paint.DrawPanel;
 import net.sourceforge.gedprint.gui.paint.FamilyTree;
 import net.sourceforge.gedprint.gui.paint.Person;
 
-/** Neue Klasse erstellt am 07.02.2005.
+/**
+ * Neue Klasse erstellt am 07.02.2005.
  * 
  * @author nigjo
  */
@@ -37,6 +44,10 @@ public class GedFrame extends JFrame
 
     drawPanel = new DrawPanel();
     getContentPane().add(new JScrollPane(drawPanel));
+
+    StatusZeile status = new StatusZeile();
+    drawPanel.addPropertyChangeListener(DrawPanel.PROPERTY_RECORD, status);
+    getContentPane().add(status, BorderLayout.SOUTH);
   }
 
   /**
@@ -57,20 +68,20 @@ public class GedFrame extends JFrame
     Record r = this.ged.findID(string);
     if(r instanceof Individual)
     {
-      Individual indi = (Individual)r;
+      Individual indi = (Individual) r;
       Logger.getLogger(getClass().getName()).info(indi.getClearedFullName());
       Logger.getLogger(getClass().getName()).info("Age: " + indi.getAge()); //$NON-NLS-1$
 
       drawPanel.add(new Person(indi));
 
-//      Individual father = indi.getDataFather();
-//      Individual mother = indi.getDataMother();
-//      Family family = indi.getDataChildFamily();
-//      Family[] faminlaw = indi.getDataSpouceFamilies();
+      // Individual father = indi.getDataFather();
+      // Individual mother = indi.getDataMother();
+      // Family family = indi.getDataChildFamily();
+      // Family[] faminlaw = indi.getDataSpouceFamilies();
     }
     else if(r instanceof Family)
     {
-      Family fam = (Family)r;
+      Family fam = (Family) r;
       Logger.getLogger(getClass().getName()).fine(fam.toString());
 
       drawPanel.add(new FamilyTree(fam, true));
@@ -122,4 +133,36 @@ public class GedFrame extends JFrame
     return true;
   }
 
+  private static class StatusZeile extends JPanel implements
+      PropertyChangeListener
+  {
+    private static final String DEFAULT = "none"; //$NON-NLS-1$
+    private static final long serialVersionUID = 4859664657296219900L;
+    JLabel text;
+
+    public StatusZeile()
+    {
+      super(new FlowLayout(FlowLayout.LEFT, 2, 0));
+      text = new JLabel(DEFAULT);
+      add(text);
+    }
+
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+      String cmd = evt.getPropertyName();
+      if(cmd.equals(DrawPanel.PROPERTY_RECORD))
+        doRecord(evt);
+    }
+
+    private void doRecord(PropertyChangeEvent evt)
+    {
+      Record rec = (Record) evt.getNewValue();
+      if(rec == null)
+        text.setText(DEFAULT);
+      else if(rec instanceof Individual)
+        text.setText(rec.toString());
+      else
+        text.setText(DEFAULT);
+    }
+  }
 }
