@@ -30,6 +30,10 @@ public abstract class BasicObject implements DrawingObject
   {
     return location;
   }
+  
+  public void translate(int dx, int dy){
+    location.translate(dx, dy);
+  }
 
   abstract public Dimension getSize(Graphics g);
 }

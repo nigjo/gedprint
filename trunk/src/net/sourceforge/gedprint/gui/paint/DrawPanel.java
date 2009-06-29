@@ -39,8 +39,14 @@ public class DrawPanel extends JPanel
     super.paintComponent(g);
     if(buffer == null)
     {
+      Logger.getLogger(getClass().getName()).fine("create buffer"); //$NON-NLS-1$
       // Objekte ausrichten
       Dimension bufsize = arrangeObjects(g, objects);
+      if(bufsize == null)
+      {
+        // Mini-Dummy-Bild erzeugen.
+        bufsize = new Dimension(10, 10);
+      }
 
       // Groesse des Panel neu definieren
       setPreferredSize(bufsize);
@@ -68,6 +74,7 @@ public class DrawPanel extends JPanel
           ((DrawingObject) e.nextElement()).paint(bg);
         }
       }
+
     }
 
     g.drawImage(buffer, 0, 0, this);

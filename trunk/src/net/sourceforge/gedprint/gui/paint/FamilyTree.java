@@ -6,21 +6,28 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
+import java.util.logging.Logger;
+
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
 
 /**
  * Neue Klasse erstellt von hof. Erstellt am Jun 25, 2009, 4:50:03 PM
- *
+ * 
  * @todo Hier fehlt die Beschreibung der Klasse.
- *
+ * 
  * @author hof
  */
 public class FamilyTree extends BasicObject
 {
+  private static final boolean DEBUG = false;
   private Family fam;
+  //
   Hashtable<Individual, Point> relativePos;
   Hashtable<Individual, BasicObject> elements;
+  Vector<RelationLine> lines;
+  //
   boolean updateLayout;
   private Dimension layoutsize;
   boolean showChildrenFamily;
@@ -41,7 +48,7 @@ public class FamilyTree extends BasicObject
   @Override
   public Dimension getSize(Graphics g)
   {
-    if(updateLayout)
+    if(g != null && updateLayout)
       updateLayout(g);
     if(layoutsize == null)
       layoutsize = new Dimension(BORDER, BORDER);
@@ -54,6 +61,10 @@ public class FamilyTree extends BasicObject
     super.setLocation(location);
     if(relativePos == null)
       return;
+    for(RelationLine line : lines)
+    {
+      line.translate(location.x, location.y);
+    }
     for(Individual indi : relativePos.keySet())
     {
       Point relpos = relativePos.get(indi);
@@ -70,25 +81,32 @@ public class FamilyTree extends BasicObject
     if(updateLayout)
       updateLayout(g);
 
-    Point pos = getLocation();
-    Dimension s = getSize(g);
-    g.setColor(Color.LIGHT_GRAY);
-    g.drawRect(pos.x, pos.y, s.width, s.height);
-
-    Color old = g.getColor();
-
+    for(RelationLine line : lines)
+    {
+      line.paint(g);
+    }
+    
     for(Individual individual : elements.keySet())
     {
       BasicObject p = elements.get(individual);
       p.paint(g);
     }
-    g.setColor(new Color(128, 128, 128, 32));
-    g.fillRect(pos.x, pos.y, s.width, s.height);
 
-    g.setColor(old);
+    if(DEBUG)
+    {
+      Color old = g.getColor();
+      Point pos = getLocation();
+      Dimension s = getSize(g);
+      g.setColor(Color.LIGHT_GRAY);
+      g.drawRect(pos.x, pos.y, s.width, s.height);
+      g.setColor(new Color(128, 128, 128, 32));
+      g.fillRect(pos.x, pos.y, s.width, s.height);
+      g.setColor(old);
+    }
+
   }
 
-  private void layoutPerson(Individual indi, BasicObject drawObject,
+  private BasicObject layoutPerson(Individual indi, BasicObject drawObject,
       Point nextPos, Dimension size, Graphics g)
   {
     if(drawObject == null)
@@ -106,10 +124,12 @@ public class FamilyTree extends BasicObject
     if(size.width < nextPos.x)
       size.width = nextPos.x;
 
-    relativePos.put(indi, (Point)nextPos.clone());
+    relativePos.put(indi, (Point) nextPos.clone());
 
     Point fampos = getLocation();
     iPos.translate(fampos.x, fampos.y);
+
+    return drawObject;
   }
 
   private void translate(Individual indi, int dx, int dy)
@@ -120,10 +140,16 @@ public class FamilyTree extends BasicObject
 
   private void updateLayout(Graphics g)
   {
+    Logger.getLogger(getClass().getName()).fine("updateLayout"); //$NON-NLS-1$
+    Logger.getLogger(getClass().getName()).fine(fam.toString());
     elements = new Hashtable<Individual, BasicObject>();
     relativePos = new Hashtable<Individual, Point>();
+    lines = new Vector<RelationLine>();
 
-    Person p;
+    int parentGap = 2 * BORDER;
+
+    Point famCenter = null;
+
     Point relPos = new Point(0, 0);
     relPos.y += BORDER;
     Dimension psize = new Dimension();
@@ -132,21 +158,29 @@ public class FamilyTree extends BasicObject
     Individual wife = fam.getWife();
 
     // Eltern positionieren
-    layoutPerson(husband, null, relPos, psize, g);
-    layoutPerson(wife, null, relPos, psize, g);
+    Person er = (Person) layoutPerson(husband, null, relPos, psize, g);
+    relPos.x += parentGap;
+    Person sie = (Person) layoutPerson(wife, null, relPos, psize, g);
 
     int childCount = fam.getChildrenCount();
-    if(childCount != 0)
+    if(childCount == 0)
+    {
+      int erx = er.getLocation().x + er.getSize(g).width;
+      int siex = sie.getLocation().x;
+      famCenter = new Point((erx + siex) / 2, psize.height / 2);
+    }
+    else
     {
       // Kinder in der Zeile drunter
+      int parentChildrenGap = 4 * BORDER;
       relPos.x = 0;
-      relPos.y += psize.height + BORDER;
+      relPos.y += psize.height + parentChildrenGap;
       Dimension csize = new Dimension();
 
       Enumeration children = fam.getChildren();
       while(children.hasMoreElements())
       {
-        Individual child = (Individual)children.nextElement();
+        Individual child = (Individual) children.nextElement();
         BasicObject obj = null;
         if(showChildrenFamily)
         {
@@ -175,20 +209,51 @@ public class FamilyTree extends BasicObject
       {
         // Kinder zentrieren
         int left = (psize.width - csize.width - BORDER) / 2;
+        left += left%2;
         children = fam.getChildren();
         while(children.hasMoreElements())
         {
-          Individual child = (Individual)children.nextElement();
+          Individual child = (Individual) children.nextElement();
           translate(child, left, 0);
         }
       }
+      Point fampos = getLocation();
+      famCenter = new Point(psize.width / 2, BORDER+ psize.height + (parentChildrenGap)
+          / 2);
+      famCenter.translate(fampos.x, fampos.y);
 
-      psize.height += csize.height + BORDER;
+      // Alle Kinder mit dem Familienpunkt verbinden
+      children = fam.getChildren();
+      while(children.hasMoreElements()){
+        Individual child = (Individual) children.nextElement();
+        BasicObject bo = elements.get(child);
+        if(bo instanceof FamilyTree){
+          FamilyTree subtree = (FamilyTree) bo;
+          BasicObject parent = subtree.elements.get(child);
+          bo = new Person(child);
+          bo.getSize(g);
+          bo.setLocation(parent.getLocation());
+          bo.translate(fampos.x, fampos.y);
+        }
+        lines.add(new RelationLine((Person) bo, famCenter));
+      }
+      
+      psize.height += csize.height + parentChildrenGap;
     }
 
     psize.width += BORDER;
     psize.height += 2 * BORDER;
     layoutsize = psize;
+
+    // Linien ziehen
+    lines.add(new RelationLine(er, famCenter));
+    lines.add(new RelationLine(sie, famCenter));
+
+    Logger.getLogger(getClass().getName()).fine("done " + fam.toString()); //$NON-NLS-1$
   }
 
+  public Family getFamily()
+  {
+    return fam;
+  }
 }

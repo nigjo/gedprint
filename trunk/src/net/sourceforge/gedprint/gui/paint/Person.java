@@ -21,6 +21,8 @@ public class Person extends BasicObject
   private Individual indi;
   String contentString;
 
+  Dimension lastdim;
+
   public Person(Individual indi)
   {
     this.indi = indi;
@@ -75,6 +77,8 @@ public class Person extends BasicObject
 
   public Dimension getSize(Graphics g)
   {
+    if(g==null)
+      return lastdim;
     FontMetrics fm = g.getFontMetrics();
     int width = 0;
     int height = 0;
@@ -88,7 +92,8 @@ public class Person extends BasicObject
       height += fm.getHeight();
     }
 
-    return new Dimension(width + 2 * BORDER, height + BORDER);
+    lastdim = new Dimension(width + 2 * BORDER, height + BORDER);
+    return lastdim;
   }
 
   public Individual getIndividual()
