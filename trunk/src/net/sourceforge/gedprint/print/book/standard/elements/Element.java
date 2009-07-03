@@ -11,7 +11,7 @@ import net.sourceforge.gedprint.print.book.standard.properties.Messages;
 
 abstract public class Element extends BasicElement
 {
-  public static final double DEFAULT_LINE_HEIGHT = 1.;
+  private static final double DEFAULT_LINE_HEIGHT = 1.;
 
   private static final String FONT_FAMILY = "SansSerif"; //$NON-NLS-1$
 

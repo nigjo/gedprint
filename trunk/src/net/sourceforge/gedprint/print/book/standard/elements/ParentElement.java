@@ -28,7 +28,7 @@ public class ParentElement extends Element
   {
     int lines[] = new int[7];
     for(int i = 0; i < lines.length; i++)
-      lines[i] = top + convertCmToPixel(i * DEFAULT_LINE_HEIGHT, res);
+      lines[i] = top + convertCmToPixel(i * getDefaultLineHeight(), res);
     return lines;
   }
 
