@@ -20,9 +20,6 @@ import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
-import net.sourceforge.gedprint.gui.paint.DrawPanel;
-import net.sourceforge.gedprint.gui.paint.FamilyTree;
-import net.sourceforge.gedprint.gui.paint.Person;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.
@@ -33,20 +30,28 @@ public class GedFrame extends JFrame
 {
   private static final long serialVersionUID = -7892421281873115631L;
   private GedFile ged;
-  private DrawPanel drawPanel;
+  private GedPainter drawPanel;
 
-  public GedFrame()
+  public GedFrame(String painterClassName)
   {
     super(Messages.getString("frame.title")); //$NON-NLS-1$
     setSize(new Dimension(1024, 768));
     setLocationByPlatform(true);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-    drawPanel = new DrawPanel();
+    try
+    {
+      Class cl = Class.forName(painterClassName);
+      drawPanel = (GedPainter) cl.newInstance();
+    }
+    catch(Exception e)
+    {
+      throw new IllegalStateException(e);
+    }
     getContentPane().add(new JScrollPane(drawPanel));
 
     StatusZeile status = new StatusZeile();
-    drawPanel.addPropertyChangeListener(DrawPanel.PROPERTY_RECORD, status);
+    drawPanel.addPropertyChangeListener(GedPainter.PROPERTY_RECORD, status);
     getContentPane().add(status, BorderLayout.SOUTH);
   }
 
@@ -72,7 +77,7 @@ public class GedFrame extends JFrame
       Logger.getLogger(getClass().getName()).info(indi.getClearedFullName());
       Logger.getLogger(getClass().getName()).info("Age: " + indi.getAge()); //$NON-NLS-1$
 
-      drawPanel.add(new Person(indi));
+      drawPanel.add(indi);
 
       // Individual father = indi.getDataFather();
       // Individual mother = indi.getDataMother();
@@ -84,12 +89,12 @@ public class GedFrame extends JFrame
       Family fam = (Family) r;
       Logger.getLogger(getClass().getName()).fine(fam.toString());
 
-      drawPanel.add(new FamilyTree(fam, true));
+      drawPanel.add(fam);
       if(fam.getChildrenCount() > 0)
       {
         for(Family family : fam.getChildFamilies())
         {
-          drawPanel.add(new FamilyTree(family, true));
+          drawPanel.add(family);
         }
       }
     }
@@ -150,7 +155,7 @@ public class GedFrame extends JFrame
     public void propertyChange(PropertyChangeEvent evt)
     {
       String cmd = evt.getPropertyName();
-      if(cmd.equals(DrawPanel.PROPERTY_RECORD))
+      if(cmd.equals(GedPainter.PROPERTY_RECORD))
         doRecord(evt);
     }
 

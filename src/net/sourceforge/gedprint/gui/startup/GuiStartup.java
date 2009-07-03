@@ -18,9 +18,9 @@ import net.sourceforge.gedprint.gui.GedPrintGui;
 
 /**
  * Neue Klasse erstellt von hof. Erstellt am Jun 25, 2009, 1:51:32 PM
- *
+ * 
  * @todo Hier fehlt die Beschreibung der Klasse.
- *
+ * 
  * @author hof
  */
 public class GuiStartup implements Runnable
@@ -29,7 +29,7 @@ public class GuiStartup implements Runnable
   private static final int CMD_FILE = 1;
   private static final int CMD_INDI = 2;
   private static final int CMD_FAM = 3;
-  //File infile;
+  // File infile;
   private static final String ARG_FILENAME = "filename"; //$NON-NLS-1$
   private static final String ARG_INDIVIDUAL = "individual"; //$NON-NLS-1$
   private static final String ARG_FAMILY = "family"; //$NON-NLS-1$
@@ -46,9 +46,9 @@ public class GuiStartup implements Runnable
       // dann halt nicht.
     }
     Properties defaults = new Properties();
-    //defaults.setProperty(ARG_FILENAME, "");
-    //defaults.setProperty(ARG_INDIVIDUAL, "");
-    //defaults.setProperty(ARG_FAMILY, "");
+    // defaults.setProperty(ARG_FILENAME, "");
+    // defaults.setProperty(ARG_INDIVIDUAL, "");
+    // defaults.setProperty(ARG_FAMILY, "");
 
     arguments = new Properties(defaults);
   }
@@ -62,7 +62,18 @@ public class GuiStartup implements Runnable
     Logger.getLogger(getClass().getName()).finer(sw.toString());
     // DEBUG end
 
-    GedFrame frame = new GedFrame();
+    String painterClassName = "net.sourceforge.gedprint.gui.paint.DrawPanel"; //$NON-NLS-1$
+    GedFrame frame = null;
+    try
+    {
+      frame = new GedFrame(painterClassName);
+    }
+    catch(IllegalStateException e)
+    {
+      illegalArg(Messages.getString("err.painterclass"), //$NON-NLS-1$ 
+          e.getCause().toString());
+      return;
+    }
 
     String file = arguments.getProperty(ARG_FILENAME);
     if(file != null && file.length() > 0)
@@ -81,11 +92,11 @@ public class GuiStartup implements Runnable
         illegalArg(Messages.getString("err.ioerror"), file); //$NON-NLS-1$
         return;
       }
-      
+
       // StartID setzen, wenn Datei gelesen wurde
       String startid = arguments.getProperty(ARG_INDIVIDUAL);
       if(startid == null)
-	  startid = arguments.getProperty(ARG_FAMILY);
+        startid = arguments.getProperty(ARG_FAMILY);
       frame.setStartID('@' + startid + '@');
     }
 
@@ -106,9 +117,8 @@ public class GuiStartup implements Runnable
   {
     String title = Messages.getString(GedPrintGui.class, "frame.title"); //$NON-NLS-1$
     String message = MessageFormat.format(pattern, new Object[]
-        {
-          arg
-        });
+    { arg
+    });
     JOptionPane.showMessageDialog(null, message, title,
         JOptionPane.ERROR_MESSAGE);
   }
@@ -135,37 +145,37 @@ public class GuiStartup implements Runnable
 
         switch(arg.charAt(1))
         {
-          case 'i':
-            status = CMD_INDI;
-            break;
-          case 'f':
-            status = CMD_FAM;
-            break;
-          default:
-            illegalArg(Messages.getString("err.unknownoption"), arg); //$NON-NLS-1$
-            return false;
+        case 'i':
+          status = CMD_INDI;
+          break;
+        case 'f':
+          status = CMD_FAM;
+          break;
+        default:
+          illegalArg(Messages.getString("err.unknownoption"), arg); //$NON-NLS-1$
+          return false;
         }
       }
       else
       {
         switch(status)
         {
-          case CMD_INDI:
-            arguments.setProperty(ARG_INDIVIDUAL, arg);
-            break;
-          case CMD_FAM:
-            arguments.setProperty(ARG_FAMILY, arg);
-            break;
-          case CMD_FILE:
-          default:
-            String infile = arguments.getProperty(ARG_FILENAME);
-            if(infile != null && infile.length() > 0)
-            {
-              illegalArg(Messages.getString("err.unknownargument"), arg); //$NON-NLS-1$
-              return false;
-            }
-            arguments.setProperty(ARG_FILENAME, arg);
-            break;
+        case CMD_INDI:
+          arguments.setProperty(ARG_INDIVIDUAL, arg);
+          break;
+        case CMD_FAM:
+          arguments.setProperty(ARG_FAMILY, arg);
+          break;
+        case CMD_FILE:
+        default:
+          String infile = arguments.getProperty(ARG_FILENAME);
+          if(infile != null && infile.length() > 0)
+          {
+            illegalArg(Messages.getString("err.unknownargument"), arg); //$NON-NLS-1$
+            return false;
+          }
+          arguments.setProperty(ARG_FILENAME, arg);
+          break;
         }
         status = CMD_OK;
       }
