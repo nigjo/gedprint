@@ -29,7 +29,7 @@ public class ChildElement extends Element
   {
     int lines[] = new int[6];
     for(int i = 0; i < lines.length; i++)
-      lines[i] = top + convertCmToPixel(i * DEFAULT_LINE_HEIGHT, res);
+      lines[i] = top + convertCmToPixel(i * getDefaultLineHeight(), res);
     return lines;
   }
 
@@ -54,8 +54,8 @@ public class ChildElement extends Element
   private void paintRecordData(Graphics g, int res, int[] lines, int[] tabs,
       Record record)
   {
-    int fontline = convertCmToPixel(DEFAULT_LINE_HEIGHT * .8, res);
-    int indent = convertCmToPixel(DEFAULT_LINE_HEIGHT * .125, res);
+    int fontline = convertCmToPixel(getDefaultLineHeight() * .8, res);
+    int indent = convertCmToPixel(getDefaultLineHeight() * .125, res);
 
     Record main, sub;
 
@@ -171,7 +171,7 @@ public class ChildElement extends Element
   private void paintText(Graphics g, int res, int[] lines, int[] tabs)
   {
     // int fontline = convertCmToPixel(DEFAULT_LINE_HEIGHT * .36, res);
-    int indent = convertCmToPixel(DEFAULT_LINE_HEIGHT * .15, res);
+    int indent = convertCmToPixel(getDefaultLineHeight() * .15, res);
 
     g.setFont(FONT_TITLE);
     int fontline = getFontline(g);

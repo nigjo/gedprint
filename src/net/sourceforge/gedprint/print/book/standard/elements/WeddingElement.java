@@ -49,8 +49,8 @@ public class WeddingElement extends Element
 
   private void paintRecordData(Graphics g, int res, int[] lines, int[] tabs, Record record)
   {
-    int fontline = convertCmToPixel(DEFAULT_LINE_HEIGHT * .8, res);
-    int indent = convertCmToPixel(DEFAULT_LINE_HEIGHT * .2, res);
+    int fontline = convertCmToPixel(getDefaultLineHeight() * .8, res);
+    int indent = convertCmToPixel(getDefaultLineHeight() * .2, res);
 
     String content;
     int left;

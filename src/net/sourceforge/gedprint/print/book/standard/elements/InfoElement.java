@@ -26,7 +26,7 @@ public class InfoElement extends Element
 
   public int print(Graphics g, int left, int top, Dimension size, int res)
   {
-    int height = convertCmToPixel(DEFAULT_LINE_HEIGHT * 4.4, res);
+    int height = convertCmToPixel(getDefaultLineHeight() * 4.4, res);
 
     // Kasten drum herum
     g.drawRect(left, top, size.width, height);

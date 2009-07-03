@@ -22,7 +22,7 @@ public class HeaderElement extends Element
 
   public int print(Graphics g, int left, int top, Dimension size, int res)
   {
-    int height = convertCmToPixel(DEFAULT_LINE_HEIGHT * .6, res);
+    int height = convertCmToPixel(getDefaultLineHeight() * .6, res);
 
     // Hintergrund
     g.setColor(Color.LIGHT_GRAY);
