@@ -15,4 +15,9 @@ public abstract class GedPainter extends JPanel
 
   abstract public void add(Family fam);
 
+  public boolean isScrollable()
+  {
+    return true;
+  }
+
 }

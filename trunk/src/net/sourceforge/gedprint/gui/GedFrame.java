@@ -48,7 +48,10 @@ public class GedFrame extends JFrame
     {
       throw new IllegalStateException(e);
     }
-    getContentPane().add(new JScrollPane(drawPanel));
+    if(drawPanel.isScrollable())
+      getContentPane().add(new JScrollPane(drawPanel));
+    else
+      getContentPane().add(drawPanel);
 
     StatusZeile status = new StatusZeile();
     drawPanel.addPropertyChangeListener(GedPainter.PROPERTY_RECORD, status);
