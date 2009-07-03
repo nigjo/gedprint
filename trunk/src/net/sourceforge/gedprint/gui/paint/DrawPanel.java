@@ -12,19 +12,18 @@ import java.util.Enumeration;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import javax.swing.JPanel;
-
+import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
+import net.sourceforge.gedprint.gui.GedPainter;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.
  * 
  * @author nigjo
  */
-public class DrawPanel extends JPanel
+public class DrawPanel extends GedPainter
 {
-  public static final String PROPERTY_RECORD = "Record"; //$NON-NLS-1$
   private static final long serialVersionUID = 1601760105575908398L;
   Vector<DrawingObject> objects;
   BufferedImage buffer;
@@ -54,6 +53,18 @@ public class DrawPanel extends JPanel
         }
       }
     });
+  }
+  
+  @Override
+  public void add(Individual indi)
+  {
+    add(new Person(indi));
+  }
+  
+  @Override
+  public void add(Family fam)
+  {
+    add(new FamilyTree(fam, true));
   }
 
   protected Record getRecord(Point point)
