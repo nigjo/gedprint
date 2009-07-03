@@ -5,8 +5,7 @@ import java.util.ResourceBundle;
 
 public class Messages
 {
-  private static final String BUNDLE_NAME = 
-    "de.nigjo.gedprint.print.samples.book.properties.messages"; //$NON-NLS-1$
+  private static final String BUNDLE_NAME = Messages.class.getName().toLowerCase();
 
   private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
       .getBundle(BUNDLE_NAME);
