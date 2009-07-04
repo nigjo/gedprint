@@ -62,7 +62,7 @@ public class ChildElement extends Element
     //
     // I D
     //
-    g.setFont(FONT_ID);
+    g.setFont(getFont(FONT_ID));
     String content = record.getIDCleared();
     int left = center(content, g, tabs, 0);
     g.drawString(content, left, lines[5] - 2 * indent);
@@ -70,7 +70,7 @@ public class ChildElement extends Element
     //
     // N A M E
     //    
-    g.setFont(FONT_NAME);
+    g.setFont(getFont(FONT_NAME));
     paintName(g, res, (Individual) record, tabs[TAB_LEFT], tabs[TAB_SURNAME],
         tabs[TAB_MORE], lines[0] + fontline, false);
 
@@ -78,7 +78,7 @@ public class ChildElement extends Element
     // G E S C H L E C H T
     //
     int gender = UNKNOWN;
-    g.setFont(FONT_DATA);
+    g.setFont(getFont(FONT_DATA));
     sub = record.getSubRecord("SEX"); //$NON-NLS-1$
     if(sub != null)
     {
@@ -100,7 +100,7 @@ public class ChildElement extends Element
     //
     // G E B U R T
     //
-    g.setFont(FONT_DATA);
+    g.setFont(getFont(FONT_DATA));
     main = record.getSubRecord("BIRT"); //$NON-NLS-1$
     if(main != null)
     {
@@ -115,7 +115,7 @@ public class ChildElement extends Element
     //
     // T O D
     //
-    g.setFont(FONT_DATA);
+    g.setFont(getFont(FONT_DATA));
     main = record.getSubRecord("DEAT"); //$NON-NLS-1$
     if(main != null)
     {
@@ -150,14 +150,14 @@ public class ChildElement extends Element
             Record fam = main;
             String id = sub.getContent();
 
-            g.setFont(FONT_ID);
+            g.setFont(getFont(FONT_ID));
             content = "{0} / {1}"; //$NON-NLS-1$
             Object[] args = { main.getIDCleared(), Record.clearID(id) };
             content = MessageFormat.format(content, args);
             left = center(content, g, tabs, TAB_MORE);
             g.drawString(content, left, lines[4] + convertCmToPixel(.3, res));
 
-            g.setFont(FONT_DATA);
+            g.setFont(getFont(FONT_DATA));
             paintName(g, res, (Individual) fam.findID(id), tabs[TAB_DATA],
                 tabs[TAB_SURNAME], tabs[TAB_RIGHT], lines[4] + fontline, false);
 
@@ -173,7 +173,7 @@ public class ChildElement extends Element
     // int fontline = convertCmToPixel(DEFAULT_LINE_HEIGHT * .36, res);
     int indent = convertCmToPixel(getDefaultLineHeight() * .15, res);
 
-    g.setFont(FONT_TITLE);
+    g.setFont(getFont(FONT_TITLE));
     int fontline = getFontline(g);
 
     String text = Messages.getString("print.data.given_names.short"); //$NON-NLS-1$

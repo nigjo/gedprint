@@ -53,7 +53,7 @@ public class ParentElement extends Element
   private void paintRecordData(Graphics g, int res, int[] lines, int[] tabs,
       Record record)
   {
-    int fontline = getFontline(g, FONT_DATA) + getFontline(g, FONT_TITLE_BOLD);
+    int fontline = getFontline(g, getFont(FONT_DATA)) + getFontline(g, getFont(FONT_TITLE_BOLD));
     int indent = getDefaultIndent(res);
 
     Record main, sub;
@@ -67,7 +67,7 @@ public class ParentElement extends Element
     //
     // I D
     //
-    g.setFont(FONT_ID);
+    g.setFont(getFont(FONT_ID));
     String content = record.getIDCleared();
     int left = center(content, g, tabs, 0);
     g.drawString(content, left, lines[5] + fontline);
@@ -82,14 +82,14 @@ public class ParentElement extends Element
     //
     // N A M E
     //    
-    g.setFont(FONT_NAME);
+    g.setFont(getFont(FONT_NAME));
     paintName(g, res, (Individual) record, tabs[TAB_LEFT], tabs[TAB_SURNAME],
         tabs[TAB_MORE], lines[0] + fontline, false);
 
     //
     // G E B U R T
     //
-    g.setFont(FONT_DATA);
+    g.setFont(getFont(FONT_DATA));
     main = record.getSubRecord("BIRT"); //$NON-NLS-1$
     if(main != null)
     {
@@ -129,12 +129,12 @@ public class ParentElement extends Element
       {
         String id = sub.getContent();
 
-        g.setFont(FONT_ID);
+        g.setFont(getFont(FONT_ID));
         content = Record.clearID(id);
         left = center(content, g, tabs, 4);
-        g.drawString(content, left, lines[4] + getFontline(g, FONT_ID));
+        g.drawString(content, left, lines[4] + getFontline(g, getFont(FONT_ID)));
 
-        g.setFont(FONT_DATA);
+        g.setFont(getFont(FONT_DATA));
         main = childFamily.findID(id);
         if(main != null)
         {
@@ -146,12 +146,12 @@ public class ParentElement extends Element
       if(sub != null)
       {
         String id = sub.getContent();
-        g.setFont(FONT_ID);
+        g.setFont(getFont(FONT_ID));
         content = Record.clearID(id);
         left = center(content, g, tabs, 4);
-        g.drawString(content, left, lines[5] + getFontline(g, FONT_ID));
+        g.drawString(content, left, lines[5] + getFontline(g, getFont(FONT_ID)));
 
-        g.setFont(FONT_DATA);
+        g.setFont(getFont(FONT_DATA));
         main = childFamily.findID(id);
         if(main != null)
         {
@@ -166,7 +166,7 @@ public class ParentElement extends Element
     //
     if(record.getSubRecordCount(Tag.FAM_SPOUSE) > 1)
     {
-      g.setFont(FONT_TITLE);
+      g.setFont(getFont(FONT_TITLE));
       fontline = getFontline(g);
       String more = Messages.getString("print.data.further_marriages"); //$NON-NLS-1$
       setChecked(g, indent, more, tabs[TAB_RIGHT] - indent, lines[0], fontline);
@@ -175,13 +175,13 @@ public class ParentElement extends Element
 
   private void paintText(Graphics g, int res, int[] lines, int[] tabs)
   {
-    int fontline = getFontline(g, FONT_TITLE_BOLD);
+    int fontline = getFontline(g, getFont(FONT_TITLE_BOLD));
     int indent = getDefaultIndent(res);
 
-    g.setFont(FONT_TITLE_BOLD);
+    g.setFont(getFont(FONT_TITLE_BOLD));
     g.drawString(title, tabs[TAB_LEFT] + indent, lines[0] + fontline);
 
-    g.setFont(FONT_TITLE);
+    g.setFont(getFont(FONT_TITLE));
     String text = Messages.getString("print.data.given_names"); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_LEFT] + indent, lines[0] + fontline, fontline);
     text = Messages.getString("print.data.sure_names.short");//$NON-NLS-1$

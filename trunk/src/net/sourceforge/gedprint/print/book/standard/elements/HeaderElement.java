@@ -35,7 +35,7 @@ public class HeaderElement extends Element
 
     if(title != null)
     {
-      g.setFont(FONT_HEADER);
+      g.setFont(getFont(FONT_HEADER));
       int fontline = getFontline(g);
       int indent = getDefaultIndent(res);
       g.drawString(title, left + indent, top + fontline);
