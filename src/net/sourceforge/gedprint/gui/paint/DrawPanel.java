@@ -66,6 +66,14 @@ public class DrawPanel extends GedPainter
   {
     add(new FamilyTree(fam, true));
   }
+  
+  @Override
+  public void clearAll()
+  {
+    objects = null;
+    buffer = null;
+    repaint();
+  }
 
   protected Record getRecord(Point point)
   {

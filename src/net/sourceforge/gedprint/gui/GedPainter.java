@@ -20,4 +20,6 @@ public abstract class GedPainter extends JPanel
     return true;
   }
 
+  public abstract void clearAll();
+
 }
