@@ -72,7 +72,8 @@ public class GedFrame extends JFrame
    */
   public void setStartID(String string)
   {
-    // TODO Automatisch erstellter Methoden-Stub
+    drawPanel.clearAll();
+    
     Record r = this.ged.findID(string);
     if(r instanceof Individual)
     {
