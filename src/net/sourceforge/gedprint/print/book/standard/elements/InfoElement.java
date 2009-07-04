@@ -33,10 +33,10 @@ public class InfoElement extends Element
 
     if(description != null)
     {
-      int fontline = getFontline(g, FONT_TITLE);
+      int fontline = getFontline(g, getFont(FONT_TITLE));
       int indent = getDefaultIndent(res);
 
-      g.setFont(FONT_TITLE);
+      g.setFont(getFont(FONT_TITLE));
       g.drawString(description, left + indent, top + fontline);
     }
 

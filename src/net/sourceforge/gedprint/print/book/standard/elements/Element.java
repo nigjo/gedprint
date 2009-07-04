@@ -3,6 +3,8 @@ package net.sourceforge.gedprint.print.book.standard.elements;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.text.DateFormat;
+import java.util.Hashtable;
+import java.util.Map.Entry;
 
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
@@ -15,29 +17,64 @@ abstract public class Element extends BasicElement
 
   private static final String FONT_FAMILY = "SansSerif"; //$NON-NLS-1$
 
-  /** Schriftart für normale Dateneinträge. */
-  public static final Font FONT_DATA = new Font(FONT_FAMILY, Font.PLAIN,
-      convertCmToPt(DEFAULT_LINE_HEIGHT * .40));
+  private static Hashtable<Entry<String, Double>, Font> fonts;
+
+  public static Font getFont(Font f)
+  {
+    return f;
+  }
+
+  public Font getFont(String id)
+  {
+    return getFont(id, getDefaultLineHeight());
+  }
+
+  public static Font getFont(String id, double lineheight)
+  {
+    FontEntry fe = new FontEntry(id, lineheight);
+    if(fonts == null)
+      fonts = new Hashtable<Entry<String, Double>, Font>();
+    if(fonts.containsKey(fe))
+      return fonts.get(fe);
+
+    String[] infos = id.split("="); //$NON-NLS-1$
+    if(infos.length != 3)
+      throw new IllegalArgumentException(id);
+    try
+    {
+      // Parameter aus ID lesen
+      int style = Integer.parseInt(infos[1]);
+      double factor = Double.parseDouble(infos[2]);
+
+      // Font erstellen und speichern
+      Font f = new Font(FONT_FAMILY, style, convertCmToPt(lineheight * factor));
+      fonts.put(fe, f);
+
+      // Ergebnis
+      return f;
+    }
+    catch(NumberFormatException e)
+    {
+      throw new IllegalArgumentException(id);
+    }
+  }
+  /** Schriftart f&uuml;r normale Dateneintr&auml;ge. */
+  public static final String FONT_DATA = "font.data=" + Font.PLAIN + '=' + .4; //$NON-NLS-1$
 
   /** Schriftart für die Namenseintäge der Indididuen. */
-  public static final Font FONT_NAME = new Font(FONT_FAMILY, Font.BOLD,
-      convertCmToPt(DEFAULT_LINE_HEIGHT * .55));
+  public static final String FONT_NAME = "font.name=" + Font.BOLD + '=' + .55; //$NON-NLS-1$
 
   /** Schriftart für Überschriften. */
-  public static final Font FONT_HEADER = new Font(FONT_FAMILY, Font.BOLD,
-      convertCmToPt(DEFAULT_LINE_HEIGHT * .45));
+  public static final String FONT_HEADER = "font.header=" + Font.BOLD + '=' + .45; //$NON-NLS-1$
 
   /** Schriftart für Überschriften in den Datenzellen. */
-  public static final Font FONT_TITLE = new Font(FONT_FAMILY, Font.PLAIN,
-      convertCmToPt(DEFAULT_LINE_HEIGHT * .25));
+  public static final String FONT_TITLE = "font.title=" + Font.PLAIN + '=' + .25; //$NON-NLS-1$
 
   /** Schriftart für dickere Überschriften in den Datenzellen. */
-  public static final Font FONT_TITLE_BOLD = new Font(FONT_FAMILY, Font.BOLD,
-      convertCmToPt(DEFAULT_LINE_HEIGHT * .35));
+  public static final String FONT_TITLE_BOLD = "font.title.bold=" + Font.BOLD + '=' + .35; //$NON-NLS-1$
 
   /** Schriftart für ID Einträge. */
-  public static final Font FONT_ID = new Font(FONT_FAMILY, Font.PLAIN,
-      convertCmToPt(DEFAULT_LINE_HEIGHT * .23));
+  public static final String FONT_ID = "font.id=" + Font.PLAIN + '=' + .23; //$NON-NLS-1$
 
   public static final int TAB_LEFT = 0;
   public static final int TAB_DATA = 1;
@@ -46,10 +83,17 @@ abstract public class Element extends BasicElement
   public static final int TAB_MORE = 4;
   public static final int TAB_RIGHT = 5;
 
+  private double lineHeight = DEFAULT_LINE_HEIGHT;
+
   @Override
   protected double getDefaultLineHeight()
   {
-    return DEFAULT_LINE_HEIGHT;
+    return lineHeight;
+  }
+
+  public void setLineHeight(double lineHeight)
+  {
+    this.lineHeight = lineHeight;
   }
 
   protected int getDefaultIndent(int res)
@@ -59,23 +103,23 @@ abstract public class Element extends BasicElement
 
   protected int getGivnIndent(int res)
   {
-    String[] testStrings = new String[] {
-        Messages.getString("print.data.given_names"), //$NON-NLS-1$
+    String[] testStrings = new String[]
+    { Messages.getString("print.data.given_names"), //$NON-NLS-1$
         Messages.getString("print.data.Father"), //$NON-NLS-1$
         Messages.getString("print.data.Mother"), //$NON-NLS-1$
         Messages.getString("print.data.spouse") //$NON-NLS-1$
     };
 
-    return getMaxWidth(res, testStrings, FONT_TITLE);
+    return getMaxWidth(res, testStrings, getFont(FONT_TITLE));
   }
 
   protected int getSurnIndent(int res)
   {
-    String[] testStrings = new String[] { Messages
-        .getString("print.data.sure_names.short") //$NON-NLS-1$
+    String[] testStrings = new String[]
+    { Messages.getString("print.data.sure_names.short") //$NON-NLS-1$
     };
 
-    return getMaxWidth(res, testStrings, FONT_TITLE);
+    return getMaxWidth(res, testStrings, getFont(FONT_TITLE));
   }
 
   /**
@@ -129,18 +173,12 @@ abstract public class Element extends BasicElement
   /**
    * Schreibt einen Wert in eine Zelle.
    * 
-   * @param g
-   *          aktueller Grafikkontext
-   * @param sub
-   *          Record, dessen Inhalt geschrieben werden soll
-   * @param leftBorder
-   *          Linker Rand der Zelle
-   * @param rightBorder
-   *          Rechter Rand der Zelle
-   * @param fontBaseline
-   *          Baseline des Textes
-   * @param centered
-   *          gibt an, ob der Text in der Zelle zentriert werden soll.
+   * @param g aktueller Grafikkontext
+   * @param sub Record, dessen Inhalt geschrieben werden soll
+   * @param leftBorder Linker Rand der Zelle
+   * @param rightBorder Rechter Rand der Zelle
+   * @param fontBaseline Baseline des Textes
+   * @param centered gibt an, ob der Text in der Zelle zentriert werden soll.
    */
   protected void paintDataEntry(Graphics g, Record sub, int leftBorder,
       int rightBorder, int fontBaseline, boolean centered)
@@ -192,5 +230,52 @@ abstract public class Element extends BasicElement
   public static int center(String content, Graphics g, int[] tabs, int i)
   {
     return tabs[i] + center(content, g, tabs[i + 1] - tabs[i]);
+  }
+
+  private static class FontEntry implements Entry<String, Double>
+  {
+    String key;
+    Double value;
+
+    public FontEntry(String name, Double lineheight)
+    {
+      key = name;
+      value = lineheight;
+    }
+
+    public String getKey()
+    {
+      return key;
+    }
+
+    public Double getValue()
+    {
+      return value;
+    }
+
+    public Double setValue(Double value)
+    {
+      Double old = this.value;
+      this.value = value;
+      return old;
+    }
+
+    @Override
+    public int hashCode()
+    {
+      return (int) (key.hashCode() * value.doubleValue());
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+      if(super.equals(obj))
+        return true;
+      if(!(obj instanceof FontEntry))
+        return false;
+      FontEntry other = (FontEntry) obj;
+      return other.getKey().equals(this.getKey())
+          && other.getValue().equals(this.getValue());
+    }
   }
 }

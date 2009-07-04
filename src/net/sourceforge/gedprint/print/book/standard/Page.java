@@ -96,7 +96,7 @@ public class Page extends BasicPage
     int baseline = top + printSize.height + footerHeight * 1 / 3;
     g.drawString(text, textPos, baseline);
 
-    g.setFont(Element.FONT_ID);
+    g.setFont(Element.getFont(Element.FONT_ID, 1.));
     String title = DateFormat.getDateInstance(DateFormat.MEDIUM).format(
         new Date());
     boolean isOdd = getPageNumber() % 2 != 0;

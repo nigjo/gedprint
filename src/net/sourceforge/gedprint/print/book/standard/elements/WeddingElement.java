@@ -56,7 +56,7 @@ public class WeddingElement extends Element
     int left;
     Record sub;
     
-    g.setFont(FONT_DATA);
+    g.setFont(getFont(FONT_DATA));
 
     Record main = record.getSubRecord(Tag.MARRIAGE);
     if(main != null)
@@ -93,7 +93,7 @@ public class WeddingElement extends Element
 
   private void paintText(Graphics g, int res, int[] lines, int[] tabs)
   {
-    g.setFont(FONT_TITLE);
+    g.setFont(getFont(FONT_TITLE));
     int fontline = getFontline(g);
     int indent = getDefaultIndent(res);
     
