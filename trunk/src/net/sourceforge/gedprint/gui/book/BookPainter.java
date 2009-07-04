@@ -23,7 +23,7 @@ public class BookPainter extends GedPainter
     tabs = new JTabbedPane();
     add(tabs);
   }
-  
+
   @Override
   public boolean isScrollable()
   {
@@ -44,9 +44,15 @@ public class BookPainter extends GedPainter
     title += fam.getHusband().getClearedFullName();
     title += "+"; //$NON-NLS-1$
     title += fam.getWife().getClearedFullName();
-    
+
     FamTab tab = new FamTab(fam);
     tabs.addTab(title, new JScrollPane(tab));
   }
 
+  @Override
+  public void clearAll()
+  {
+    if(tabs != null)
+      tabs.removeAll();
+  }
 }
