@@ -62,8 +62,8 @@ public class GuiStartup implements Runnable
     Logger.getLogger(getClass().getName()).finer(sw.toString());
     // DEBUG end
 
-    //String painterClassName = "net.sourceforge.gedprint.gui.paint.DrawPanel"; //$NON-NLS-1$
-    String painterClassName = "net.sourceforge.gedprint.gui.book.BookPainter"; //$NON-NLS-1$
+    String painterClassName = "net.sourceforge.gedprint.gui.paint.DrawPanel"; //$NON-NLS-1$
+    //String painterClassName = "net.sourceforge.gedprint.gui.book.BookPainter"; //$NON-NLS-1$
     GedFrame frame = null;
     try
     {
