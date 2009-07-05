@@ -43,46 +43,38 @@ public class WeddingElement extends Element
 
     if(getRecord() != null)
       paintRecordData(g, res, lines, tabs, getRecord());
-    
+
     return lines[1] - lines[0];
   }
 
-  private void paintRecordData(Graphics g, int res, int[] lines, int[] tabs, Record record)
+  private void paintRecordData(Graphics g, int res, int[] lines, int[] tabs,
+      Record record)
   {
     int fontline = convertCmToPixel(getDefaultLineHeight() * .8, res);
     int indent = convertCmToPixel(getDefaultLineHeight() * .2, res);
 
-    String content;
-    int left;
-    Record sub;
-    
     g.setFont(getFont(FONT_DATA));
 
     Record main = record.getSubRecord(Tag.MARRIAGE);
     if(main != null)
     {
-      sub = main.getSubRecord(Tag.DATE);
-      if(sub != null)
-      {
-        content = sub.getContent();
-        left = center(content, g, tabs, 1);
-        g.drawString(content, left, lines[0] + fontline);
-      }
-      sub = main.getSubRecord("PLAC"); //$NON-NLS-1$
-      if(sub != null)
-      {
-        content = sub.getContent();
-        left = tabs[TAB_PLACE] + indent;
-        content = shrink(content, g, tabs[TAB_MORE] - left);
-        g.drawString(content, left, lines[0] + fontline);
-      }
+      Record subrecord;
+
+      subrecord = main.getSubRecord("DATE"); //$NON-NLS-1$
+      paintDataEntry(g, subrecord, tabs[TAB_DATA] + 2 * indent,
+          tabs[TAB_PLACE], lines[0] + fontline, true);
+
+      subrecord = main.getSubRecord("PLAC"); //$NON-NLS-1$
+      paintDataEntry(g, subrecord, tabs[TAB_PLACE] + indent, tabs[TAB_MORE],
+          lines[0] + fontline, false);
     }
   }
 
   private void paintGrid(Graphics g, int[] lines, int[] tabs)
   {
     // Kasten drum herum
-    g.drawRect(tabs[TAB_LEFT], lines[0], tabs[TAB_RIGHT] - tabs[TAB_LEFT], lines[1] - lines[0]);
+    g.drawRect(tabs[TAB_LEFT], lines[0], tabs[TAB_RIGHT] - tabs[TAB_LEFT],
+        lines[1] - lines[0]);
     // Oben 'ne Dicke linie;
     // g.fillRect(tabs[0], lines[0]-1, tabs[4]-tabs[0], 2);
 
@@ -96,7 +88,7 @@ public class WeddingElement extends Element
     g.setFont(getFont(FONT_TITLE));
     int fontline = getFontline(g);
     int indent = getDefaultIndent(res);
-    
+
     String text;
 
     text = Messages.getString("print.data.date"); //$NON-NLS-1$
