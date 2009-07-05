@@ -54,19 +54,32 @@ public class DrawPanel extends GedPainter
       }
     });
   }
-  
+
   @Override
   public void add(Individual indi)
   {
     add(new Person(indi));
   }
-  
+
   @Override
   public void add(Family fam)
   {
     add(new FamilyTree(fam, true));
   }
-  
+
+  @Override
+  public Record getRecord()
+  {
+    if(objects == null || objects.size() == 0)
+      return null;
+    DrawingObject drawingObject = objects.get(0);
+    if(drawingObject instanceof FamilyTree)
+      return ((FamilyTree) drawingObject).getFamily();
+    else if(drawingObject instanceof Person)
+      return ((Person) drawingObject).getIndividual();
+    return null;
+  }
+
   @Override
   public void clearAll()
   {

@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
+import net.sourceforge.gedprint.gedcom.Record;
 
 public abstract class GedPainter extends JPanel
 {
@@ -21,5 +22,7 @@ public abstract class GedPainter extends JPanel
   }
 
   public abstract void clearAll();
+
+  public abstract Record getRecord();
 
 }

@@ -8,6 +8,7 @@ import javax.swing.JTabbedPane;
 
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
+import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.GedPainter;
 
 public class BookPainter extends GedPainter
@@ -47,6 +48,12 @@ public class BookPainter extends GedPainter
 
     FamTab tab = new FamTab(fam);
     tabs.addTab(title, new JScrollPane(tab));
+  }
+  
+  @Override
+  public Record getRecord()
+  {
+    return null;
   }
 
   @Override

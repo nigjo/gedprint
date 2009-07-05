@@ -3,15 +3,17 @@ package net.sourceforge.gedprint.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -20,6 +22,10 @@ import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
+import net.sourceforge.gedprint.gui.action.Exit;
+import net.sourceforge.gedprint.gui.action.FileMenuAction;
+import net.sourceforge.gedprint.gui.action.OpenGedcom;
+import net.sourceforge.gedprint.gui.action.PrintFamilyBook;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.
@@ -39,6 +45,41 @@ public class GedFrame extends JFrame
     setLocationByPlatform(true);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+    // Anzeigeklasse
+    addGedPainter(painterClassName);
+
+    // Menue und Toolbar
+    initMenu();
+
+    // Statuszeile initialisieren
+    initStatus();
+  }
+
+  private void initMenu()
+  {
+    JMenuBar menubar = new JMenuBar();
+    JMenu menu;
+
+    menu = new JMenu(new FileMenuAction());
+    menu.add(new OpenGedcom());
+    menu.addSeparator();
+    menu.add(new PrintFamilyBook());
+    menu.addSeparator();
+    menu.add(new Exit());
+    menubar.add(menu);
+
+    setJMenuBar(menubar);
+  }
+
+  private void initStatus()
+  {
+    StatusZeile status = new StatusZeile();
+    drawPanel.addPropertyChangeListener(GedPainter.PROPERTY_RECORD, status);
+    getContentPane().add(status, BorderLayout.SOUTH);
+  }
+
+  private void addGedPainter(String painterClassName)
+  {
     try
     {
       Class cl = Class.forName(painterClassName);
@@ -52,10 +93,6 @@ public class GedFrame extends JFrame
       getContentPane().add(new JScrollPane(drawPanel));
     else
       getContentPane().add(drawPanel);
-
-    StatusZeile status = new StatusZeile();
-    drawPanel.addPropertyChangeListener(GedPainter.PROPERTY_RECORD, status);
-    getContentPane().add(status, BorderLayout.SOUTH);
   }
 
   /**
@@ -63,7 +100,6 @@ public class GedFrame extends JFrame
    */
   public void setGedFile(GedFile gedfile)
   {
-    // TODO Automatisch erstellter Methoden-Stub
     this.ged = gedfile;
   }
 
@@ -73,7 +109,12 @@ public class GedFrame extends JFrame
   public void setStartID(String string)
   {
     drawPanel.clearAll();
-    
+
+    // Abbrechen, wenn keine GEDCOM Datei oder
+    // keine ID angegeben ist.
+    if(this.ged == null || string == null)
+      return;
+
     Record r = this.ged.findID(string);
     if(r instanceof Individual)
     {
@@ -82,20 +123,18 @@ public class GedFrame extends JFrame
       Logger.getLogger(getClass().getName()).info("Age: " + indi.getAge()); //$NON-NLS-1$
 
       drawPanel.add(indi);
-
-      // Individual father = indi.getDataFather();
-      // Individual mother = indi.getDataMother();
-      // Family family = indi.getDataChildFamily();
-      // Family[] faminlaw = indi.getDataSpouceFamilies();
     }
     else if(r instanceof Family)
     {
       Family fam = (Family) r;
       Logger.getLogger(getClass().getName()).fine(fam.toString());
 
+      // Die Familie selbst
       drawPanel.add(fam);
+
       if(fam.getChildrenCount() > 0)
       {
+        // und die Familien der Kinder.
         for(Family family : fam.getChildFamilies())
         {
           drawPanel.add(family);
@@ -173,5 +212,17 @@ public class GedFrame extends JFrame
       else
         text.setText(DEFAULT);
     }
+  }
+
+  public void close()
+  {
+    dispose();    
+  }
+
+  public Record getRecord()
+  {
+    if(drawPanel==null)
+      return null;
+    return drawPanel.getRecord();
   }
 }
