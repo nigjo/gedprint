@@ -2,9 +2,21 @@
 <menubar>
 	<submenu action="FileMenuAction">
 		<item action="OpenGedcom" />
+		<item action="CloseGedcom" />
 		<separator />
 		<item action="PrintFamilyBook" />
+		<item action="PrinterSettings" />
+		<separator />
+		<item action="MostRecentlyUsed" />
 		<separator />
 		<item action="Exit" />
+	</submenu>
+	<submenu action="SearchMenuAction">
+		<item action="SearchFamily"/>
+		<item action="SearchIndividual"/>
+	</submenu>
+	<submenu action="ViewMenuAction">
+		<item action="SelectTreeView" />
+		<item action="SelectBookView" />
 	</submenu>
 </menubar>
