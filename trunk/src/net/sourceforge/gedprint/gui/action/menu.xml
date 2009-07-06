@@ -1,0 +1,10 @@
+<!DOCTYPE menu>
+<menubar>
+	<submenu action="FileMenuAction">
+		<item action="OpenGedcom" />
+		<separator />
+		<item action="PrintFamilyBook" />
+		<separator />
+		<item action="Exit" />
+	</submenu>
+</menubar>
