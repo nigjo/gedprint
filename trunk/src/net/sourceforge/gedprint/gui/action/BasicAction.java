@@ -3,6 +3,8 @@ package net.sourceforge.gedprint.gui.action;
 import java.awt.Container;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -19,7 +21,7 @@ import net.sourceforge.gedprint.gui.GedFrame;
  * 
  * @author nigjo
  */
-public class BasicAction extends AbstractAction
+public class BasicAction extends AbstractAction implements PropertyChangeListener
 {
   private static final long serialVersionUID = 51080980824162277L;
 
@@ -57,6 +59,10 @@ public class BasicAction extends AbstractAction
   }
 
   public void actionPerformed(ActionEvent e)
+  {
+  }
+
+  public void propertyChange(PropertyChangeEvent evt)
   {
   }
 
