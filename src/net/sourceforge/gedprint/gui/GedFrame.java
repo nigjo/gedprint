@@ -113,7 +113,7 @@ public class GedFrame extends JFrame
       Logger.getLogger(getClass().getName()).info(indi.getClearedFullName());
       Logger.getLogger(getClass().getName()).info("Age: " + indi.getAge()); //$NON-NLS-1$
 
-      drawPanel.add(indi);
+      drawPanel.addRecord(indi);
     }
     else if(r instanceof Family)
     {
@@ -121,14 +121,14 @@ public class GedFrame extends JFrame
       Logger.getLogger(getClass().getName()).fine(fam.toString());
 
       // Die Familie selbst
-      drawPanel.add(fam);
+      drawPanel.addRecord(fam);
 
       if(fam.getChildrenCount() > 0)
       {
         // und die Familien der Kinder.
         for(Family family : fam.getChildFamilies())
         {
-          drawPanel.add(family);
+          drawPanel.addRecord(family);
         }
       }
     }
