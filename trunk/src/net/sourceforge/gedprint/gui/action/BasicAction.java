@@ -14,6 +14,11 @@ import javax.swing.JRootPane;
 
 import net.sourceforge.gedprint.gui.GedFrame;
 
+/**
+ * Grundklasse fuer alle Actions in diesem Paket.
+ * 
+ * @author nigjo
+ */
 public class BasicAction extends AbstractAction
 {
   private static final long serialVersionUID = 51080980824162277L;
