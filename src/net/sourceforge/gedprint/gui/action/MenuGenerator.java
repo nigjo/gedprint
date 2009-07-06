@@ -23,6 +23,7 @@ public class MenuGenerator
   private JMenuBar menubar;
   private URL resource;
   private static final String DEFAULT_XML_READER = "org.apache.crimson.parser.XMLReaderImpl"; //$NON-NLS-1$
+  private static final String ACTION_PACKAGE = "net.sourceforge.gedprint.gui.action"; //$NON-NLS-1$
 
   private MenuGenerator()
   {
@@ -36,9 +37,17 @@ public class MenuGenerator
 
   public static JMenuBar generate(URL resource)
   {
-    MenuGenerator generator = new MenuGenerator();
-    generator.setResource(resource);
-    return generator.getMenuBar();
+    Logger.getLogger(MenuGenerator.class.getName()).fine(">>> generate"); //$NON-NLS-1$
+    try
+    {
+      MenuGenerator generator = new MenuGenerator();
+      generator.setResource(resource);
+      return generator.getMenuBar();
+    }
+    finally
+    {
+      Logger.getLogger(MenuGenerator.class.getName()).fine("<<< generate"); //$NON-NLS-1$
+    }
   }
 
   private JMenuBar getMenuBar()
@@ -114,7 +123,6 @@ public class MenuGenerator
 
   private static class MenuContentHandler implements ContentHandler
   {
-    private static final String ACTION_PACKAGE = "net.sourceforge.gedprint.gui.action"; //$NON-NLS-1$
     private JMenuBar menubar;
     private JMenu current;
     private Locator locator;
@@ -151,47 +159,41 @@ public class MenuGenerator
     public void startElement(String uri, String localName, String qName,
         Attributes atts) throws SAXException
     {
-      Logger.getLogger(getClass().getName()).fine("startElement:" + qName); //$NON-NLS-1$
       lastopen = qName;
-      if("menubar".equals(qName)) //$NON-NLS-1$
-      {
-        if(menubar != null)
-          throwSAXException("element 'menubar' already used"); //$NON-NLS-1$
-        menubar = new JMenuBar();
-      }
-      else if("submenu".equals(qName)) //$NON-NLS-1$
-      {
-        if(menubar == null)
-          throwSAXException("missing 'menubar' element"); //$NON-NLS-1$
-        current = new JMenu();
-        BasicAction action = getAction(atts);
-        current.setAction(action);
-      }
-      else if("item".equals(qName)) //$NON-NLS-1$
-      {
-        if(current == null)
-          throwSAXException("missing 'submenu' element"); //$NON-NLS-1$
-        BasicAction action = getAction(atts);
-        current.add(action);
-      }
-      else if("separator".equals(qName)) //$NON-NLS-1$
-      {
-        current.addSeparator();
-      }
-    }
-
-    private BasicAction getAction(Attributes atts) throws SAXException
-    {
-      String actionName = atts.getValue("action"); //$NON-NLS-1$
       try
       {
-        Class actionClass = Class.forName(ACTION_PACKAGE + '.' + actionName);
-        return (BasicAction) actionClass.newInstance();
+        if("menubar".equals(qName)) //$NON-NLS-1$
+        {
+          if(menubar != null)
+            throwSAXException("element 'menubar' already used"); //$NON-NLS-1$
+          menubar = new JMenuBar();
+        }
+        else if("submenu".equals(qName)) //$NON-NLS-1$
+        {
+          if(menubar == null)
+            throwSAXException("missing 'menubar' element"); //$NON-NLS-1$
+          current = createSubMenu(atts.getValue("action")); //$NON-NLS-1$
+        }
+        else if("item".equals(qName)) //$NON-NLS-1$
+        {
+          if(current == null)
+            throwSAXException("missing 'submenu' element"); //$NON-NLS-1$
+          BasicAction action = getAction(atts.getValue("action")); //$NON-NLS-1$
+          current.add(action);
+        }
+        else if("separator".equals(qName)) //$NON-NLS-1$
+        {
+          current.addSeparator();
+        }
+        else
+        {
+          throwSAXException("unknown element '" + qName + '\''); //$NON-NLS-1$
+        }
       }
-      catch(Exception e)
+      catch(IllegalStateException e)
       {
-        throwSAXException(e);
-        return null;
+        // es ist etwas beim Erstellen des Menues schief gelaufen
+        throwSAXException((Exception) e.getCause());
       }
     }
 
@@ -209,7 +211,6 @@ public class MenuGenerator
     public void endElement(String uri, String localName, String qName)
         throws SAXException
     {
-      Logger.getLogger(getClass().getName()).fine("endElement:" + qName); //$NON-NLS-1$
       if("menubar".equals(qName)) //$NON-NLS-1$
       {
         // should be marked as done.
@@ -270,6 +271,35 @@ public class MenuGenerator
       return new InputSource(new ByteArrayInputStream(new byte[0]));
     }
 
+  }
+
+  private static JMenu createSubMenu(String actionName)
+  {
+    Logger.getLogger(MenuGenerator.class.getName()).fine(
+        "submenu " + actionName); //$NON-NLS-1$
+    JMenu current = new JMenu();
+    BasicAction action = getAction(actionName);
+    current.setAction(action);
+    return current;
+  }
+
+  private static BasicAction getAction(String actionName)
+  {
+    try
+    {
+      Class actionClass = Class.forName(ACTION_PACKAGE + '.' + actionName);
+      return (BasicAction) actionClass.newInstance();
+    }
+    catch(ClassNotFoundException e)
+    {
+      BasicAction defaultAction = new BasicAction(actionName);
+      defaultAction.setEnabled(false);
+      return defaultAction;
+    }
+    catch(Exception e)
+    {
+      throw new IllegalStateException(e);
+    }
   }
 
 }
