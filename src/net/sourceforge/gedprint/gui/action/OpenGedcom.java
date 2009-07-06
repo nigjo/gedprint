@@ -27,7 +27,7 @@ public class OpenGedcom extends BasicAction
     super(Messages.getString("file.open")); //$NON-NLS-1$
     putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl O")); //$NON-NLS-1$
 
-    lastdir = new File("user.file"); //$NON-NLS-1$
+    lastdir = new File(System.getProperty("user.dir")); //$NON-NLS-1$
   }
 
   @Override
