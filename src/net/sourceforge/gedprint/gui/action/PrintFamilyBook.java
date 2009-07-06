@@ -16,7 +16,7 @@ public class PrintFamilyBook extends BasicAction
 
   public PrintFamilyBook()
   {
-    super(Messages.getString("print.fambook.title")); //$NON-NLS-1$
+    super(Messages.getString("PrintFamilyBook.title")); //$NON-NLS-1$
     putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl P")); //$NON-NLS-1$
   }
   

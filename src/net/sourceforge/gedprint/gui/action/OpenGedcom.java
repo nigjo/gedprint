@@ -24,7 +24,7 @@ public class OpenGedcom extends BasicAction
 
   public OpenGedcom()
   {
-    super(Messages.getString("file.open")); //$NON-NLS-1$
+    super(Messages.getString("OpenGedcom.title")); //$NON-NLS-1$
     putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl O")); //$NON-NLS-1$
 
     lastdir = new File(System.getProperty("user.dir")); //$NON-NLS-1$
@@ -39,7 +39,7 @@ public class OpenGedcom extends BasicAction
       @Override
       public String getDescription()
       {
-        String desc = Messages.getString("file.gedcom.description"); //$NON-NLS-1$
+        String desc = Messages.getString("OpenGedcom.gedcom.description"); //$NON-NLS-1$
         desc += " (*" + EXT + ')'; //$NON-NLS-1$
         return desc;
       }
@@ -82,14 +82,14 @@ public class OpenGedcom extends BasicAction
       }
       catch(FileNotFoundException fnfe)
       {
-        String msg = Messages.getString("err.file_not_found"); //$NON-NLS-1$
+        String msg = Messages.getString("action.err.file_not_found"); //$NON-NLS-1$
         JOptionPane.showMessageDialog(owner, msg, owner.getName(),
             JOptionPane.WARNING_MESSAGE);
         return;
       }
       catch(IOException e1)
       {
-        String msg = Messages.getString("err.io-error.read"); //$NON-NLS-1$
+        String msg = Messages.getString("action.err.io-error.read"); //$NON-NLS-1$
         JOptionPane.showMessageDialog(owner, msg, owner.getName(),
             JOptionPane.ERROR_MESSAGE);
         return;
