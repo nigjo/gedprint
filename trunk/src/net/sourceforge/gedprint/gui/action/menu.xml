@@ -1,4 +1,4 @@
-<!DOCTYPE menu>
+<!DOCTYPE menu SYSTEM "./menu.dtd">
 <menubar>
 	<submenu action="FileMenuAction">
 		<item action="OpenGedcom" />
