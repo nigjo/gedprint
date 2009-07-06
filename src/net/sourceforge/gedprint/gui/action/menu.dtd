@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT menubar (submenu+) > 
+
+<!ELEMENT submenu (item,(item|separator)*)>
+<!ATTLIST submenu action CDATA #REQUIRED>
+
+<!--
+Ein regulaerer Eintrag im Menue.
+Das Attribut "action" gibt den Klassennamen an, der fuer diese Aktion verwendet
+werden soll. Es muss kein vollstaendiger Klassenname angegeben werden, sondern
+nur der Name der Klasse selbst. Diese muss von BasicAction abgeleitet und im
+Paket net.sourceforge.gedprint.gui.action liegen.
+-->
+<!ELEMENT item EMPTY >
+<!ATTLIST item action CDATA #REQUIRED >
+
+<!--Eine horizontale Linie im Menue-->
+<!ELEMENT separator EMPTY>

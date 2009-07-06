@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,10 +21,7 @@ import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
-import net.sourceforge.gedprint.gui.action.Exit;
-import net.sourceforge.gedprint.gui.action.FileMenuAction;
-import net.sourceforge.gedprint.gui.action.OpenGedcom;
-import net.sourceforge.gedprint.gui.action.PrintFamilyBook;
+import net.sourceforge.gedprint.gui.action.MenuGenerator;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.
@@ -57,17 +53,8 @@ public class GedFrame extends JFrame
 
   private void initMenu()
   {
-    JMenuBar menubar = new JMenuBar();
-    JMenu menu;
-
-    menu = new JMenu(new FileMenuAction());
-    menu.add(new OpenGedcom());
-    menu.addSeparator();
-    menu.add(new PrintFamilyBook());
-    menu.addSeparator();
-    menu.add(new Exit());
-    menubar.add(menu);
-
+    JMenuBar menubar = MenuGenerator.generate();
+    
     setJMenuBar(menubar);
   }
 
