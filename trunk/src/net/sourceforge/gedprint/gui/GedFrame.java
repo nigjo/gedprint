@@ -101,6 +101,7 @@ public class GedFrame extends JFrame
   public void setGedFile(GedFile gedfile)
   {
     this.ged = gedfile;
+    setStartID(null);
   }
 
   /**
@@ -113,7 +114,10 @@ public class GedFrame extends JFrame
     // Abbrechen, wenn keine GEDCOM Datei oder
     // keine ID angegeben ist.
     if(this.ged == null || string == null)
+    {
+      updatePanel();
       return;
+    }
 
     Record r = this.ged.findID(string);
     if(r instanceof Individual)
@@ -148,6 +152,17 @@ public class GedFrame extends JFrame
     else
     {
       Logger.getLogger(getClass().getName()).fine(r.toString());
+    }
+
+    updatePanel();
+  }
+
+  private void updatePanel()
+  {
+    if(isVisible())
+    {
+      repaint();
+      validate();
     }
   }
 
@@ -216,12 +231,12 @@ public class GedFrame extends JFrame
 
   public void close()
   {
-    dispose();    
+    dispose();
   }
 
   public Record getRecord()
   {
-    if(drawPanel==null)
+    if(drawPanel == null)
       return null;
     return drawPanel.getRecord();
   }
