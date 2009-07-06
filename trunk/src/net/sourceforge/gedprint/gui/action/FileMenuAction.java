@@ -10,7 +10,7 @@ public class FileMenuAction extends BasicAction
 
   public FileMenuAction()
   {
-    super(Messages.getString("file.title")); //$NON-NLS-1$
+    super(Messages.getString("FileMenuAction.title")); //$NON-NLS-1$
     
   }
   

@@ -13,7 +13,7 @@ public class Exit extends BasicAction
 
   public Exit()
   {
-    super(Messages.getString("exit")); //$NON-NLS-1$
+    super(Messages.getString("Exit.title")); //$NON-NLS-1$
     putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("alt F4")); //$NON-NLS-1$
   }
 
