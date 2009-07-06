@@ -10,11 +10,20 @@ public abstract class GedPainter extends JPanel
 {
   private static final long serialVersionUID = 2282097895141356155L;
 
-  public static final String PROPERTY_RECORD = "Record"; //$NON-NLS-1$
+  public static final String PROPERTY_RECORD = "painter.record"; //$NON-NLS-1$
 
-  abstract public void add(Individual indi);
+  public void addRecord(Record rec){
+    if(rec instanceof Individual)
+      addIndividual((Individual)rec);
+    else if(rec instanceof Family)
+      addFamily((Family)rec);
 
-  abstract public void add(Family fam);
+    firePropertyChange(PROPERTY_RECORD, null, rec);
+  }
+  
+  protected abstract void addIndividual(Individual indi);
+
+  protected abstract void addFamily(Family fam);
 
   public boolean isScrollable()
   {

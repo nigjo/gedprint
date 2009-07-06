@@ -32,13 +32,13 @@ public class BookPainter extends GedPainter
   }
 
   @Override
-  public void add(Individual indi)
+  public void addIndividual(Individual indi)
   {
     tabs.addTab(indi.toString(), new JPanel());
   }
 
   @Override
-  public void add(Family fam)
+  public void addFamily(Family fam)
   {
     String title = fam.getIDCleared();
     title += " - "; //$NON-NLS-1$

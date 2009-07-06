@@ -56,13 +56,13 @@ public class DrawPanel extends GedPainter
   }
 
   @Override
-  public void add(Individual indi)
+  public void addIndividual(Individual indi)
   {
     add(new Person(indi));
   }
 
   @Override
-  public void add(Family fam)
+  public void addFamily(Family fam)
   {
     add(new FamilyTree(fam, true));
   }
