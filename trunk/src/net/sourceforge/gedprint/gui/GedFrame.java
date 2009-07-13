@@ -4,12 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Image;
+import java.awt.MediaTracker;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
@@ -41,6 +45,21 @@ public class GedFrame extends JFrame
     setLocationByPlatform(true);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+    // Icon setzen
+    URL iconRes = getClass().getResource("icon32.png"); //$NON-NLS-1$
+    Image icon = new ImageIcon(iconRes).getImage();
+    MediaTracker mt = new MediaTracker(this);
+    mt.addImage(icon, 0);
+    try
+    {
+      mt.waitForAll();
+    }
+    catch(InterruptedException e)
+    {
+      e.printStackTrace();
+    }
+    setIconImage(icon);
+
     // Anzeigeklasse
     addGedPainter(painterClassName);
 
@@ -54,7 +73,7 @@ public class GedFrame extends JFrame
   private void initMenu()
   {
     JMenuBar menubar = MenuGenerator.generate();
-    
+
     setJMenuBar(menubar);
   }
 
