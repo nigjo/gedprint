@@ -23,7 +23,6 @@ public class MenuGenerator
   private JMenuBar menubar;
   private URL resource;
   private static final String DEFAULT_XML_READER = "org.apache.crimson.parser.XMLReaderImpl"; //$NON-NLS-1$
-  private static final String ACTION_PACKAGE = "net.sourceforge.gedprint.gui.action"; //$NON-NLS-1$
 
   private MenuGenerator()
   {
@@ -285,21 +284,7 @@ public class MenuGenerator
 
   private static BasicAction getAction(String actionName)
   {
-    try
-    {
-      Class actionClass = Class.forName(ACTION_PACKAGE + '.' + actionName);
-      return (BasicAction) actionClass.newInstance();
-    }
-    catch(ClassNotFoundException e)
-    {
-      BasicAction defaultAction = new BasicAction(actionName);
-      defaultAction.setEnabled(false);
-      return defaultAction;
-    }
-    catch(Exception e)
-    {
-      throw new IllegalStateException(e);
-    }
+    return ActionManager.getAction(actionName);
   }
 
 }
