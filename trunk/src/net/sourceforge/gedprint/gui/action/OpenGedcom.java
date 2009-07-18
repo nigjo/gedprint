@@ -76,6 +76,7 @@ public class OpenGedcom extends BasicAction
 
       try
       {
+        
         GedFile gedFile = new GedFile(selected.getAbsolutePath());
         GedFrame frame = getFrame(ae);
         frame.setGedFile(gedFile);

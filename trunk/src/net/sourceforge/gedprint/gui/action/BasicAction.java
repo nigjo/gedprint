@@ -5,6 +5,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -26,6 +27,10 @@ import net.sourceforge.gedprint.gui.core.GedFrame;
 public class BasicAction extends AbstractAction implements
     PropertyChangeListener
 {
+  public static final String PROPERTY_FILE = "gedcom.file"; //$NON-NLS-1$
+  public static final String PROPERTY_RECORD = "gedcom.record"; //$NON-NLS-1$
+  public static final String PROPERTY_SELECTION = "selection"; //$NON-NLS-1$
+
   private static final long serialVersionUID = 51080980824162277L;
 
   protected BasicAction(GedFrame owner)
@@ -86,7 +91,15 @@ public class BasicAction extends AbstractAction implements
 
   public void propertyChange(PropertyChangeEvent evt)
   {
-    Logger.getLogger(getClass().getName()).fine(evt.getPropertyName());
+    String pattern = "changing property {0} in {1}"; //$NON-NLS-1$
+    Object[] args = new Object[]{
+      evt.getPropertyName(),
+      getClass().getSimpleName()
+    };
+    if(getClass().equals(BasicAction.class))
+      args[1]=getValue(NAME);
+    String message = MessageFormat.format(pattern, args);
+    Logger.getLogger(getClass().getName()).fine(message);
   }
 
   protected GedFrame getFrame(Object source)

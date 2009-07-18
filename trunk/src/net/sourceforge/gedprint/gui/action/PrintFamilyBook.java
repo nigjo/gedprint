@@ -1,6 +1,7 @@
 package net.sourceforge.gedprint.gui.action;
 
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 
 import javax.swing.KeyStroke;
 
@@ -18,14 +19,29 @@ public class PrintFamilyBook extends BasicAction
   {
     super(Messages.getString("PrintFamilyBook.title")); //$NON-NLS-1$
     putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl P")); //$NON-NLS-1$
+    setEnabled(false);
   }
-  
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    String name = evt.getPropertyName();
+    if(name.equals(PROPERTY_FILE))
+    {
+      setEnabled(evt.getNewValue() != null);
+    }
+    else
+    {
+      super.propertyChange(evt);
+    }
+  }
+
   @Override
   public void actionPerformed(ActionEvent e)
   {
     GedFrame frame = getFrame(e);
     FamilyBook book = new FamilyBook(frame);
-    
+
     Record fam = frame.getRecord();
     if(!(fam instanceof Family))
       return;

@@ -6,7 +6,7 @@ public class SearchMenuAction extends BasicAction
 {
   private static final long serialVersionUID = 4409284122252800770L;
 
-  protected SearchMenuAction()
+  public SearchMenuAction()
   {
     super(Messages.getString("SearchMenuAction.title")); //$NON-NLS-1$
   }
