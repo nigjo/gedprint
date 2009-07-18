@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.KeyStroke;
 
 import net.sourceforge.gedprint.core.Messages;
-import net.sourceforge.gedprint.gui.GedFrame;
+import net.sourceforge.gedprint.gui.core.GedFrame;
 
 public class Exit extends BasicAction
 {

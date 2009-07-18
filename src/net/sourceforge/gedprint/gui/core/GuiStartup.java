@@ -1,4 +1,4 @@
-package net.sourceforge.gedprint.gui.startup;
+package net.sourceforge.gedprint.gui.core;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +13,6 @@ import javax.swing.UIManager;
 
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
-import net.sourceforge.gedprint.gui.GedFrame;
 import net.sourceforge.gedprint.gui.GedPrintGui;
 
 /**

@@ -1,10 +1,16 @@
-package net.sourceforge.gedprint.gui.action;
+package net.sourceforge.gedprint.gui.core;
 
 import java.util.Hashtable;
 
+import net.sourceforge.gedprint.gui.action.BasicAction;
+
 public class ActionManager
 {
-  private static final String ACTION_PACKAGE = "net.sourceforge.gedprint.gui.action"; //$NON-NLS-1$
+  private static final String ACTION_PACKAGE;
+  static
+  {
+    ACTION_PACKAGE = BasicAction.class.getPackage().getName();
+  }
   private static ActionManager globalManager;
 
   Hashtable<String, BasicAction> cache;

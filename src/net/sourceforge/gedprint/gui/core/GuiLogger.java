@@ -1,4 +1,4 @@
-package net.sourceforge.gedprint.gui.startup;
+package net.sourceforge.gedprint.gui.core;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

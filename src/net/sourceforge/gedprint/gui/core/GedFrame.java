@@ -1,4 +1,4 @@
-package net.sourceforge.gedprint.gui;
+package net.sourceforge.gedprint.gui.core;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -25,7 +25,7 @@ import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
-import net.sourceforge.gedprint.gui.action.MenuGenerator;
+import net.sourceforge.gedprint.gui.GedPrintGui;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.

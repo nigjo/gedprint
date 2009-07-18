@@ -1,4 +1,4 @@
-package net.sourceforge.gedprint.gui.action;
+package net.sourceforge.gedprint.gui.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+
+import net.sourceforge.gedprint.gui.action.BasicAction;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -31,7 +33,7 @@ public class MenuGenerator
 
   public static JMenuBar generate()
   {
-    return generate(MenuGenerator.class.getResource("menu.xml")); //$NON-NLS-1$
+    return generate(BasicAction.class.getResource("menu.xml")); //$NON-NLS-1$
   }
 
   public static JMenuBar generate(URL resource)

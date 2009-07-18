@@ -1,4 +1,4 @@
-package net.sourceforge.gedprint.gui;
+package net.sourceforge.gedprint.gui.core;
 
 import javax.swing.JPanel;
 

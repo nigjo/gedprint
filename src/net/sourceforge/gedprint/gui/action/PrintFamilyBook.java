@@ -7,7 +7,7 @@ import javax.swing.KeyStroke;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Record;
-import net.sourceforge.gedprint.gui.GedFrame;
+import net.sourceforge.gedprint.gui.core.GedFrame;
 import net.sourceforge.gedprint.print.book.standard.FamilyBook;
 
 public class PrintFamilyBook extends BasicAction

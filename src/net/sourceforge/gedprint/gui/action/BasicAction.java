@@ -15,7 +15,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRootPane;
 
-import net.sourceforge.gedprint.gui.GedFrame;
+import net.sourceforge.gedprint.gui.core.ActionManager;
+import net.sourceforge.gedprint.gui.core.GedFrame;
 
 /**
  * Grundklasse fuer alle Actions in diesem Paket.
@@ -40,7 +41,7 @@ public class BasicAction extends AbstractAction implements
     checkValidCreation();
   }
 
-  protected BasicAction(String name)
+  public BasicAction(String name)
   {
     super(name);
     findMnemonic(name);
