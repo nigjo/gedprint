@@ -1,7 +1,5 @@
 package net.sourceforge.gedprint.gui.action;
 
-import java.awt.Container;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -10,14 +8,8 @@ import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JRootPane;
 
 import net.sourceforge.gedprint.gui.core.ActionManager;
-import net.sourceforge.gedprint.gui.core.GedFrame;
 
 /**
  * Grundklasse fuer alle Actions in diesem Paket.
@@ -27,13 +19,16 @@ import net.sourceforge.gedprint.gui.core.GedFrame;
 public class BasicAction extends AbstractAction implements
     PropertyChangeListener
 {
+  /**
+   * Die aktuelle GEDCOM Datei der Anwendung.  
+   */
   public static final String PROPERTY_FILE = "gedcom.file"; //$NON-NLS-1$
   public static final String PROPERTY_RECORD = "gedcom.record"; //$NON-NLS-1$
   public static final String PROPERTY_SELECTION = "selection"; //$NON-NLS-1$
 
   private static final long serialVersionUID = 51080980824162277L;
 
-  protected BasicAction(GedFrame owner)
+  protected BasicAction()
   {
     super();
     checkValidCreation();
@@ -92,48 +87,22 @@ public class BasicAction extends AbstractAction implements
   public void propertyChange(PropertyChangeEvent evt)
   {
     String pattern = "changing property {0} in {1}"; //$NON-NLS-1$
-    Object[] args = new Object[]{
-      evt.getPropertyName(),
-      getClass().getSimpleName()
+    Object[] args = new Object[]
+    { evt.getPropertyName(), getClass().getSimpleName()
     };
     if(getClass().equals(BasicAction.class))
-      args[1]=getValue(NAME);
+      args[1] = getValue(NAME);
     String message = MessageFormat.format(pattern, args);
     Logger.getLogger(getClass().getName()).fine(message);
   }
 
-  protected GedFrame getFrame(Object source)
+  protected Object getProperty(String key)
   {
-    if(source instanceof GedFrame)
-      return (GedFrame) source;
-    if(source instanceof ActionEvent)
-      source = ((ActionEvent) source).getSource();
-    if(source instanceof JMenuItem)
-    {
-      while(!(source instanceof JMenuBar))
-      {
-        while(source instanceof JMenuItem)
-          source = ((JMenuItem) source).getParent();
-        while(source instanceof JPopupMenu)
-          source = ((JPopupMenu) source).getInvoker();
-      }
-    }
-    if(source instanceof JComponent)
-    {
-      JRootPane rootPane = ((JComponent) source).getRootPane();
-      Container parent = rootPane.getParent();
-      if(parent instanceof GedFrame)
-        return (GedFrame) parent;
-    }
-    // bisher nicht gefunden. Fallback: Global suchen
-    Frame[] frames = GedFrame.getFrames();
-    for(Frame frame : frames)
-    {
-      if(frame instanceof GedFrame)
-        return (GedFrame) frame;
-    }
+    return ActionManager.getActionProperty(key);
+  }
 
-    // nichts gefunden.
-    return null;
+  protected void setProperty(String key, Object value)
+  {
+    ActionManager.setActionProperty(key, value);
   }
 }

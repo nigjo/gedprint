@@ -11,7 +11,7 @@ import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.core.GedFrame;
 import net.sourceforge.gedprint.print.book.standard.FamilyBook;
 
-public class PrintFamilyBook extends BasicAction
+public class PrintFamilyBook extends FrameAccessAction
 {
   private static final long serialVersionUID = -4539998494437698574L;
 
