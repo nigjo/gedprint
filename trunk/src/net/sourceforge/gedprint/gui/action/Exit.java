@@ -1,6 +1,7 @@
 package net.sourceforge.gedprint.gui.action;
 
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 
 import javax.swing.KeyStroke;
 
@@ -25,5 +26,10 @@ public class Exit extends BasicAction
       System.exit(1);
     else
       frame.close();
+  }
+  
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    // nothing to do. Exit is always active.
   }
 }

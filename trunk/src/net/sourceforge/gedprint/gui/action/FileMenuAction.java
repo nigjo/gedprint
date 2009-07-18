@@ -1,6 +1,6 @@
 package net.sourceforge.gedprint.gui.action;
 
-import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 
 import net.sourceforge.gedprint.core.Messages;
 
@@ -14,9 +14,8 @@ public class FileMenuAction extends BasicAction
     
   }
   
-  @Override
-  public void actionPerformed(ActionEvent e)
+  public void propertyChange(PropertyChangeEvent evt)
   {
-    super.actionPerformed(e);
+    // nothing to do. FileMenu is always active.
   }
 }
