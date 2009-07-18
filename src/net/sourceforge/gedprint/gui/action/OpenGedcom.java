@@ -15,7 +15,7 @@ import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.core.GedFrame;
 
-public class OpenGedcom extends BasicAction
+public class OpenGedcom extends FrameAccessAction
 {
   private static final long serialVersionUID = -4059235264496416456L;
   private static final String EXT = ".ged"; //$NON-NLS-1$
@@ -76,7 +76,6 @@ public class OpenGedcom extends BasicAction
 
       try
       {
-        
         GedFile gedFile = new GedFile(selected.getAbsolutePath());
         GedFrame frame = getFrame(ae);
         frame.setGedFile(gedFile);

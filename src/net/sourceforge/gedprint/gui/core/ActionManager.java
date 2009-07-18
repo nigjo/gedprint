@@ -73,10 +73,26 @@ public class ActionManager
     return action;
   }
 
+  public static Object getActionProperty(String property)
+  {
+    ActionManager manager = getManager();
+    return manager.getProperty(property);
+  }
+  
   public static void setActionProperty(String property, Object newValue)
   {
     ActionManager manager = getManager();
     manager.firePropertyChange(property, newValue);
+  }
+
+  public Object getProperty(String key)
+  {
+    synchronized(propMutex)
+    {
+      if(properties == null)
+        return null;
+      return properties.get(key);
+    }
   }
 
   public Object setProperty(String key, Object value)

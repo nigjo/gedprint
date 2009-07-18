@@ -8,7 +8,7 @@ import javax.swing.KeyStroke;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gui.core.GedFrame;
 
-public class Exit extends BasicAction
+public class Exit extends FrameAccessAction
 {
   private static final long serialVersionUID = 3133439925045511079L;
 
