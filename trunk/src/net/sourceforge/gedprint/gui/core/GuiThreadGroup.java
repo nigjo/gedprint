@@ -1,4 +1,4 @@
-package net.sourceforge.gedprint.gui.startup;
+package net.sourceforge.gedprint.gui.core;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

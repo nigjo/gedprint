@@ -3,9 +3,10 @@ package net.sourceforge.gedprint.gui;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
-import net.sourceforge.gedprint.gui.startup.GuiLogger;
-import net.sourceforge.gedprint.gui.startup.GuiStartup;
-import net.sourceforge.gedprint.gui.startup.GuiThreadGroup;
+
+import net.sourceforge.gedprint.gui.core.GuiLogger;
+import net.sourceforge.gedprint.gui.core.GuiStartup;
+import net.sourceforge.gedprint.gui.core.GuiThreadGroup;
 
 /**
  * Neue Klasse erstellt von hof. Erstellt am Jun 24, 2009, 2:45:51 PM

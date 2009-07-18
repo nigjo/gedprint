@@ -13,7 +13,7 @@ import javax.swing.filechooser.FileFilter;
 
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
-import net.sourceforge.gedprint.gui.GedFrame;
+import net.sourceforge.gedprint.gui.core.GedFrame;
 
 public class OpenGedcom extends BasicAction
 {
