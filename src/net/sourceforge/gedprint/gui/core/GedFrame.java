@@ -26,6 +26,7 @@ import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.GedPrintGui;
+import net.sourceforge.gedprint.gui.action.BasicAction;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.
@@ -106,8 +107,9 @@ public class GedFrame extends JFrame
    */
   public void setGedFile(GedFile gedfile)
   {
-    this.ged = gedfile;
     setStartID(null);
+    this.ged = gedfile;
+    ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, this.ged);
   }
 
   /**
@@ -121,6 +123,7 @@ public class GedFrame extends JFrame
     // keine ID angegeben ist.
     if(this.ged == null || string == null)
     {
+      ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, null);
       updatePanel();
       return;
     }
@@ -160,6 +163,7 @@ public class GedFrame extends JFrame
       Logger.getLogger(getClass().getName()).fine(r.toString());
     }
 
+    ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, r);
     updatePanel();
   }
 

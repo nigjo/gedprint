@@ -6,7 +6,7 @@ public class ViewMenuAction extends BasicAction
 {
   private static final long serialVersionUID = 2941382176273713295L;
 
-  protected ViewMenuAction()
+  public ViewMenuAction()
   {
     super(Messages.getString("ViewMenuAction.title")); //$NON-NLS-1$
   }
