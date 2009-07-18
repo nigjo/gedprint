@@ -13,7 +13,6 @@ import javax.swing.UIManager;
 
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
-import net.sourceforge.gedprint.gui.GedPrintGui;
 
 /**
  * Neue Klasse erstellt von hof. Erstellt am Jun 25, 2009, 1:51:32 PM
@@ -115,7 +114,7 @@ public class GuiStartup implements Runnable
 
   private void illegalArg(String pattern, String arg)
   {
-    String title = Messages.getString(GedPrintGui.class, "frame.title"); //$NON-NLS-1$
+    String title = Messages.getString(GedFrame.class, "frame.title"); //$NON-NLS-1$
     String message = MessageFormat.format(pattern, new Object[]
     { arg
     });
