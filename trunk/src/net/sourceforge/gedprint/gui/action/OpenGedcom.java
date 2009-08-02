@@ -29,7 +29,6 @@ public class OpenGedcom extends FrameAccessAction
     lastdir = new File(System.getProperty("user.dir")); //$NON-NLS-1$
   }
 
-  @Override
   public void actionPerformed(ActionEvent ae)
   {
     JFileChooser chooser = new JFileChooser(lastdir);

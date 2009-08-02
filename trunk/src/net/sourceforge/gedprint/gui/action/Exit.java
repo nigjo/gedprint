@@ -18,7 +18,6 @@ public class Exit extends FrameAccessAction
     putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("alt F4")); //$NON-NLS-1$
   }
 
-  @Override
   public void actionPerformed(ActionEvent e)
   {
     GedFrame frame = getFrame(e);
