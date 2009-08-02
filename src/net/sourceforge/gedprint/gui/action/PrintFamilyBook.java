@@ -36,7 +36,6 @@ public class PrintFamilyBook extends FrameAccessAction
     }
   }
 
-  @Override
   public void actionPerformed(ActionEvent e)
   {
     GedFrame frame = getFrame(e);
