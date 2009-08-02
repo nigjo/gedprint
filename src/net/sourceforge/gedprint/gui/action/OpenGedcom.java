@@ -13,7 +13,6 @@ import javax.swing.filechooser.FileFilter;
 
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
-import net.sourceforge.gedprint.gui.core.GedFrame;
 
 public class OpenGedcom extends FrameAccessAction
 {
@@ -77,8 +76,7 @@ public class OpenGedcom extends FrameAccessAction
       try
       {
         GedFile gedFile = new GedFile(selected.getAbsolutePath());
-        GedFrame frame = getFrame(ae);
-        frame.setGedFile(gedFile);
+        setProperty(PROPERTY_FILE, gedFile);
       }
       catch(FileNotFoundException fnfe)
       {
