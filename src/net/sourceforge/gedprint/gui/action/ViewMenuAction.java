@@ -2,7 +2,7 @@ package net.sourceforge.gedprint.gui.action;
 
 import net.sourceforge.gedprint.core.Messages;
 
-public class ViewMenuAction extends BasicAction
+public class ViewMenuAction extends BasicMenu
 {
   private static final long serialVersionUID = 2941382176273713295L;
 
