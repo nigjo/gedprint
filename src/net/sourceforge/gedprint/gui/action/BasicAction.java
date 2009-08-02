@@ -1,6 +1,5 @@
 package net.sourceforge.gedprint.gui.action;
 
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
@@ -16,7 +15,7 @@ import net.sourceforge.gedprint.gui.core.ActionManager;
  * 
  * @author nigjo
  */
-public class BasicAction extends AbstractAction implements
+public abstract class BasicAction extends AbstractAction implements
     PropertyChangeListener
 {
   /**
@@ -25,6 +24,7 @@ public class BasicAction extends AbstractAction implements
   public static final String PROPERTY_FILE = "gedcom.file"; //$NON-NLS-1$
   public static final String PROPERTY_RECORD = "gedcom.record"; //$NON-NLS-1$
   public static final String PROPERTY_SELECTION = "selection"; //$NON-NLS-1$
+  public static final String ACTION_DATA = "action.data"; //$NON-NLS-1$
 
   private static final long serialVersionUID = 51080980824162277L;
 
@@ -78,10 +78,6 @@ public class BasicAction extends AbstractAction implements
     else
       name = name.substring(0, wo) + name.substring(wo + 1);
     putValue(NAME, name);
-  }
-
-  public void actionPerformed(ActionEvent e)
-  {
   }
 
   public void propertyChange(PropertyChangeEvent evt)
