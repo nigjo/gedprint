@@ -1,5 +1,6 @@
 package net.sourceforge.gedprint.gui.core;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -24,7 +25,21 @@ public class ActionManager
 
   private ActionManager()
   {
+    checkValidCreation();
     pcSupport = new PropertyChangeSupport(this);
+  }
+
+  private void checkValidCreation()
+  {
+    StackTraceElement[] trace = new Throwable().getStackTrace();
+    String searchedClass = ActionManager.class.getName();
+    // Das dritte Element in der Liste muss "getManager" aus dieser Klasse sein
+    if(trace.length<3)
+      throw new IllegalStateException("ActionManager not created by itself"); //$NON-NLS-1$
+    if(!searchedClass.equals(trace[2].getClassName()))
+      throw new IllegalStateException("ActionManager not created by itself"); //$NON-NLS-1$
+    if(!trace[2].getMethodName().equals("getManager")) //$NON-NLS-1$
+      throw new IllegalStateException("ActionManager not created by itself"); //$NON-NLS-1$
   }
 
   public static BasicAction getAction(String actionName)
@@ -78,7 +93,7 @@ public class ActionManager
     ActionManager manager = getManager();
     return manager.getProperty(property);
   }
-  
+
   public static void setActionProperty(String property, Object newValue)
   {
     ActionManager manager = getManager();
@@ -110,4 +125,32 @@ public class ActionManager
     Object oldValue = setProperty(property, newValue);
     pcSupport.firePropertyChange(property, oldValue, newValue);
   }
+
+  public static void addPropertyChangeListener(PropertyChangeListener listener)
+  {
+    ActionManager manager = getManager();
+    manager.pcSupport.addPropertyChangeListener(listener);
+  }
+
+  public static void removePropertyChangeListener(
+      PropertyChangeListener listener)
+  {
+    ActionManager manager = getManager();
+    manager.pcSupport.removePropertyChangeListener(listener);
+  }
+
+  public static void addPropertyChangeListener(String property,
+      PropertyChangeListener listener)
+  {
+    ActionManager manager = getManager();
+    manager.pcSupport.addPropertyChangeListener(property, listener);
+  }
+
+  public static void removePropertyChangeListener(String property,
+      PropertyChangeListener listener)
+  {
+    ActionManager manager = getManager();
+    manager.pcSupport.removePropertyChangeListener(property, listener);
+  }
+
 }
