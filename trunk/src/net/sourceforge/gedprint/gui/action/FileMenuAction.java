@@ -4,7 +4,7 @@ import java.beans.PropertyChangeEvent;
 
 import net.sourceforge.gedprint.core.Messages;
 
-public class FileMenuAction extends BasicAction
+public class FileMenuAction extends BasicMenu
 {
   private static final long serialVersionUID = 8075406551995372107L;
 
