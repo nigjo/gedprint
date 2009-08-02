@@ -13,7 +13,7 @@ import javax.swing.JRootPane;
 
 import net.sourceforge.gedprint.gui.core.GedFrame;
 
-public class FrameAccessAction extends BasicAction
+public abstract class FrameAccessAction extends BasicAction
 {
   private static final long serialVersionUID = -2587452212647260627L;
 
