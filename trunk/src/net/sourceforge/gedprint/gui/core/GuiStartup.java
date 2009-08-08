@@ -13,6 +13,7 @@ import javax.swing.UIManager;
 
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
+import net.sourceforge.gedprint.gui.action.BasicAction;
 
 /**
  * Neue Klasse erstellt von hof. Erstellt am Jun 25, 2009, 1:51:32 PM
@@ -74,12 +75,20 @@ public class GuiStartup implements Runnable
       return;
     }
 
+    frame.setVisible(true);
+    
+    initParameters();
+  }
+
+  private void initParameters()
+  {
     String file = arguments.getProperty(ARG_FILENAME);
     if(file != null && file.length() > 0)
     {
       try
       {
-        frame.setGedFile(new GedFile(file));
+        GedFile gedfile = new GedFile(file);
+        ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, gedfile);
       }
       catch(FileNotFoundException ex)
       {
@@ -96,10 +105,10 @@ public class GuiStartup implements Runnable
       String startid = arguments.getProperty(ARG_INDIVIDUAL);
       if(startid == null)
         startid = arguments.getProperty(ARG_FAMILY);
-      frame.setStartID('@' + startid + '@');
+      
+      // TODO: frame.setStartID('@' + startid + '@');
+      ActionManager.performAction("AddRecordAction", '@' + startid + '@'); //$NON-NLS-1$
     }
-
-    frame.setVisible(true);
   }
 
   public static void exit()
