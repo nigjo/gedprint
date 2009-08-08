@@ -1,9 +1,11 @@
 package net.sourceforge.gedprint.gui.core;
 
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.logging.Logger;
 
 import net.sourceforge.gedprint.gui.action.BasicAction;
 
@@ -34,7 +36,7 @@ public class ActionManager
     StackTraceElement[] trace = new Throwable().getStackTrace();
     String searchedClass = ActionManager.class.getName();
     // Das dritte Element in der Liste muss "getManager" aus dieser Klasse sein
-    if(trace.length<3)
+    if(trace.length < 3)
       throw new IllegalStateException("ActionManager not created by itself"); //$NON-NLS-1$
     if(!searchedClass.equals(trace[2].getClassName()))
       throw new IllegalStateException("ActionManager not created by itself"); //$NON-NLS-1$
@@ -73,9 +75,7 @@ public class ActionManager
     }
     catch(ClassNotFoundException e)
     {
-      BasicAction defaultAction = new BasicAction(actionName);
-      defaultAction.setEnabled(false);
-      action = defaultAction;
+      action = new AbstractBasicAction(actionName);
     }
     catch(Exception e)
     {
@@ -83,7 +83,15 @@ public class ActionManager
     }
 
     cache.put(actionName, action);
-    pcSupport.addPropertyChangeListener(action);
+    Object value = action.getValue("listened_properties"); //$NON-NLS-1$
+    if(value != null && value instanceof String)
+    {
+      String[] properties = ((String) value).split(","); //$NON-NLS-1$
+      for(String property : properties)
+      {
+        addPropertyChangeListener(property, action);
+      }
+    }
 
     return action;
   }
@@ -153,4 +161,61 @@ public class ActionManager
     manager.pcSupport.removePropertyChangeListener(property, listener);
   }
 
+  /**
+   * fuehrt eine Action aus.
+   * 
+   * @param class1
+   * @param object
+   */
+  public static void performAction(Class<? extends BasicAction> actionClass,
+      Object data)
+  {
+    String actionName = actionClass.getSimpleName();
+    BasicAction action = getAction(actionName);
+    if(!actionClass.isInstance(action))
+      throw new IllegalStateException("action name already used."); //$NON-NLS-1$
+    perform(action, data);
+  }
+
+  public static void performAction(String actionName)
+  {
+    performAction(actionName, null);
+  }
+
+  public static void performAction(String actionName, Object data)
+  {
+    BasicAction action = getAction(actionName);
+    perform(action, data);
+  }
+
+  private static void perform(BasicAction action, Object data)
+  {
+    ActionEvent evt = new ActionEvent(getManager(),
+        ActionEvent.ACTION_PERFORMED, (String) action
+            .getValue(BasicAction.ACTION_COMMAND_KEY));
+    // Daten uebergeben
+    action.putValue(BasicAction.ACTION_DATA, data);
+    // Aktion ausfuehren
+    action.actionPerformed(evt);
+    // Daten wieder loeschen
+    action.putValue(BasicAction.ACTION_DATA, null);
+  }
+  
+  private static class AbstractBasicAction extends BasicAction
+  {
+    private static final long serialVersionUID = -6203670363521467316L;
+
+    public AbstractBasicAction(String actionName)
+    {
+      super(actionName);
+      setEnabled(false);
+      Logger.getLogger(getClass().getName()).fine(actionName);
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+      // nothing to do in this action (always disabled)
+    }
+
+  }
 }

@@ -36,7 +36,7 @@ import net.sourceforge.gedprint.gui.action.BasicAction;
 public class GedFrame extends JFrame
 {
   private static final long serialVersionUID = -7892421281873115631L;
-  private GedFile ged;
+  //private GedFile ged;
   private GedPainter drawPanel;
 
   public GedFrame(String painterClassName)
@@ -100,35 +100,41 @@ public class GedFrame extends JFrame
       getContentPane().add(new JScrollPane(drawPanel));
     else
       getContentPane().add(drawPanel);
+    
+    ActionManager.setActionProperty("painter", drawPanel);
   }
 
   /**
    * @param gedfile
+   * @deprecated
    */
-  public void setGedFile(GedFile gedfile)
+  /*public void setGedFile(GedFile gedfile)
   {
-    setStartID(null);
-    this.ged = gedfile;
-    ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, this.ged);
-  }
+    //setStartID(null);
+    //this.ged = gedfile;
+    ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, gedfile);
+  }*/
 
   /**
    * @param string
+   * @deprecated
    */
   public void setStartID(String string)
   {
     drawPanel.clearAll();
 
+    GedFile ged = (GedFile) ActionManager.getActionProperty(BasicAction.PROPERTY_FILE);
     // Abbrechen, wenn keine GEDCOM Datei oder
     // keine ID angegeben ist.
-    if(this.ged == null || string == null)
+    if(ged == null || string == null)
     {
-      ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, null);
-      updatePanel();
+      ActionManager.performAction("AddRecordAction", null); //$NON-NLS-1$
+      //ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, null);
+      //updatePanel();
       return;
     }
 
-    Record r = this.ged.findID(string);
+    Record r = ged.findID(string);
     if(r instanceof Individual)
     {
       Individual indi = (Individual) r;
@@ -163,10 +169,14 @@ public class GedFrame extends JFrame
       Logger.getLogger(getClass().getName()).fine(r.toString());
     }
 
-    ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, r);
+    //ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, r);
+    ActionManager.performAction("AddRecordAction", r); //$NON-NLS-1$
     updatePanel();
   }
 
+  /**
+   * @deprecated
+   */
   private void updatePanel()
   {
     if(isVisible())
@@ -244,6 +254,9 @@ public class GedFrame extends JFrame
     dispose();
   }
 
+  /**
+   * @deprecated
+   */
   public Record getRecord()
   {
     if(drawPanel == null)

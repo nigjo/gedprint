@@ -9,6 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
 import net.sourceforge.gedprint.gui.core.ActionManager;
+import net.sourceforge.gedprint.gui.core.GedPainter;
 
 /**
  * Grundklasse fuer alle Actions in diesem Paket.
@@ -100,5 +101,10 @@ public abstract class BasicAction extends AbstractAction implements
   protected void setProperty(String key, Object value)
   {
     ActionManager.setActionProperty(key, value);
+  }
+
+  protected GedPainter getPainter()
+  {
+    return (GedPainter) getProperty("painter"); //$NON-NLS-1$
   }
 }
