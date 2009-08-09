@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="build/classes" path="src"/>
-	<classpathentry kind="src" output="build/book" path="src.doc/book"/>
-	<classpathentry kind="src" output="build/treeprint" path="src.doc/treepaint"/>
+	<classpathentry kind="src" output="build/book" path="src.gui/book"/>
+	<classpathentry kind="src" output="build/treeprint" path="src.gui/treepaint"/>
+	<classpathentry kind="src" path="src.gui/core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java6"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="lib" path="gdbi/gdbi-13-pgv.jar" sourcepath="gdbi/gdbi-13-src.jar"/>
