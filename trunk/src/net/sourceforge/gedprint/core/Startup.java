@@ -30,7 +30,7 @@ public class Startup
           String[] args2 = new String[args.length - 2];
           if(i > 0)
             System.arraycopy(args, 0, args2, 0, i);
-          if(i + 1 < args.length)
+          if(i + 2 < args.length)
             System.arraycopy(args, i + 2, args2, i, args2.length - i);
 
           args = args2;
