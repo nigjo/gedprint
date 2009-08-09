@@ -58,8 +58,19 @@ public class GedFile implements Cloneable
   public GedFile(String infilename, Filter f) throws FileNotFoundException,
       IOException
   {
+    this(new File(infilename), f);
+  }
+
+  public GedFile(File infile) throws FileNotFoundException, IOException
+  {
+    this(infile, null);
+  }
+
+  public GedFile(File infile, Filter f) throws FileNotFoundException,
+      IOException
+  {
     this();
-    read(infilename, f);
+    read(infile, f);
   }
 
   /*****************************************************************************
