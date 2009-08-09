@@ -16,12 +16,12 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
+import net.sourceforge.gedprint.core.Lookup;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.core.DocumentManager;
 import net.sourceforge.gedprint.gui.core.GedDocumentFactory;
 import net.sourceforge.gedprint.gui.core.GedPainter;
-import net.sourceforge.gedprint.gui.core.Lookup;
 
 public class OpenGedcom extends FrameAccessAction
 {
