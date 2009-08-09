@@ -1,4 +1,4 @@
-package net.sourceforge.gedprint.gui.core;
+package net.sourceforge.gedprint.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
