@@ -3,7 +3,6 @@ package net.sourceforge.gedprint.gui.core;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 
-import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 
@@ -54,6 +53,13 @@ public class DocumentManager
       e.printStackTrace();
     }
 
+  }
+
+  public static GedPainter getActiveDocument()
+  {
+    // TODO mehr tests, ob das auch wirklich passt.
+    JInternalFrame iFrame = getManager().gedDesktop.getSelectedFrame();
+    return (GedPainter) iFrame.getContentPane().getComponent(0);
   }
 
 }
