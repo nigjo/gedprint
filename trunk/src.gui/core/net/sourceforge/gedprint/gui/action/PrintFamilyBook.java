@@ -5,7 +5,14 @@ import java.beans.PropertyChangeEvent;
 
 import javax.swing.KeyStroke;
 
+import net.sourceforge.gedprint.core.Lookup;
 import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.gedcom.Family;
+import net.sourceforge.gedprint.gedcom.Record;
+import net.sourceforge.gedprint.gui.core.DocumentManager;
+import net.sourceforge.gedprint.gui.core.GedPainter;
+import net.sourceforge.gedprint.print.PrintManager;
+import net.sourceforge.gedprint.print.PrintManagerFactory;
 
 public class PrintFamilyBook extends FrameAccessAction
 {
@@ -34,14 +41,17 @@ public class PrintFamilyBook extends FrameAccessAction
 
   public void actionPerformed(ActionEvent e)
   {
-//    GedFrame frame = getFrame(e);
-//    FamilyBook book = new FamilyBook(frame);
-//
-//    Record fam = frame.getRecord();
-//    if(!(fam instanceof Family))
-//      return;
-//    book.setTitleFamily((Family) fam);
-//    book.addFamily((Family) fam, true, true);
-//    book.print();
+    PrintManagerFactory factory = Lookup.lookup(PrintManagerFactory.class);
+    
+    GedPainter document = DocumentManager.getActiveDocument();
+    PrintManager manager = factory.createPrintManager();
+
+    Record fam = document.getRecord();
+    if(!(fam instanceof Family))
+      return;
+    
+    manager.setTitleFamily((Family) fam);
+    manager.addFamily((Family) fam, true, true);
+    manager.print();
   }
 }
