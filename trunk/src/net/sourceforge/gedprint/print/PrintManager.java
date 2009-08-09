@@ -18,14 +18,24 @@ abstract public class PrintManager
   public static final int EVEN = 0;
   public static final String VERSION_STRING = "GEDPrint v0.1 alpha"; //$NON-NLS-1$
 
-  JFrame owner;
+  private JFrame owner;
 
   private Vector<BasicPage> pages;
 
   private JProgressBar progressBar;
   private Family family;
   
+  public PrintManager()
+  {
+    super();
+  }
+  
   public PrintManager(JFrame owner)
+  {
+    setOwner(owner);
+  }
+
+  public void setOwner(JFrame owner)
   {
     this.owner = owner;
   }
