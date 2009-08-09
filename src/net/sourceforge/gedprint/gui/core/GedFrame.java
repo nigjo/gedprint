@@ -4,29 +4,29 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import net.sourceforge.gedprint.core.Messages;
-import net.sourceforge.gedprint.gedcom.Family;
-import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.GedPrintGui;
-import net.sourceforge.gedprint.gui.action.BasicAction;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.
@@ -36,8 +36,9 @@ import net.sourceforge.gedprint.gui.action.BasicAction;
 public class GedFrame extends JFrame
 {
   private static final long serialVersionUID = -7892421281873115631L;
-  //private GedFile ged;
-  private GedPainter drawPanel;
+  // private GedFile ged;
+  // private GedPainter drawPanel;
+  JDesktopPane desktop;
 
   public GedFrame(String painterClassName)
   {
@@ -46,11 +47,24 @@ public class GedFrame extends JFrame
     setLocationByPlatform(true);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-    // Icon setzen
-    URL iconRes = getClass().getResource("icon32.png"); //$NON-NLS-1$
-    Image icon = new ImageIcon(iconRes).getImage();
+    // Icons setzen
+    ArrayList<Image> icons = new ArrayList<Image>();
+    String[] iconResNames = new String[]
+    { "icon16.png", //$NON-NLS-1$
+        "icon32.png", //$NON-NLS-1$
+        "icon48.png", //$NON-NLS-1$
+        "icon256.png", //$NON-NLS-1$
+    };
     MediaTracker mt = new MediaTracker(this);
-    mt.addImage(icon, 0);
+    for(String iconResName : iconResNames)
+    {
+      URL iconRes = getClass().getResource(iconResName);
+      if(iconRes==null)
+        continue;
+      Image icon = new ImageIcon(iconRes).getImage();
+      icons.add(icon);
+      mt.addImage(icon, 0);
+    }
     try
     {
       mt.waitForAll();
@@ -59,10 +73,12 @@ public class GedFrame extends JFrame
     {
       e.printStackTrace();
     }
-    setIconImage(icon);
+    setIconImages(icons);
 
     // Anzeigeklasse
-    addGedPainter(painterClassName);
+    desktop = new GedDesktop();
+    getContentPane().add(desktop);
+    // addGedPainter(painterClassName);
 
     // Menue und Toolbar
     initMenu();
@@ -81,110 +97,102 @@ public class GedFrame extends JFrame
   private void initStatus()
   {
     StatusZeile status = new StatusZeile();
-    drawPanel.addPropertyChangeListener(GedPainter.PROPERTY_RECORD, status);
+    // drawPanel.addPropertyChangeListener(GedPainter.PROPERTY_RECORD, status);
     getContentPane().add(status, BorderLayout.SOUTH);
   }
 
-  private void addGedPainter(String painterClassName)
-  {
-    try
-    {
-      Class cl = Class.forName(painterClassName);
-      drawPanel = (GedPainter) cl.newInstance();
-    }
-    catch(Exception e)
-    {
-      throw new IllegalStateException(e);
-    }
-    if(drawPanel.isScrollable())
-      getContentPane().add(new JScrollPane(drawPanel));
-    else
-      getContentPane().add(drawPanel);
-    
-    ActionManager.setActionProperty("painter", drawPanel);
-  }
-
-  /**
-   * @param gedfile
-   * @deprecated
+  /*
+   * private void addGedPainter(String painterClassName) { try { Class cl =
+   * Class.forName(painterClassName); drawPanel = (GedPainter) cl.newInstance();
+   * } catch(Exception e) { throw new IllegalStateException(e); }
+   * if(drawPanel.isScrollable()) getContentPane().add(new
+   * JScrollPane(drawPanel)); else getContentPane().add(drawPanel);
+   * 
+   * ActionManager.setActionProperty("painter", drawPanel); }
    */
-  /*public void setGedFile(GedFile gedfile)
-  {
-    //setStartID(null);
-    //this.ged = gedfile;
-    ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, gedfile);
-  }*/
 
-  /**
-   * @param string
-   * @deprecated
-   */
-  public void setStartID(String string)
-  {
-    drawPanel.clearAll();
+  // /**
+  // * @param gedfile
+  // * @deprecated
+  // */
+  // public void setGedFile(GedFile gedfile)
+  // {
+  // //setStartID(null);
+  // //this.ged = gedfile;
+  // ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, gedfile);
+  // }
 
-    GedFile ged = (GedFile) ActionManager.getActionProperty(BasicAction.PROPERTY_FILE);
-    // Abbrechen, wenn keine GEDCOM Datei oder
-    // keine ID angegeben ist.
-    if(ged == null || string == null)
-    {
-      ActionManager.performAction("AddRecordAction", null); //$NON-NLS-1$
-      //ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, null);
-      //updatePanel();
-      return;
-    }
+  // /**
+  // * @param string
+  // * @deprecated
+  // */
+  // public void setStartID(String string)
+  // {
+  // drawPanel.clearAll();
+  //
+  // GedFile ged = (GedFile)
+  // ActionManager.getActionProperty(BasicAction.PROPERTY_FILE);
+  // // Abbrechen, wenn keine GEDCOM Datei oder
+  // // keine ID angegeben ist.
+  // if(ged == null || string == null)
+  // {
+  //      ActionManager.performAction("AddRecordAction", null); //$NON-NLS-1$
+  // //ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, null);
+  // //updatePanel();
+  // return;
+  // }
+  //
+  // Record r = ged.findID(string);
+  // if(r instanceof Individual)
+  // {
+  // Individual indi = (Individual) r;
+  // Logger.getLogger(getClass().getName()).info(indi.getClearedFullName());
+  //      Logger.getLogger(getClass().getName()).info("Age: " + indi.getAge()); //$NON-NLS-1$
+  //
+  // drawPanel.addRecord(indi);
+  // }
+  // else if(r instanceof Family)
+  // {
+  // Family fam = (Family) r;
+  // Logger.getLogger(getClass().getName()).fine(fam.toString());
+  //
+  // // Die Familie selbst
+  // drawPanel.addRecord(fam);
+  //
+  // if(fam.getChildrenCount() > 0)
+  // {
+  // // und die Familien der Kinder.
+  // for(Family family : fam.getChildFamilies())
+  // {
+  // drawPanel.addRecord(family);
+  // }
+  // }
+  // }
+  // else if(r == null)
+  // {
+  //      Logger.getLogger(getClass().getName()).fine("no record found"); //$NON-NLS-1$
+  // }
+  // else
+  // {
+  // Logger.getLogger(getClass().getName()).fine(r.toString());
+  // }
+  //
+  // //ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, r);
+  //    ActionManager.performAction("AddRecordAction", r); //$NON-NLS-1$
+  // updatePanel();
+  // }
 
-    Record r = ged.findID(string);
-    if(r instanceof Individual)
-    {
-      Individual indi = (Individual) r;
-      Logger.getLogger(getClass().getName()).info(indi.getClearedFullName());
-      Logger.getLogger(getClass().getName()).info("Age: " + indi.getAge()); //$NON-NLS-1$
-
-      drawPanel.addRecord(indi);
-    }
-    else if(r instanceof Family)
-    {
-      Family fam = (Family) r;
-      Logger.getLogger(getClass().getName()).fine(fam.toString());
-
-      // Die Familie selbst
-      drawPanel.addRecord(fam);
-
-      if(fam.getChildrenCount() > 0)
-      {
-        // und die Familien der Kinder.
-        for(Family family : fam.getChildFamilies())
-        {
-          drawPanel.addRecord(family);
-        }
-      }
-    }
-    else if(r == null)
-    {
-      Logger.getLogger(getClass().getName()).fine("no record found"); //$NON-NLS-1$
-    }
-    else
-    {
-      Logger.getLogger(getClass().getName()).fine(r.toString());
-    }
-
-    //ActionManager.setActionProperty(BasicAction.PROPERTY_RECORD, r);
-    ActionManager.performAction("AddRecordAction", r); //$NON-NLS-1$
-    updatePanel();
-  }
-
-  /**
-   * @deprecated
-   */
-  private void updatePanel()
-  {
-    if(isVisible())
-    {
-      repaint();
-      validate();
-    }
-  }
+  // /**
+  // * @deprecated
+  // */
+  // private void updatePanel()
+  // {
+  // if(isVisible())
+  // {
+  // repaint();
+  // validate();
+  // }
+  // }
 
   @Override
   public void dispose()
@@ -254,13 +262,54 @@ public class GedFrame extends JFrame
     dispose();
   }
 
-  /**
-   * @deprecated
-   */
-  public Record getRecord()
+  // /**
+  // * @deprecated
+  // */
+  // public Record getRecord()
+  // {
+  // if(drawPanel == null)
+  // return null;
+  // return drawPanel.getRecord();
+  // }
+  public class GedDesktop extends JDesktopPane
   {
-    if(drawPanel == null)
-      return null;
-    return drawPanel.getRecord();
+    private static final long serialVersionUID = -1454766223860345991L;
+
+    public GedDesktop()
+    {
+      super();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g)
+    {
+      super.paintComponent(g);
+
+      Dimension size = getSize();
+      g.drawLine(0, 0, size.width, size.height);
+      g.drawLine(0, size.height, size.width, 0);
+
+      Image biggest = null;
+      List<Image> icons = GedFrame.this.getIconImages();
+      for(Image icon : icons)
+      {
+        if(biggest == null)
+        {
+          biggest = icon;
+        }
+        else
+        {
+          int iwidth = icon.getWidth(this);
+          int bwidth = biggest.getWidth(this);
+          if(iwidth > bwidth)
+            biggest = icon;
+        }
+      }
+
+      int x = (size.width - biggest.getWidth(this)*2) / 2;
+      int y = (size.height - biggest.getHeight(this)*2) / 2;
+
+      g.drawImage(biggest, x, y, biggest.getWidth(this)*2,biggest.getHeight(this)*2, this);
+    }
   }
 }
