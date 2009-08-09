@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -61,6 +62,18 @@ public class GuiStartup implements Runnable
     Logger.getLogger(getClass().getName()).finer(sw.toString());
     // DEBUG end
 
+    Collection<? extends GedDocumentFactory> factories = Lookup
+        .lookupAll(GedDocumentFactory.class);
+    if(factories.size() == 0)
+    {
+      String msg = Messages.getString("err.no_painter"); //$NON-NLS-1$
+      Logger.getLogger(getClass().getName()).warning(msg);
+      String title = Messages.getString("frame.title"); //$NON-NLS-1$
+      JOptionPane.showMessageDialog(null, msg, title,
+          JOptionPane.WARNING_MESSAGE);
+      exit(1);
+    }
+
     String painterClassName = "net.sourceforge.gedprint.gui.paint.DrawPanel"; //$NON-NLS-1$
     //String painterClassName = "net.sourceforge.gedprint.gui.book.BookPainter"; //$NON-NLS-1$
     GedFrame frame = null;
@@ -76,7 +89,7 @@ public class GuiStartup implements Runnable
     }
 
     frame.setVisible(true);
-    
+
     initParameters();
   }
 
@@ -105,7 +118,7 @@ public class GuiStartup implements Runnable
       String startid = arguments.getProperty(ARG_INDIVIDUAL);
       if(startid == null)
         startid = arguments.getProperty(ARG_FAMILY);
-      
+
       // TODO: frame.setStartID('@' + startid + '@');
       ActionManager.performAction("AddRecordAction", '@' + startid + '@'); //$NON-NLS-1$
     }

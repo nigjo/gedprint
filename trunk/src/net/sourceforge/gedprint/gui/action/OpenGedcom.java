@@ -1,18 +1,27 @@
 package net.sourceforge.gedprint.gui.action;
 
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
+import net.sourceforge.gedprint.gui.core.DocumentManager;
+import net.sourceforge.gedprint.gui.core.GedDocumentFactory;
+import net.sourceforge.gedprint.gui.core.GedPainter;
+import net.sourceforge.gedprint.gui.core.Lookup;
 
 public class OpenGedcom extends FrameAccessAction
 {
@@ -32,25 +41,7 @@ public class OpenGedcom extends FrameAccessAction
   public void actionPerformed(ActionEvent ae)
   {
     JFileChooser chooser = new JFileChooser(lastdir);
-    FileFilter gedfilter = new FileFilter() {
-
-      @Override
-      public String getDescription()
-      {
-        String desc = Messages.getString("OpenGedcom.gedcom.description"); //$NON-NLS-1$
-        desc += " (*" + EXT + ')'; //$NON-NLS-1$
-        return desc;
-      }
-
-      @Override
-      public boolean accept(File f)
-      {
-        if(f.isDirectory())
-          return true;
-        String name = f.getName();
-        return name.toLowerCase().endsWith(EXT);
-      }
-    };
+    FileFilter gedfilter = new GedFileFilter();
     chooser.addChoosableFileFilter(gedfilter);
 
     chooser.setAcceptAllFileFilterUsed(true);
@@ -74,8 +65,9 @@ public class OpenGedcom extends FrameAccessAction
 
       try
       {
-        GedFile gedFile = new GedFile(selected.getAbsolutePath());
-        setProperty(PROPERTY_FILE, gedFile);
+        GedPainter doc = createDocument(selected);
+        if(doc != null)
+          DocumentManager.addDocument(doc);
       }
       catch(FileNotFoundException fnfe)
       {
@@ -95,8 +87,69 @@ public class OpenGedcom extends FrameAccessAction
       {
         lastdir = chooser.getCurrentDirectory();
       }
+    }
+  }
 
+  private GedPainter createDocument(File selected)
+      throws FileNotFoundException, IOException
+  {
+    GedFile gedFile = new GedFile(selected.getAbsolutePath());
+    // setProperty(PROPERTY_FILE, gedFile);
+    Collection<? extends GedDocumentFactory> factories = Lookup
+        .lookupAll(GedDocumentFactory.class);
+    GedDocumentFactory factory = null;
+    if(factories.size() == 1)
+    {
+      factory = factories.iterator().next();
+    }
+    else
+    {
+      JComboBox box = new JComboBox();
+      for(GedDocumentFactory factory2 : factories)
+      {
+        String name = factory2.getName();
+        box.addItem(name);
+      }
+      JPanel wrapper = new JPanel(new GridLayout(2, 1));
+      wrapper.add(new JLabel("Bitte eine Darstellungklasse wählen"));
+      wrapper.add(box);
+      String title = "Darstellung wählen";
+      int erg1 = JOptionPane.showConfirmDialog(null, wrapper, title,
+          JOptionPane.OK_CANCEL_OPTION);
+      if(erg1 != JOptionPane.YES_OPTION)
+        return null;
+
+      for(GedDocumentFactory factory2 : factories)
+      {
+        if(box.getSelectedItem().equals(factory2.getName()))
+        {
+          factory = factory2;
+          break;
+        }
+      }
+    }
+    GedPainter doc = factory.createDocument();
+    doc.setGedFile(gedFile);
+    return doc;
+  }
+
+  private static class GedFileFilter extends FileFilter
+  {
+    @Override
+    public String getDescription()
+    {
+      String desc = Messages.getString("OpenGedcom.gedcom.description"); //$NON-NLS-1$
+      desc += " (*" + EXT + ')'; //$NON-NLS-1$
+      return desc;
     }
 
+    @Override
+    public boolean accept(File f)
+    {
+      if(f.isDirectory())
+        return true;
+      String name = f.getName();
+      return name.toLowerCase().endsWith(EXT);
+    }
   }
 }

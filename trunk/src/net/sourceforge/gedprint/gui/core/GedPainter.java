@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 
 import net.sourceforge.gedprint.gedcom.Family;
+import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.action.BasicAction;
@@ -16,6 +17,8 @@ public abstract class GedPainter extends JPanel implements
   private static final long serialVersionUID = 2282097895141356155L;
 
   public static final String PROPERTY_RECORD = "painter.record"; //$NON-NLS-1$
+
+  private GedFile gedFile;
 
   public GedPainter()
   {
@@ -53,5 +56,15 @@ public abstract class GedPainter extends JPanel implements
       // Eine neue Datei loescht erstmal alles bisherige
       clearAll();
     }
+  }
+
+  public void setGedFile(GedFile gedFile)
+  {
+    this.gedFile = gedFile;
+  }
+  
+  public GedFile getGedFile()
+  {
+    return gedFile;
   }
 }

@@ -9,6 +9,7 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,8 +18,10 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -47,6 +50,11 @@ public class GedFrame extends JFrame
     setLocationByPlatform(true);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+    // Anzeigeklasse
+    desktop = new GedDesktop();
+    //desktop = new JDesktopPane();
+    setContentPane(desktop);
+
     // Icons setzen
     ArrayList<Image> icons = new ArrayList<Image>();
     String[] iconResNames = new String[]
@@ -59,7 +67,7 @@ public class GedFrame extends JFrame
     for(String iconResName : iconResNames)
     {
       URL iconRes = getClass().getResource(iconResName);
-      if(iconRes==null)
+      if(iconRes == null)
         continue;
       Image icon = new ImageIcon(iconRes).getImage();
       icons.add(icon);
@@ -75,9 +83,6 @@ public class GedFrame extends JFrame
     }
     setIconImages(icons);
 
-    // Anzeigeklasse
-    desktop = new GedDesktop();
-    getContentPane().add(desktop);
     // addGedPainter(painterClassName);
 
     // Menue und Toolbar
@@ -275,41 +280,44 @@ public class GedFrame extends JFrame
   {
     private static final long serialVersionUID = -1454766223860345991L;
 
+    DocumentManager manager;
+
     public GedDesktop()
     {
       super();
+      manager = new DocumentManager(this);
     }
 
-    @Override
-    protected void paintComponent(Graphics g)
-    {
-      super.paintComponent(g);
-
-      Dimension size = getSize();
-      g.drawLine(0, 0, size.width, size.height);
-      g.drawLine(0, size.height, size.width, 0);
-
-      Image biggest = null;
-      List<Image> icons = GedFrame.this.getIconImages();
-      for(Image icon : icons)
-      {
-        if(biggest == null)
-        {
-          biggest = icon;
-        }
-        else
-        {
-          int iwidth = icon.getWidth(this);
-          int bwidth = biggest.getWidth(this);
-          if(iwidth > bwidth)
-            biggest = icon;
-        }
-      }
-
-      int x = (size.width - biggest.getWidth(this)*2) / 2;
-      int y = (size.height - biggest.getHeight(this)*2) / 2;
-
-      g.drawImage(biggest, x, y, biggest.getWidth(this)*2,biggest.getHeight(this)*2, this);
-    }
+//    @Override
+//    protected void paintComponent(Graphics g)
+//    {
+//      super.paintComponent(g);
+//
+//      Dimension size = getSize();
+//
+//      Image biggest = null;
+//      List<Image> icons = GedFrame.this.getIconImages();
+//      for(Image icon : icons)
+//      {
+//        if(biggest == null)
+//        {
+//          biggest = icon;
+//        }
+//        else
+//        {
+//          int iwidth = icon.getWidth(this);
+//          int bwidth = biggest.getWidth(this);
+//          if(iwidth > bwidth)
+//            biggest = icon;
+//        }
+//      }
+//
+//      int x = (size.width - biggest.getWidth(this) * 2) / 2;
+//      int y = (size.height - biggest.getHeight(this) * 2) / 2;
+//
+//      g.drawImage(biggest, x, y, biggest.getWidth(this) * 2, biggest
+//          .getHeight(this) * 2, this);
+//    }
+    
   }
 }
