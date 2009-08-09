@@ -5,16 +5,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import net.sourceforge.gedprint.core.GedPrintStarter;
 import net.sourceforge.gedprint.core.Lookup;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
+import net.sourceforge.gedprint.gui.GedPrintGui;
 import net.sourceforge.gedprint.gui.action.BasicAction;
 
 /**
@@ -24,7 +28,7 @@ import net.sourceforge.gedprint.gui.action.BasicAction;
  * 
  * @author hof
  */
-public class GuiStartup implements Runnable
+public class GuiStartup implements GedPrintStarter
 {
   private static final int CMD_OK = 0;
   private static final int CMD_FILE = 1;
@@ -35,6 +39,17 @@ public class GuiStartup implements Runnable
   private static final String ARG_INDIVIDUAL = "individual"; //$NON-NLS-1$
   private static final String ARG_FAMILY = "family"; //$NON-NLS-1$
   Properties arguments;
+  
+  static
+  {
+    // Protokollierung initialisieren
+    GuiLogger.initLogger();
+
+    // Programmstart in die Protokolldatei mit Zeitstempel
+    Logger logger = Logger.getLogger(GedPrintGui.class.getName());
+    logger.info("------------------------------"); //$NON-NLS-1$
+    logger.info(new SimpleDateFormat().format(new Date()));
+  }
 
   public GuiStartup()
   {
@@ -125,12 +140,12 @@ public class GuiStartup implements Runnable
     }
   }
 
-  public static void exit()
+  public void exit()
   {
     exit(0);
   }
 
-  public static void exit(int rc)
+  public void exit(int rc)
   {
     System.exit(rc);
   }
