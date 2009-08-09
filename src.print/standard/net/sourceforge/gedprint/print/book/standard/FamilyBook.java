@@ -3,8 +3,6 @@ package net.sourceforge.gedprint.print.book.standard;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.JFrame;
-
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.print.BasicPage;
@@ -20,9 +18,9 @@ public class FamilyBook extends PrintManager
 {
   private TitlePage titlePage;
 
-  public FamilyBook(JFrame frame)
+  public FamilyBook()
   {
-    super(frame);
+    super();
 
     titlePage = new TitlePage();
     add(titlePage);
