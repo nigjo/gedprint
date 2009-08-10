@@ -1,6 +1,9 @@
 
 <project name="GEDprint" default="deploy">
 
+  <property name="target" value="1.6"/>
+  <property name="source" value="1.6"/>
+
   <target name="-init" depends="-macrodef">
     <property name="build.dir" value="build"/>
     <property name="javadoc.dir" value="docs/apidocs"/>
@@ -14,16 +17,19 @@
 
   </target>
   
-  <target name="deploy" depends="-init,jar,javadoc">
+  <target name="deploy" depends="-init,jar,javadoc"
+  	description="generates a zip files for deployment on a website">
   </target>
 
-  <target name="clean" depends="-init">
+  <target name="clean" depends="-init"
+  	description="cleans all generated files">
     <delete dir="${build.dir}"/>
     <delete dir="${deploy.dir}"/>
     <delete dir="${javadoc.dir}"/>
   </target>
   
-  <target name="javadoc" depends="-init,compile">
+  <target name="javadoc" depends="-init,compile"
+  	description="generates apidocs for all source folders">
     <document prefix="source.core" />
     <document prefix="source.gui.core" />
 
@@ -33,7 +39,8 @@
     <document prefix="source.doc.tree"/>
   </target>
 
-  <target name="compile" depends="-init">
+  <target name="compile" depends="-init"
+  	description="compiles all source files">
     <compile prefix="source.core"/>
     <compile prefix="source.gui.core"/>
 
@@ -43,7 +50,8 @@
     <compile prefix="source.doc.tree"/>
   </target>
 
-  <target name="jar" depends="-init,compile">
+  <target name="jar" depends="-init,compile"
+  	description="generates jar modules for all compiled sources">
     <mkdir dir="${deploy.dir}/lib"/>
 
     <deploy prefix="source.core"/>
@@ -95,7 +103,8 @@
         </pathconvert>
         <!--echo message="classpath=${@{prefix}.deps.path}"/-->
         <mkdir dir="${build.dir}/${@{prefix}.build}"/>
-        <javac srcdir="${@{prefix}.location}" source="1.6" target="1.6"
+        <javac srcdir="${@{prefix}.location}"
+          source="${source}" target="${target}"
           destdir="${build.dir}/${@{prefix}.build}"
           classpath="${@{prefix}.deps.path}"
           debug="true" debuglevel="lines,vars,source"/>
