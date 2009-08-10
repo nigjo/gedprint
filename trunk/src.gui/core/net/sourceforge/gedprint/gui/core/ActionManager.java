@@ -164,9 +164,11 @@ public class ActionManager
   /**
    * fuehrt eine Action aus.
    * 
-   * @param class1
-   * @param object
+   * @param actionClass
+   * @param data
    */
+
+
   public static void performAction(Class<? extends BasicAction> actionClass,
       Object data)
   {
