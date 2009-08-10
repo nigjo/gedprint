@@ -53,8 +53,6 @@ public class Family extends Record
 
   /**
    * liefert die Records der Kinder.
-   * 
-   * @return
    */
   public Enumeration getChildren()
   {
