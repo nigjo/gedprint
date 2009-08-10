@@ -1,0 +1,146 @@
+
+<project name="GEDprint" default="deploy">
+
+  <target name="-init" depends="-macrodef">
+    <property name="build.dir" value="build"/>
+    <property name="javadoc.dir" value="docs/apidocs"/>
+    <property name="deploy.dir" value="deploy"/>
+    <property name="deploy.path" location="${deploy.dir}"/>
+
+    <property name="main.class" value="net.sourceforge.gedprint.core.Startup"/>
+    <property name="starter.jar" value="${deploy.dir}/GEDprint.jar"/>
+
+    <xmlproperty file="sources.xml" collapseattributes="true"/>
+
+  </target>
+  
+  <target name="deploy" depends="-init,jar,javadoc">
+  </target>
+
+  <target name="clean" depends="-init">
+    <delete dir="${build.dir}"/>
+    <delete dir="${deploy.dir}"/>
+    <delete dir="${javadoc.dir}"/>
+  </target>
+  
+  <target name="javadoc" depends="-init,compile">
+    <document prefix="source.core" />
+    <document prefix="source.gui.core" />
+
+    <document prefix="source.print.book"/>
+
+    <document prefix="source.doc.book"/>
+    <document prefix="source.doc.tree"/>
+  </target>
+
+  <target name="compile" depends="-init">
+    <compile prefix="source.core"/>
+    <compile prefix="source.gui.core"/>
+
+    <compile prefix="source.print.book"/>
+
+    <compile prefix="source.doc.book"/>
+    <compile prefix="source.doc.tree"/>
+  </target>
+
+  <target name="jar" depends="-init,compile">
+    <mkdir dir="${deploy.dir}/lib"/>
+
+    <deploy prefix="source.core"/>
+    <deploy prefix="source.gui.core"/>
+
+    <deploy prefix="source.print.book"/>
+
+    <deploy prefix="source.doc.book"/>
+    <deploy prefix="source.doc.tree"/>
+
+    <fileset dir="${deploy.dir}/lib" id="runtime.libs" includes="*.jar" />
+    <pathconvert pathsep=" " dirsep="/"
+        property="runtime.class.path" refid="runtime.libs">
+      <map from="${deploy.path}/" to=""/>
+    </pathconvert>
+    <jar destfile="${starter.jar}">
+      <manifest>
+        <attribute name="Main-Class" value="${main.class}"/>
+        <attribute name="Class-Path" value="${runtime.class.path}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="-init-debug" depends="-init">
+    <path id="runtime.classpath">
+      <dirset dir="${build.dir}" includes="*"/>
+    </path>
+    <pathconvert refid="runtime.classpath"/>
+  </target>
+  <target name="debug" depends="-init,compile,-init-debug">
+    <property name="debug.jvmargs" value=""/>
+    <java dir="${basedir}" fork="true"
+      classpathref="runtime.classpath"
+      classname="${main.class}"
+      >
+      <jvmarg line="${debug.jvmargs}"/>
+    </java>
+  </target>
+
+  <target name="-macrodef">
+
+    <macrodef name="compile">
+      <attribute name="prefix"/>
+      <sequential>
+        <!--echo message="deps=${@{prefix}.deps}"/-->
+        <pathconvert property="@{prefix}.deps.path">
+          <filelist dir="${build.dir}" files="${@{prefix}.deps}"/>
+          <map from="${build.dir}" to=""/>
+        </pathconvert>
+        <!--echo message="classpath=${@{prefix}.deps.path}"/-->
+        <mkdir dir="${build.dir}/${@{prefix}.build}"/>
+        <javac srcdir="${@{prefix}.location}" source="1.6" target="1.6"
+          destdir="${build.dir}/${@{prefix}.build}"
+          classpath="${@{prefix}.deps.path}"
+          debug="true" debuglevel="lines,vars,source"/>
+        <copy todir="${build.dir}/${@{prefix}.build}">
+          <fileset dir="${@{prefix}.location}" excludes="**/*.java"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="deploy">
+      <attribute name="prefix"/>
+      <sequential>
+        <jar basedir="${build.dir}/${@{prefix}.build}"
+          destfile="${deploy.dir}/lib/${@{prefix}.deploy}.jar"/>
+      </sequential>
+    </macrodef>
+    
+    <macrodef name="document">
+      <attribute name="prefix"/>
+      <sequential>
+        <pathconvert property="@{prefix}.deps.path">
+          <filelist dir="${build.dir}" files="${@{prefix}.deps}"/>
+        </pathconvert>
+        <antcall target="-do-javadoc">
+          <param name="javadoc.source" value="${@{prefix}.location}"/>
+          <param name="javadoc.dest" value="${javadoc.dir}/${@{prefix}.build}"/>
+          <param name="javadoc.classpath" value="${@{prefix}.deps.path}"/>
+        </antcall>
+      </sequential>
+    </macrodef>
+
+  </target>
+  <target name="-javadoc-init">
+    <mkdir dir="${javadoc.dest}"/>
+    <uptodate targetfile="${javadoc.dest}/package-list"
+          property="javadoc.uptodate">
+      <srcfiles dir="${javadoc.source}" />
+    </uptodate>
+  </target>
+  <target name="-do-javadoc" depends="-javadoc-init" unless="javadoc.uptodate">
+    <javadoc sourcepath="${javadoc.source}"
+          destdir="${javadoc.dest}"
+          classpath="${javadoc.classpath}">
+      <tag name="todo" scope="all"
+        description="&lt;span style='background-color:orange;'&gt;Zu Erledigen:&lt;/span&gt;"/>
+    </javadoc>
+  </target>
+</project>
