@@ -111,9 +111,9 @@ public class OpenGedcom extends FrameAccessAction
         box.addItem(name);
       }
       JPanel wrapper = new JPanel(new GridLayout(2, 1));
-      wrapper.add(new JLabel("Bitte eine Darstellungklasse wählen"));
+      wrapper.add(new JLabel(Messages.getString("OpenGedcom.select_painter"))); //$NON-NLS-1$
       wrapper.add(box);
-      String title = "Darstellung wählen";
+      String title = Messages.getString("OpenGedcom.select_painter.title"); //$NON-NLS-1$
       int erg1 = JOptionPane.showConfirmDialog(null, wrapper, title,
           JOptionPane.OK_CANCEL_OPTION);
       if(erg1 != JOptionPane.YES_OPTION)
