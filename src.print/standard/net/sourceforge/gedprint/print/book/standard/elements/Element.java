@@ -61,19 +61,19 @@ abstract public class Element extends BasicElement
   /** Schriftart f&uuml;r normale Dateneintr&auml;ge. */
   public static final String FONT_DATA = "font.data=" + Font.PLAIN + '=' + .4; //$NON-NLS-1$
 
-  /** Schriftart für die Namenseintäge der Indididuen. */
+  /** Schriftart f&uuml;r die Namenseint&auml;ge der Indididuen. */
   public static final String FONT_NAME = "font.name=" + Font.BOLD + '=' + .55; //$NON-NLS-1$
 
-  /** Schriftart für Überschriften. */
+  /** Schriftart f&uuml;r &uuml;berschriften. */
   public static final String FONT_HEADER = "font.header=" + Font.BOLD + '=' + .45; //$NON-NLS-1$
 
-  /** Schriftart für Überschriften in den Datenzellen. */
+  /** Schriftart f&uuml;r &uuml;berschriften in den Datenzellen. */
   public static final String FONT_TITLE = "font.title=" + Font.PLAIN + '=' + .25; //$NON-NLS-1$
 
-  /** Schriftart für dickere Überschriften in den Datenzellen. */
+  /** Schriftart f&uuml;r dickere &uuml;berschriften in den Datenzellen. */
   public static final String FONT_TITLE_BOLD = "font.title.bold=" + Font.BOLD + '=' + .35; //$NON-NLS-1$
 
-  /** Schriftart für ID Einträge. */
+  /** Schriftart f&uuml;r ID Eintr&auml;ge. */
   public static final String FONT_ID = "font.id=" + Font.PLAIN + '=' + .23; //$NON-NLS-1$
 
   public static final int TAB_LEFT = 0;
