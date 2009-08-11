@@ -4,7 +4,7 @@
   <property name="target" value="1.6"/>
   <property name="source" value="1.6"/>
 
-  <target name="-init" depends="-macrodef">
+  <target name="-init" depends="-iterate-init">
     <property name="build.dir" value="build"/>
     <property name="javadoc.dir" value="docs/apidocs"/>
     <property name="deploy.dir" value="deploy"/>
@@ -16,10 +16,6 @@
     <xmlproperty file="sources.xml" collapseattributes="true"/>
 
   </target>
-  
-  <target name="deploy" depends="-init,jar,javadoc"
-  	description="generates a zip files for deployment on a website">
-  </target>
 
   <target name="clean" depends="-init"
   	description="cleans all generated files">
@@ -27,55 +23,84 @@
     <delete dir="${deploy.dir}"/>
     <delete dir="${javadoc.dir}"/>
   </target>
-  
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         D E P L O Y
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="deploy" depends="-init,pack,javadoc"
+  	description="generates a zip files for deployment on a website">
+    <iterate task="deploy"/>
+    <zip destfile="${deploy.dir}/core.zip" update="true">
+      <zipfileset file="${starter.jar}" prefix="gedprint"/>
+    </zip>
+  </target>
+  <target name="-do-deploy">
+    <zip destfile="${deploy.dir}/${source.deploy}.zip">
+      <zipfileset dir="${deploy.dir}/${source.type}/" includes="${source.deploy}.jar"
+        prefix="gedprint/${source.type}"/>
+      <zipfileset dir="${javadoc.dir}/${source.build}"
+        prefix="gedprint/apidoc/${source.deploy}"/>
+    </zip>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         J A V A D O C
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <target name="javadoc" depends="-init,compile"
   	description="generates apidocs for all source folders">
-    <antcall target="-iterate">
-      <param name="task" value="document"/>
-    </antcall>
+    <iterate task="document"/>
   </target>
-  <target name="-iterate-next">
-    <basename property="prefix" file="${basedir}"/>
-    <antcall target="-iterate-${task}">
-      <param name="basedir" value="${basedir.main}"/>
-      <param name="source.${prefix}.location" value="src/${prefix}"/>
-      <param name="source.${prefix}.build" value="${prefix}"/>
-    </antcall>
+  <target name="-javadoc-init">
+    <mkdir dir="${javadoc.dir}/${source.build}"/>
+    <uptodate targetfile="${javadoc.dir}/${source.build}/package-list"
+          property="javadoc.uptodate">
+      <srcfiles dir="${source.location}" />
+    </uptodate>
   </target>
-
-  <target name="-iterate-compile" depends="-init">
-    <compile prefix="source.${prefix}" />
-  </target>
-  <target name="-iterate-document" depends="-init">
-    <document prefix="source.${prefix}" />
-  </target>
-  <target name="-iterate-pack" depends="-init">
-    <pack prefix="source.${prefix}" />
+  <target name="-do-document" depends="-javadoc-init" unless="javadoc.uptodate">
+    <pathconvert property="source.deps.path">
+      <filelist dir="${build.dir}" files="${source.deps}"/>
+    </pathconvert>
+    <javadoc sourcepath="${source.location}"
+          destdir="${javadoc.dir}/${source.build}"
+          classpath="${source.deps.path}">
+      <tag name="todo" scope="all"
+        description="&lt;span style='background-color:orange;'&gt;Zu Erledigen:&lt;/span&gt;"/>
+    </javadoc>
   </target>
 
-  <target name="-iterate" depends="-init">
-    <subant target="-iterate-next" genericantfile="build.xml"
-      failonerror="false">
-      <filelist dir="src" files="${source.buildpath}"/>
-      <property name="basedir.main" value="${basedir}"/>
-      <property name="task" value="${task}"/>
-    </subant>
-  </target>
-
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         C O M P I L E
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <target name="compile" depends="-init"
   	description="compiles all source files">
-    <antcall target="-iterate">
-      <param name="task" value="compile"/>
-    </antcall>
+    <iterate task="compile"/>
+  </target>
+  <target name="-do-compile">
+    <!--echo message="deps=${@{prefix}.deps}"/-->
+    <pathconvert property="source.deps.path">
+      <filelist dir="${build.dir}" files="${source.deps}"/>
+      <map from="${build.dir}" to=""/>
+    </pathconvert>
+    <!--echo message="classpath=${@{prefix}.deps.path}"/-->
+    <mkdir dir="${build.dir}/${source.build}"/>
+    <javac srcdir="${source.location}"
+      source="${source}" target="${target}"
+      destdir="${build.dir}/${source.build}"
+      classpath="${source.deps.path}"
+      debug="true" debuglevel="lines,vars,source"/>
+    <copy todir="${build.dir}/${source.build}">
+      <fileset dir="${source.location}" excludes="**/*.java"/>
+    </copy>
   </target>
 
-  <target name="jar" depends="-init,compile"
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         P A C K
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="pack" depends="-init,compile"
   	description="generates jar modules for all compiled sources">
-    <mkdir dir="${deploy.dir}/lib"/>
 
-    <antcall target="-iterate">
-      <param name="task" value="pack"/>
-    </antcall>
+    <iterate task="pack"/>
 
     <fileset dir="${deploy.dir}/lib" id="runtime.libs" includes="*.jar" />
     <pathconvert pathsep=" " dirsep="/"
@@ -89,7 +114,15 @@
       </manifest>
     </jar>
   </target>
+  <target name="-do-pack">
+    <mkdir dir="${deploy.dir}/${source.type}"/>
+    <jar basedir="${build.dir}/${source.build}"
+      destfile="${deploy.dir}/${source.type}/${source.deploy}.jar"/>
+  </target>
 
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         D E B U G
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <target name="-init-debug" depends="-init">
     <path id="runtime.classpath">
       <dirset dir="${build.dir}" includes="*"/>
@@ -106,65 +139,45 @@
     </java>
   </target>
 
-  <target name="-macrodef">
-
-    <macrodef name="compile">
-      <attribute name="prefix"/>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         I T E R A T I O N
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="-iterate-next">
+    <basename property="prefix" file="${basedir}"/>
+    <antcall target="-iterate-task">
+      <param name="basedir" value="${basedir.main}"/>
+      <param name="source.${prefix}.location" value="src/${prefix}"/>
+      <param name="source.${prefix}.build" value="${prefix}"/>
+    </antcall>
+  </target>
+  <target name="-iterate-task" depends="-init">
+    <dotask prefix="source.${prefix}"/>
+  </target>
+  <target name="-iterate-init">
+    <macrodef name="iterate"
+      description="wrapper fuer ein subant ueber den buildpath">
+      <attribute name="task"/>
       <sequential>
-        <!--echo message="deps=${@{prefix}.deps}"/-->
-        <pathconvert property="@{prefix}.deps.path">
-          <filelist dir="${build.dir}" files="${@{prefix}.deps}"/>
-          <map from="${build.dir}" to=""/>
-        </pathconvert>
-        <!--echo message="classpath=${@{prefix}.deps.path}"/-->
-        <mkdir dir="${build.dir}/${@{prefix}.build}"/>
-        <javac srcdir="${@{prefix}.location}"
-          source="${source}" target="${target}"
-          destdir="${build.dir}/${@{prefix}.build}"
-          classpath="${@{prefix}.deps.path}"
-          debug="true" debuglevel="lines,vars,source"/>
-        <copy todir="${build.dir}/${@{prefix}.build}">
-          <fileset dir="${@{prefix}.location}" excludes="**/*.java"/>
-        </copy>
+        <subant target="-iterate-next" genericantfile="build.xml"
+          failonerror="true">
+          <filelist dir="src" files="${source.buildpath}"/>
+          <property name="basedir.main" value="${basedir}"/>
+          <property name="task" value="@{task}"/>
+        </subant>
       </sequential>
     </macrodef>
-
-    <macrodef name="pack">
-      <attribute name="prefix"/>
+    <macrodef name="dotask"
+      description="startet einen 'do'-task mit den aktuellen Quellen">
+      <attribute name="prefix" />
       <sequential>
-        <jar basedir="${build.dir}/${@{prefix}.build}"
-          destfile="${deploy.dir}/lib/${@{prefix}.deploy}.jar"/>
-      </sequential>
-    </macrodef>
-    
-    <macrodef name="document">
-      <attribute name="prefix"/>
-      <sequential>
-        <pathconvert property="@{prefix}.deps.path">
-          <filelist dir="${build.dir}" files="${@{prefix}.deps}"/>
-        </pathconvert>
-        <antcall target="-do-javadoc">
-          <param name="javadoc.source" value="${@{prefix}.location}"/>
-          <param name="javadoc.dest" value="${javadoc.dir}/${@{prefix}.build}"/>
-          <param name="javadoc.classpath" value="${@{prefix}.deps.path}"/>
+        <antcall target="-do-${task}">
+          <param name="source.location" value="${@{prefix}.location}"/>
+          <param name="source.type" value="${@{prefix}.type}"/>
+          <param name="source.deploy" value="${@{prefix}.deploy}"/>
+          <param name="source.deps" value="${@{prefix}.deps}"/>
+          <param name="source.build" value="${@{prefix}.build}"/>
         </antcall>
       </sequential>
     </macrodef>
-
-  </target>
-  <target name="-javadoc-init">
-    <mkdir dir="${javadoc.dest}"/>
-    <uptodate targetfile="${javadoc.dest}/package-list"
-          property="javadoc.uptodate">
-      <srcfiles dir="${javadoc.source}" />
-    </uptodate>
-  </target>
-  <target name="-do-javadoc" depends="-javadoc-init" unless="javadoc.uptodate">
-    <javadoc sourcepath="${javadoc.source}"
-          destdir="${javadoc.dest}"
-          classpath="${javadoc.classpath}">
-      <tag name="todo" scope="all"
-        description="&lt;span style='background-color:orange;'&gt;Zu Erledigen:&lt;/span&gt;"/>
-    </javadoc>
   </target>
 </project>
