@@ -55,7 +55,10 @@ public class Startup
     public static void execute(Runnable runnable)
     {
       GedPrintThreadGroup group = new GedPrintThreadGroup();
-      new Thread(group, runnable).start();
+      Thread gedthread = new Thread(group, runnable);
+      ClassLoader cl = new ServiceClassLoader(gedthread.getContextClassLoader());
+      gedthread.setContextClassLoader(cl);
+      gedthread.start();
     }
 
     public GedPrintThreadGroup()
