@@ -1,33 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <source>
+  <buildpath>core,gui_core,print_book,doc_book,doc_tree</buildpath>
   <core>
-    <location>src/core</location>
-    <build>main_core</build>
-    <deploy>main_core</deploy>
+    <deploy>core</deploy>
     <deps/>
   </core>
-  <gui.core>
-    <location>src/gui_core</location>
-    <build>gui_core</build>
-    <deploy>gui</deploy>
-    <deps>main_core</deps>
-  </gui.core>
-  <print.book>
-    <location>src/print_book</location>
-    <build>print_book</build>
+  <gui_core>
+    <deploy>gui.core</deploy>
+    <deps>core</deps>
+  </gui_core>
+  <print_book>
     <deploy>print.book</deploy>
-    <deps>main_core</deps>
-  </print.book>
-  <doc.book>
-    <location>src/doc_book</location>
-    <build>doc_book</build>
+    <deps>core</deps>
+  </print_book>
+  <doc_book>
     <deploy>doc.book</deploy>
-    <deps>main_core,print_book,gui_core</deps>
-  </doc.book>
-  <doc.tree>
+    <deps>core,print_book,gui_core</deps>
+  </doc_book>
+  <doc_tree>
     <location>src/doc_tree</location>
     <build>doc_tree</build>
     <deploy>doc.tree</deploy>
-    <deps>main_core,gui_core</deps>
-  </doc.tree>
+    <deps>core,gui_core</deps>
+  </doc_tree>
 </source>
