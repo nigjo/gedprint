@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <source>
   <core>
-    <location>src</location>
+    <location>src/core</location>
     <build>main_core</build>
     <deploy>main_core</deploy>
     <deps/>
   </core>
   <gui.core>
-    <location>src.gui/core</location>
+    <location>src/gui_core</location>
     <build>gui_core</build>
     <deploy>gui</deploy>
     <deps>main_core</deps>
   </gui.core>
   <print.book>
-    <location>src.print/standard</location>
+    <location>src/print_book</location>
     <build>print_book</build>
     <deploy>print.book</deploy>
     <deps>main_core</deps>
   </print.book>
   <doc.book>
-    <location>src.gui/book</location>
+    <location>src/doc_book</location>
     <build>doc_book</build>
     <deploy>doc.book</deploy>
     <deps>main_core,print_book,gui_core</deps>
   </doc.book>
   <doc.tree>
-    <location>src.gui/treepaint</location>
+    <location>src/doc_tree</location>
     <build>doc_tree</build>
     <deploy>doc.tree</deploy>
     <deps>main_core,gui_core</deps>
