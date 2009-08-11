@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
+import net.sourceforge.gedprint.core.ExceptionEcho;
 import net.sourceforge.gedprint.core.Lookup;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
@@ -27,7 +28,6 @@ public class OpenGedcom extends FrameAccessAction
 {
   private static final long serialVersionUID = -4059235264496416456L;
   private static final String EXT = ".ged"; //$NON-NLS-1$
-
   private File lastdir;
 
   public OpenGedcom()
@@ -48,7 +48,7 @@ public class OpenGedcom extends FrameAccessAction
     chooser.setFileFilter(gedfilter);
 
     Object source = ae.getSource();
-    Component owner = (Component) source;
+    Component owner = (Component)source;
     int erg = chooser.showOpenDialog(owner);
     if(erg == JFileChooser.APPROVE_OPTION)
     {
@@ -72,16 +72,21 @@ public class OpenGedcom extends FrameAccessAction
       catch(FileNotFoundException fnfe)
       {
         String msg = Messages.getString("action.err.file_not_found"); //$NON-NLS-1$
-        JOptionPane.showMessageDialog(owner, msg, owner.getName(),
+        JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
             JOptionPane.WARNING_MESSAGE);
         return;
       }
-      catch(IOException e1)
+      catch(IOException ioe)
       {
         String msg = Messages.getString("action.err.io-error.read"); //$NON-NLS-1$
-        JOptionPane.showMessageDialog(owner, msg, owner.getName(),
+        JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
             JOptionPane.ERROR_MESSAGE);
         return;
+      }
+      catch(Exception unexpected)
+      {
+        String pattern = Messages.getString("OpenGedcom.err.unexpected"); //$NON-NLS-1$
+        ExceptionEcho.show(unexpected, pattern, 3);
       }
       finally
       {
@@ -95,8 +100,8 @@ public class OpenGedcom extends FrameAccessAction
   {
     GedFile gedFile = new GedFile(selected.getAbsolutePath());
     // setProperty(PROPERTY_FILE, gedFile);
-    Collection<? extends GedDocumentFactory> factories = Lookup
-        .lookupAll(GedDocumentFactory.class);
+    Collection<? extends GedDocumentFactory> factories = Lookup.lookupAll(
+        GedDocumentFactory.class);
     GedDocumentFactory factory = null;
     if(factories.size() == 1)
     {
@@ -151,5 +156,6 @@ public class OpenGedcom extends FrameAccessAction
       String name = f.getName();
       return name.toLowerCase().endsWith(EXT);
     }
+
   }
 }
