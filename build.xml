@@ -127,7 +127,6 @@
     <path id="runtime.classpath">
       <dirset dir="${build.dir}" includes="*"/>
     </path>
-    <pathconvert refid="runtime.classpath"/>
   </target>
   <target name="debug" depends="-init,compile,-init-debug">
     <property name="debug.jvmargs" value=""/>
