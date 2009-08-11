@@ -30,37 +30,52 @@
   
   <target name="javadoc" depends="-init,compile"
   	description="generates apidocs for all source folders">
-    <document prefix="source.core" />
-    <document prefix="source.gui.core" />
+    <antcall target="-iterate">
+      <param name="task" value="document"/>
+    </antcall>
+  </target>
+  <target name="-iterate-next">
+    <basename property="prefix" file="${basedir}"/>
+    <antcall target="-${task}-single">
+      <param name="basedir" value="${basedir.main}"/>
+      <param name="source.${prefix}.location" value="src/${prefix}"/>
+      <param name="source.${prefix}.build" value="${prefix}"/>
+    </antcall>
+  </target>
 
-    <document prefix="source.print.book"/>
+  <target name="-compile-single" depends="-init">
+    <compile prefix="source.${prefix}" />
+  </target>
+  <target name="-document-single" depends="-init">
+    <document prefix="source.${prefix}" />
+  </target>
+  <target name="-deploy-single" depends="-init">
+    <deploy prefix="source.${prefix}" />
+  </target>
 
-    <document prefix="source.doc.book"/>
-    <document prefix="source.doc.tree"/>
+  <target name="-iterate" depends="-init">
+    <subant target="-iterate-next" genericantfile="build.xml"
+      failonerror="false">
+      <filelist dir="src" files="${source.buildpath}"/>
+      <property name="basedir.main" value="${basedir}"/>
+      <property name="task" value="${task}"/>
+    </subant>
   </target>
 
   <target name="compile" depends="-init"
   	description="compiles all source files">
-    <compile prefix="source.core"/>
-    <compile prefix="source.gui.core"/>
-
-    <compile prefix="source.print.book"/>
-
-    <compile prefix="source.doc.book"/>
-    <compile prefix="source.doc.tree"/>
+    <antcall target="-iterate">
+      <param name="task" value="compile"/>
+    </antcall>
   </target>
 
   <target name="jar" depends="-init,compile"
   	description="generates jar modules for all compiled sources">
     <mkdir dir="${deploy.dir}/lib"/>
 
-    <deploy prefix="source.core"/>
-    <deploy prefix="source.gui.core"/>
-
-    <deploy prefix="source.print.book"/>
-
-    <deploy prefix="source.doc.book"/>
-    <deploy prefix="source.doc.tree"/>
+    <antcall target="-iterate">
+      <param name="task" value="deploy"/>
+    </antcall>
 
     <fileset dir="${deploy.dir}/lib" id="runtime.libs" includes="*.jar" />
     <pathconvert pathsep=" " dirsep="/"
