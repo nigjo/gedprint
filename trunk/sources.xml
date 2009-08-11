@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <source>
   <buildpath>core,gui_core,print_book,doc_book,doc_tree</buildpath>
-  <core>
+  <core type="lib">
     <deploy>core</deploy>
     <deps/>
   </core>
-  <gui_core>
+  <gui_core type="lib">
     <deploy>gui.core</deploy>
     <deps>core</deps>
   </gui_core>
-  <print_book>
+
+  <print_book type="services">
     <deploy>print.book</deploy>
     <deps>core</deps>
   </print_book>
-  <doc_book>
+  <doc_book type="services">
     <deploy>doc.book</deploy>
     <deps>core,print_book,gui_core</deps>
   </doc_book>
-  <doc_tree>
+
+  <doc_tree type="services">
     <location>src/doc_tree</location>
     <build>doc_tree</build>
     <deploy>doc.tree</deploy>
