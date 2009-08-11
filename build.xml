@@ -36,21 +36,21 @@
   </target>
   <target name="-iterate-next">
     <basename property="prefix" file="${basedir}"/>
-    <antcall target="-${task}-single">
+    <antcall target="-iterate-${task}">
       <param name="basedir" value="${basedir.main}"/>
       <param name="source.${prefix}.location" value="src/${prefix}"/>
       <param name="source.${prefix}.build" value="${prefix}"/>
     </antcall>
   </target>
 
-  <target name="-compile-single" depends="-init">
+  <target name="-iterate-compile" depends="-init">
     <compile prefix="source.${prefix}" />
   </target>
-  <target name="-document-single" depends="-init">
+  <target name="-iterate-document" depends="-init">
     <document prefix="source.${prefix}" />
   </target>
-  <target name="-deploy-single" depends="-init">
-    <deploy prefix="source.${prefix}" />
+  <target name="-iterate-pack" depends="-init">
+    <pack prefix="source.${prefix}" />
   </target>
 
   <target name="-iterate" depends="-init">
@@ -74,7 +74,7 @@
     <mkdir dir="${deploy.dir}/lib"/>
 
     <antcall target="-iterate">
-      <param name="task" value="deploy"/>
+      <param name="task" value="pack"/>
     </antcall>
 
     <fileset dir="${deploy.dir}/lib" id="runtime.libs" includes="*.jar" />
@@ -129,7 +129,7 @@
       </sequential>
     </macrodef>
 
-    <macrodef name="deploy">
+    <macrodef name="pack">
       <attribute name="prefix"/>
       <sequential>
         <jar basedir="${build.dir}/${@{prefix}.build}"
