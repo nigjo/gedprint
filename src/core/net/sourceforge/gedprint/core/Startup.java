@@ -3,10 +3,10 @@ package net.sourceforge.gedprint.core;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class Startup
 {
-  private static final String DEFAULT_MAIN = "net.sourceforge.gedprint.gui.core.GuiStartup"; //$NON-NLS-1$
+  private static final String DEFAULT_MAIN =
+      "net.sourceforge.gedprint.gui.core.GuiStartup"; //$NON-NLS-1$
 
   /**
    * @param args
@@ -35,32 +35,52 @@ public class Startup
       }
     }
 
-    try
-    {
-      Class starterClass = Class.forName(starterClassName);
-      Object starterObject = starterClass.newInstance();
-      GedPrintStarter starter = (GedPrintStarter) starterObject;
+    // Klassenlader fuer externe Services
+    ClassLoader serviceLoader = new ServiceClassLoader(Thread.currentThread().
+        getContextClassLoader());
 
-      if(starter.parseCommandline(args))
-        GedPrintThreadGroup.execute(starter);
-    }
-    catch(Exception e)
-    {
-      ExceptionEcho.show(e);
-    }
+    // Neuen Thread mit diesem Klassenlader initialisieren
+    GedPrintThreadGroup group = new GedPrintThreadGroup();
+    Runnable startup = new StartupRunner(starterClassName, args);
+    Thread gedthread = new Thread(group, startup, "startup");
+    gedthread.setContextClassLoader(serviceLoader);
+
+    // ... und starten
+    gedthread.start();
   }
 
-  public static class GedPrintThreadGroup extends ThreadGroup
+  private static class StartupRunner implements Runnable
   {
-    public static void execute(Runnable runnable)
+    private String realStarterClassName;
+    private String[] realArgs;
+
+    public StartupRunner(String realStarterClassName, String[] realArgs)
     {
-      GedPrintThreadGroup group = new GedPrintThreadGroup();
-      Thread gedthread = new Thread(group, runnable);
-      ClassLoader cl = new ServiceClassLoader(gedthread.getContextClassLoader());
-      gedthread.setContextClassLoader(cl);
-      gedthread.start();
+      this.realStarterClassName = realStarterClassName;
+      this.realArgs = realArgs;
     }
 
+    public void run()
+    {
+      try
+      {
+        Class starterClass = Class.forName(realStarterClassName);
+        Object starterObject = starterClass.newInstance();
+        GedPrintStarter starter = (GedPrintStarter)starterObject;
+
+        if(starter.parseCommandline(realArgs))
+          starter.run();
+      }
+      catch(Exception e)
+      {
+        ExceptionEcho.show(e);
+      }
+    }
+
+  }
+
+  private static class GedPrintThreadGroup extends ThreadGroup
+  {
     public GedPrintThreadGroup()
     {
       super("gedprint"); //$NON-NLS-1$
@@ -74,5 +94,6 @@ public class Startup
       Logger.getLogger(getClass().getName()).log(Level.SEVERE,
           e.getLocalizedMessage(), e);
     }
+
   }
 }
