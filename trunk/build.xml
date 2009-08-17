@@ -1,182 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="modulebuild" default="buildall">
 
-<project name="GEDprint" default="deploy">
-
-  <property name="target" value="1.6"/>
-  <property name="source" value="1.6"/>
-
-  <target name="-init" depends="-iterate-init">
-    <property name="build.dir" value="build"/>
-    <property name="javadoc.dir" value="docs/apidocs"/>
-    <property name="deploy.dir" value="deploy"/>
-    <property name="deploy.path" location="${deploy.dir}"/>
-
-    <property name="main.class" value="net.sourceforge.gedprint.core.Startup"/>
-    <property name="starter.jar" value="${deploy.dir}/GEDprint.jar"/>
-
-    <xmlproperty file="sources.xml" collapseattributes="true"/>
-
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         I N I T
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="-init-module">
+    <available file="module.properties" property="module.exist"/>
+    <fail unless="module.exist">script can be executed in module directory only.
+Missing messages.properties in ${basedir}
+    </fail>
+    <property file="module.properties" />
+    <fail unless="suite.dir" message="no suite.dir is set in module.properties" />
+    <property file="${suite.dir}/suite.properties" />
   </target>
 
-  <target name="clean" depends="-init"
-  	description="cleans all generated files">
+  <target name="-init-suite">
+    <available file="suite.properties" property="suite.exist"/>
+    <fail unless="suite.exist" message="script can be executed in suite directory only"/>
+    <property file="suite.properties" />
+  </target>
+  <target name="-init-buildpath" depends="-init-suite,-init-anttasks">
+    <path id="subprojects">
+      <fileset dir="${basedir}">
+        <include name="*/build.xml"/>
+      </fileset>
+    </path>
+    <sortmodules buildpath="build.path" moduleref="subprojects"
+      suite="${basedir}"/>
+  </target>
+
+  <target name="-init-anttasks">
+    <condition property="build.anttasks.dir.resolved"
+      value="${suite.dir}/${build.anttasks.dir}"
+      else="${build.anttasks.dir}">
+      <isset property="suite.dir"/>
+    </condition>
+    <condition property="src.anttasks.dir.resolved"
+      value="${suite.dir}/${src.anttasks.dir}"
+      else="${src.anttasks.dir}">
+      <isset property="suite.dir"/>
+    </condition>
+    <mkdir dir="${build.anttasks.dir.resolved}"/>
+    <javac srcdir="${src.anttasks.dir.resolved}" debug="true"
+      destdir="${build.anttasks.dir.resolved}"/>
+    <typedef name="sortmodules" classpath="${build.anttasks.dir.resolved}"
+      classname="net.sourceforge.geprint.ant.SortModulesTask" />
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         S U I T E   T A R G E T S
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+  <target name="buildall" depends="-init-suite,-init-anttasks,-init-buildpath"
+    description="Builds all subproject at once">
+    <subant buildpath="${build.path}" genericantfile="${ant.file}"
+      target="compile" inheritall="false"/>
+  </target>
+  <target name="cleanall" depends="-init-suite,-init-anttasks,-init-buildpath"
+    description="cleans all generated files from subprojects">
+    <subant buildpath="${build.path}" genericantfile="${ant.file}"
+      target="clean" inheritall="false"/>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         M O D U L E   T A R G E T S
+       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+  <!-- - -  C L E A N - - -->
+
+  <target name="clean" depends="-init-module,-pre-clean,-do-clean,-post-clean"
+  	description="cleans all generated files"/>
+  <target name="-pre-clean"/>
+  <target name="-post-clean"/>
+  <target name="-do-clean">
     <delete dir="${build.dir}"/>
-    <delete dir="${deploy.dir}"/>
+    <delete dir="${dist.dir}"/>
     <delete dir="${javadoc.dir}"/>
   </target>
 
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-         D E P L O Y
-       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <target name="deploy" depends="-init,pack,javadoc"
-  	description="generates a zip files for deployment on a website">
-    <iterate task="deploy"/>
-    <zip destfile="${deploy.dir}/core.zip" update="true">
-      <zipfileset file="${starter.jar}" prefix="gedprint"/>
-    </zip>
-  </target>
-  <target name="-do-deploy">
-    <zip destfile="${deploy.dir}/${source.deploy}.zip">
-      <zipfileset dir="${deploy.dir}/${source.type}/" includes="${source.deploy}.jar"
-        prefix="gedprint/${source.type}"/>
-      <zipfileset dir="${javadoc.dir}/${source.build}"
-        prefix="gedprint/apidoc/${source.deploy}"/>
-    </zip>
-  </target>
+  <!-- - -  C O M P I L E - - -->
 
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-         J A V A D O C
-       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <target name="javadoc" depends="-init,compile"
-  	description="generates apidocs for all source folders">
-    <iterate task="document"/>
+  <target name="compile" depends="-init-module,-init-compile,-pre-compile,-do-compile,-post-compile"
+    description="Uebersetzt alle notwendigen Klassen" />
+  <target name="-init-compile" depends="-init-module,-init-anttasks">
+    <property name="modules" value=""/>
+    <sortmodules classpath="build.classpath" modules="${modules}"
+      suite="${suite.dir}"/>
   </target>
-  <target name="-javadoc-init">
-    <mkdir dir="${javadoc.dir}/${source.build}"/>
-    <uptodate targetfile="${javadoc.dir}/${source.build}/package-list"
-          property="javadoc.uptodate">
-      <srcfiles dir="${source.location}" />
-    </uptodate>
-  </target>
-  <target name="-do-document" depends="-javadoc-init" unless="javadoc.uptodate">
-    <pathconvert property="source.deps.path">
-      <filelist dir="${build.dir}" files="${source.deps}"/>
-    </pathconvert>
-    <javadoc sourcepath="${source.location}"
-          destdir="${javadoc.dir}/${source.build}"
-          classpath="${source.deps.path}">
-      <tag name="todo" scope="all"
-        description="&lt;span style='background-color:orange;'&gt;Zu Erledigen:&lt;/span&gt;"/>
-    </javadoc>
-  </target>
-
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-         C O M P I L E
-       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <target name="compile" depends="-init"
-  	description="compiles all source files">
-    <iterate task="compile"/>
-  </target>
-  <target name="-do-compile">
-    <!--echo message="deps=${@{prefix}.deps}"/-->
-    <pathconvert property="source.deps.path">
-      <filelist dir="${build.dir}" files="${source.deps}"/>
-      <map from="${build.dir}" to=""/>
-    </pathconvert>
-    <!--echo message="classpath=${@{prefix}.deps.path}"/-->
-    <mkdir dir="${build.dir}/${source.build}"/>
-    <javac srcdir="${source.location}"
-      source="${source}" target="${target}"
-      destdir="${build.dir}/${source.build}"
-      classpath="${source.deps.path}"
-      debug="true" debuglevel="lines,vars,source"/>
-    <copy todir="${build.dir}/${source.build}">
-      <fileset dir="${source.location}" excludes="**/*.java"/>
+  <target name="-pre-compile"/>
+  <target name="-post-compile"/>
+  <target name="-do-compile" depends="-init-compile">
+    <mkdir dir="${build.classes.dir}"/>
+    <fail unless="build.classpath" message="no classpath"/>
+    <javac source="${source}" target="${target}"
+      srcdir="${src.dir}" destdir="${build.classes.dir}"
+      classpath="${build.classpath}" debug="${debug}">
+    </javac>
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}" excludes="**/*.java"/>
     </copy>
   </target>
 
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-         P A C K
-       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <target name="pack" depends="-init,compile"
-  	description="generates jar modules for all compiled sources">
-
-    <iterate task="pack"/>
-
-    <fileset dir="${deploy.dir}/lib" id="runtime.libs" includes="*.jar" />
-    <pathconvert pathsep=" " dirsep="/"
-        property="runtime.class.path" refid="runtime.libs">
-      <map from="${deploy.path}/" to=""/>
-    </pathconvert>
-    <jar destfile="${starter.jar}">
-      <manifest>
-        <attribute name="Main-Class" value="${main.class}"/>
-        <attribute name="Class-Path" value="${runtime.class.path}"/>
-      </manifest>
-    </jar>
-  </target>
-  <target name="-do-pack">
-    <mkdir dir="${deploy.dir}/${source.type}"/>
-    <jar basedir="${build.dir}/${source.build}"
-      destfile="${deploy.dir}/${source.type}/${source.deploy}.jar"/>
-  </target>
-
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-         D E B U G
-       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <target name="-init-debug" depends="-init">
-    <path id="runtime.classpath">
-      <dirset dir="${build.dir}" includes="*"/>
-    </path>
-  </target>
-  <target name="debug" depends="-init,compile,-init-debug">
-    <property name="debug.jvmargs" value=""/>
-    <java dir="${basedir}" fork="true"
-      classpathref="runtime.classpath"
-      classname="${main.class}"
-      >
-      <jvmarg line="${debug.jvmargs}"/>
+  <target name="run" depends="compile">
+    <condition value="--starter ${starter.class}" else=""
+      property="args.starter"><isset property="starter.class"/></condition>
+    <java classpath="${build.classpath};${build.classes.dir}"
+      classname="${main.class}">
+      <arg line="${args.starter}"/>
     </java>
-  </target>
-
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-         I T E R A T I O N
-       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <target name="-iterate-next">
-    <basename property="prefix" file="${basedir}"/>
-    <antcall target="-iterate-task">
-      <param name="basedir" value="${basedir.main}"/>
-      <param name="source.${prefix}.location" value="src/${prefix}"/>
-      <param name="source.${prefix}.build" value="${prefix}"/>
-    </antcall>
-  </target>
-  <target name="-iterate-task" depends="-init">
-    <dotask prefix="source.${prefix}"/>
-  </target>
-  <target name="-iterate-init">
-    <macrodef name="iterate"
-      description="wrapper fuer ein subant ueber den buildpath">
-      <attribute name="task"/>
-      <sequential>
-        <subant target="-iterate-next" genericantfile="build.xml"
-          failonerror="true">
-          <filelist dir="src" files="${source.buildpath}"/>
-          <property name="basedir.main" value="${basedir}"/>
-          <property name="task" value="@{task}"/>
-        </subant>
-      </sequential>
-    </macrodef>
-    <macrodef name="dotask"
-      description="startet einen 'do'-task mit den aktuellen Quellen">
-      <attribute name="prefix" />
-      <sequential>
-        <antcall target="-do-${task}">
-          <param name="source.location" value="${@{prefix}.location}"/>
-          <param name="source.type" value="${@{prefix}.type}"/>
-          <param name="source.deploy" value="${@{prefix}.deploy}"/>
-          <param name="source.deps" value="${@{prefix}.deps}"/>
-          <param name="source.build" value="${@{prefix}.build}"/>
-        </antcall>
-      </sequential>
-    </macrodef>
   </target>
 </project>
