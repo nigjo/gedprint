@@ -1,0 +1,3 @@
+<project name="treeview" basedir=".">
+  <import file="../build.xml"/>
+</project>
