@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="modulebuild" default="buildall">
+<project name="modulebuild" default="compile">
 
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
          I N I T
        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <target name="-init-module">
+  <target name="-init" depends="-init-type,-init-suite,-init-module"/>
+
+  <target name="-init-type">
     <available file="module.properties" property="module.exist"/>
+    <available file="suite.properties" property="suite.exist"/>
+  </target>
+  <target name="-init-module" unless="suite.exist">
     <fail unless="module.exist">script can be executed in module directory only.
 Missing messages.properties in ${basedir}
     </fail>
@@ -14,12 +19,10 @@ Missing messages.properties in ${basedir}
     <property file="${suite.dir}/suite.properties" />
   </target>
 
-  <target name="-init-suite">
-    <available file="suite.properties" property="suite.exist"/>
-    <fail unless="suite.exist" message="script can be executed in suite directory only"/>
+  <target name="-init-suite" if="suite.exist">
     <property file="suite.properties" />
   </target>
-  <target name="-init-buildpath" depends="-init-suite,-init-anttasks">
+  <target name="-init-buildpath" depends="-init,-init-anttasks" if="suite.exist">
     <path id="subprojects">
       <fileset dir="${basedir}">
         <include name="*/build.xml"/>
@@ -29,7 +32,17 @@ Missing messages.properties in ${basedir}
       suite="${basedir}"/>
   </target>
 
-  <target name="-init-anttasks">
+  <target name="-init-anttasks" depends="-resolve-ant-dirs,-do-ant-compile">
+    <typedef name="sortmodules" classpath="${anttasks.jar.resolved}"
+      classname="net.sourceforge.geprint.ant.SortModulesTask" />
+  </target>
+  
+  <target name="-resolve-ant-dirs">
+    <condition property="suite.build.dir"
+      value="${suite.dir}/${build.dir}"
+      else="${build.dir}">
+      <isset property="suite.dir"/>
+    </condition>
     <condition property="build.anttasks.dir.resolved"
       value="${suite.dir}/${build.anttasks.dir}"
       else="${build.anttasks.dir}">
@@ -40,26 +53,42 @@ Missing messages.properties in ${basedir}
       else="${src.anttasks.dir}">
       <isset property="suite.dir"/>
     </condition>
+    <condition property="anttasks.jar.resolved"
+      value="${suite.dir}/${anttasks.jar}"
+      else="${anttasks.jar}">
+      <isset property="suite.dir"/>
+    </condition>
+    <uptodate targetfile="${anttasks.jar.resolved}" property="doanttasks">
+      <srcfiles dir="${src.anttasks.dir.resolved}"/>
+    </uptodate>
+  </target>
+
+  <target name="-do-ant-compile" unless="doanttasks">
     <mkdir dir="${build.anttasks.dir.resolved}"/>
     <javac srcdir="${src.anttasks.dir.resolved}" debug="true"
       destdir="${build.anttasks.dir.resolved}"/>
-    <typedef name="sortmodules" classpath="${build.anttasks.dir.resolved}"
-      classname="net.sourceforge.geprint.ant.SortModulesTask" />
+    <jar basedir="${build.anttasks.dir.resolved}"
+        destfile="${anttasks.jar.resolved}"/>
   </target>
 
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
          S U I T E   T A R G E T S
        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-  <target name="buildall" depends="-init-suite,-init-anttasks,-init-buildpath"
-    description="Builds all subproject at once">
+  <target name="-do-compile-all" depends="-init,-init-anttasks,-init-buildpath"
+    if="suite.exist">
     <subant buildpath="${build.path}" genericantfile="${ant.file}"
       target="compile" inheritall="false"/>
   </target>
-  <target name="cleanall" depends="-init-suite,-init-anttasks,-init-buildpath"
-    description="cleans all generated files from subprojects">
+  <target name="-do-clean-all" depends="-init,-init-anttasks,-init-buildpath"
+    if="suite.exist">
+    <delete dir="${build.dir}"/>
     <subant buildpath="${build.path}" genericantfile="${ant.file}"
       target="clean" inheritall="false"/>
+  </target>
+  <target name="cleantasks" depends="-init-suite">
+    <delete dir="${build.dir}"/>
+    <delete file="${anttasks.jar}"/>
   </target>
 
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -68,11 +97,11 @@ Missing messages.properties in ${basedir}
 
   <!-- - -  C L E A N - - -->
 
-  <target name="clean" depends="-init-module,-pre-clean,-do-clean,-post-clean"
+  <target name="clean" depends="-init,-pre-clean,-do-clean,-do-clean-all,-post-clean"
   	description="cleans all generated files"/>
   <target name="-pre-clean"/>
   <target name="-post-clean"/>
-  <target name="-do-clean">
+  <target name="-do-clean" depends="-init" if="module.exist">
     <delete dir="${build.dir}"/>
     <delete dir="${dist.dir}"/>
     <delete dir="${javadoc.dir}"/>
@@ -80,16 +109,16 @@ Missing messages.properties in ${basedir}
 
   <!-- - -  C O M P I L E - - -->
 
-  <target name="compile" depends="-init-module,-init-compile,-pre-compile,-do-compile,-post-compile"
+  <target name="compile" depends="-init,-init-compile,-pre-compile,-do-compile,-do-compile-all,-post-compile"
     description="Uebersetzt alle notwendigen Klassen" />
-  <target name="-init-compile" depends="-init-module,-init-anttasks">
+  <target name="-init-compile" depends="-init,-init-anttasks" if="module.exist">
     <property name="modules" value=""/>
     <sortmodules classpath="build.classpath" modules="${modules}"
       suite="${suite.dir}"/>
   </target>
   <target name="-pre-compile"/>
   <target name="-post-compile"/>
-  <target name="-do-compile" depends="-init-compile">
+  <target name="-do-compile" depends="-init-compile" if="module.exist">
     <mkdir dir="${build.classes.dir}"/>
     <fail unless="build.classpath" message="no classpath"/>
     <javac source="${source}" target="${target}"
