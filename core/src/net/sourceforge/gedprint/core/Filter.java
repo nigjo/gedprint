@@ -55,6 +55,7 @@ public class Filter
     return null;
   }
 
+  @Override
   public boolean equals(Object obj)
   {
     String rec = getType();
@@ -89,10 +90,10 @@ public class Filter
 
     if (subfilter != null)
     {
-      Enumeration e = subfilter.elements();
+      Enumeration<Filter> e = subfilter.elements();
       while (e.hasMoreElements())
       {
-        ((Filter) e.nextElement()).store(out);
+        e.nextElement().store(out);
       }
     }
   }
@@ -137,10 +138,10 @@ public class Filter
     }
     if (subfilter != null)
     {
-      Enumeration e = subfilter.elements();
+      Enumeration<Filter> e = subfilter.elements();
       while (e.hasMoreElements())
       {
-        ((Filter) e.nextElement()).storeDeny(out, prefix + recType + '/');
+        e.nextElement().storeDeny(out, prefix + recType + '/');
       }
     }
   }
@@ -203,10 +204,10 @@ public class Filter
       parent.learn(current);
       return;
     }
-    Enumeration e = current.elements();
+    Enumeration<Record> e = current.elements();
     while (e != null && e.hasMoreElements())
     {
-      Record sub = (Record) e.nextElement();
+      Record sub = e.nextElement();
       if (accept(sub))
       {
         getSubFilter(sub.getType()).learn(sub);
@@ -240,10 +241,10 @@ public class Filter
     }
     Vector<Record> del=new Vector<Record>();
     
-    Enumeration e = current.elements();
+    Enumeration<Record> e = current.elements();
     while (e != null && e.hasMoreElements())
     {
-      Record sub = (Record) e.nextElement();
+      Record sub = e.nextElement();
       if (accept(sub))
       {
         getSubFilter(sub.getType()).apply(sub);
@@ -266,10 +267,10 @@ public class Filter
   {
     if (subfilter != null)
     {
-      Enumeration e = subfilter.elements();
+      Enumeration<Filter> e = subfilter.elements();
       while (e.hasMoreElements())
       {
-        Filter f = (Filter) e.nextElement();
+        Filter f = e.nextElement();
         if (f.getType().equals(string))
           return f;
       }

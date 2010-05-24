@@ -50,17 +50,17 @@ public class Record implements Cloneable, Comparable<Record>
     setID(id);
   }
 
-  public Enumeration elements()
+  public Enumeration<Record> elements()
   {
     if(entries != null)
       return entries.elements();
-    return new Enumeration() {
+    return new Enumeration<Record>() {
       public boolean hasMoreElements()
       {
         return false;
       }
 
-      public Object nextElement()
+      public Record nextElement()
       {
         throw new NoSuchElementException();
       }
@@ -88,10 +88,10 @@ public class Record implements Cloneable, Comparable<Record>
     }
     else
     {
-      Enumeration e = elements();
+      Enumeration<Record> e = elements();
       while(e.hasMoreElements())
       {
-        Record r = (Record) e.nextElement();
+        Record r = e.nextElement();
         if(r.getType().equals(type))
           return r;
       }
@@ -114,10 +114,10 @@ public class Record implements Cloneable, Comparable<Record>
   public Record[] getSubRecords(String type)
   {
     Vector<Record> found = new Vector<Record>();
-    Enumeration e = elements();
+    Enumeration<Record> e = elements();
     while(e.hasMoreElements())
     {
-      Record r = (Record) e.nextElement();
+      Record r = e.nextElement();
       if(r.getType().equals(type))
         found.add(r);
     }
@@ -131,11 +131,11 @@ public class Record implements Cloneable, Comparable<Record>
 
   public int getSubRecordCount(String string)
   {
-    Enumeration e = elements();
+    Enumeration<Record> e = elements();
     int counter = 0;
     while(e.hasMoreElements())
     {
-      Record r = (Record) e.nextElement();
+      Record r = e.nextElement();
       if(r.getType().equals(string))
         counter++;
     }
@@ -179,10 +179,10 @@ public class Record implements Cloneable, Comparable<Record>
     return rec;
   }
 
-  public void addSubRecords(Enumeration recs)
+  public void addSubRecords(Enumeration<Record> recs)
   {
     while(recs.hasMoreElements())
-      addSubRecord((Record) recs.nextElement());
+      addSubRecord(recs.nextElement());
   }
 
   /**
@@ -304,10 +304,10 @@ public class Record implements Cloneable, Comparable<Record>
   {
     if(entries != null)
     {
-      Enumeration e = entries.elements();
+      Enumeration<Record> e = entries.elements();
       while(e.hasMoreElements())
       {
-        ((Record) e.nextElement()).clear();
+        e.nextElement().clear();
       }
       entries.removeAllElements();
     }
@@ -345,9 +345,9 @@ public class Record implements Cloneable, Comparable<Record>
 
     if(entries != null)
     {
-      Enumeration e = entries.elements();
+      Enumeration<Record> e = entries.elements();
       while(e.hasMoreElements())
-        ((Record) e.nextElement()).print(out);
+        e.nextElement().print(out);
     }
   }
 
