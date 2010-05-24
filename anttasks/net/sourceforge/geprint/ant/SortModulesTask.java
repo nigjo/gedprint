@@ -100,7 +100,8 @@ public class SortModulesTask extends Task
       return;
     suite.initialize();
     File basedir = getProject().getBaseDir();
-
+    
+    @SuppressWarnings("rawtypes")
     Iterator iterator = modulesPaths.iterator();
     while (iterator.hasNext())
     {
