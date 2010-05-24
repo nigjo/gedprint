@@ -97,6 +97,7 @@ class AntProject
 
   private static class AntProperties extends Properties
   {
+    private static final long serialVersionUID = 7378407652479874680L;
 
     @Override
     public synchronized Object put(Object key, Object value)
