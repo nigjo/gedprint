@@ -100,8 +100,8 @@ public class OpenGedcom extends FrameAccessAction
   {
     GedFile gedFile = new GedFile(selected.getAbsolutePath());
     // setProperty(PROPERTY_FILE, gedFile);
-    Collection<? extends GedDocumentFactory> factories = Lookup.lookupAll(
-        GedDocumentFactory.class);
+    Collection<? extends GedDocumentFactory> factories =
+        Lookup.getGlobal().lookupAll(GedDocumentFactory.class);
     GedDocumentFactory factory = null;
     if(factories.size() == 1)
     {
