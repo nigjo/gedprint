@@ -180,6 +180,13 @@ public class MenuGenerator
           if(current == null)
             throwSAXException("missing 'submenu' element"); //$NON-NLS-1$
           BasicAction action = getAction(atts.getValue("action")); //$NON-NLS-1$
+          String name = (String)action.getValue(BasicAction.NAME);
+          if(name == null || name.trim().length() == 0)
+          {
+            // Sicherstellen, dass ein Name angezeigt wird.
+            action.putValue(BasicAction.NAME,
+                '(' + action.getClass().getSimpleName() + ')');
+          }
           current.add(action);
         }
         else if("separator".equals(qName)) //$NON-NLS-1$
@@ -194,7 +201,7 @@ public class MenuGenerator
       catch(IllegalStateException e)
       {
         // es ist etwas beim Erstellen des Menues schief gelaufen
-        throwSAXException((Exception) e.getCause());
+        throwSAXException((Exception)e.getCause());
       }
     }
 
@@ -260,18 +267,15 @@ public class MenuGenerator
     {
       // We don't care about this.
     }
-
   }
 
   private static class MenuEntityResolver implements EntityResolver
   {
-
     public InputSource resolveEntity(String publicId, String systemId)
         throws SAXException, IOException
     {
       return new InputSource(new ByteArrayInputStream(new byte[0]));
     }
-
   }
 
   private static JMenu createSubMenu(String actionName)
@@ -288,5 +292,4 @@ public class MenuGenerator
   {
     return ActionManager.getAction(actionName);
   }
-
 }
