@@ -86,7 +86,7 @@ Missing messages.properties in ${basedir}
     <subant buildpath="${build.path}" genericantfile="${ant.file}"
       target="clean" inheritall="false"/>
   </target>
-  <target name="cleantasks" depends="-init-suite">
+  <target name="cleantasks" depends="-init-type,-init-suite">
     <delete dir="${build.dir}"/>
     <delete file="${anttasks.jar}"/>
   </target>
