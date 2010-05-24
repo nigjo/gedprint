@@ -30,11 +30,12 @@ class ServiceClassLoader extends URLClassLoader
     File appdir = findAppDir(ServiceClassLoader.class);
     if(appdir == null)
       return;
+    findServiceJars(new File(appdir, "lib"));
     findServiceJars(new File(appdir, "services"));
     findServiceJars(new File(System.getProperty("user.dir")));
   }
 
-  private static File findAppDir(Class aClass)
+  private static File findAppDir(Class<?> aClass)
   {
     String simpleName = aClass.getSimpleName();
     URL clazzLocation = aClass.getResource(simpleName + CLASS_EXT);
@@ -55,11 +56,8 @@ class ServiceClassLoader extends URLClassLoader
     return appdir;
   }
 
-  private static File getJarDir(Class aClass, URL clazzLocation)
+  private static File getJarDir(Class<?> aClass, URL clazzLocation)
   {
-    Logger.getLogger(ServiceClassLoader.class.getName()).fine(clazzLocation.
-        toString());
-
     //File file = new File(clazzLocation.toURI());
     String path = clazzLocation.getPath();
     String parentpath = path.substring(0, path.length() - (aClass.getName().
@@ -112,6 +110,8 @@ class ServiceClassLoader extends URLClassLoader
       {
         URL serviceLocator = servicefile.toURI().toURL();
         addURL(serviceLocator);
+        Logger.getLogger(getClass().getName()).config(
+            "added " + servicefile.getName());
       }
       catch(MalformedURLException ex)
       {
@@ -149,6 +149,5 @@ class ServiceClassLoader extends URLClassLoader
       }
 
     }
-
   }
 }

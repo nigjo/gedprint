@@ -1,6 +1,9 @@
 package net.sourceforge.gedprint.core;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
@@ -12,6 +15,7 @@ public class Startup
 {
   private static final String DEFAULT_MAIN =
       "net.sourceforge.gedprint.gui.core.GuiStartup"; //$NON-NLS-1$
+  private static Logger appglobal;
 
   private Startup()
   {
@@ -23,7 +27,33 @@ public class Startup
    */
   public static void main(String[] args)
   {
+    initGlobalLogger();
     StartupRunner.startup(args);
+  }
+
+  private static void initGlobalLogger() throws SecurityException
+  {
+    ConsoleHandler console = new ConsoleHandler();
+    console.setLevel(Level.ALL);
+    console.setFormatter(new Formatter()
+    {
+      @Override
+      public String format(LogRecord record)
+      {
+        StringBuilder builder = new StringBuilder();
+        String source = record.getSourceClassName();
+        builder.append(source.substring(source.lastIndexOf('.') + 1));
+        builder.append(": ");
+        builder.append(record.getMessage());
+        builder.append("\n");
+        return builder.toString();
+      }
+    });
+
+    appglobal = Logger.getLogger("net.sourceforge.gedprint");
+    appglobal.setUseParentHandlers(false);
+    appglobal.addHandler(console);
+    appglobal.setLevel(Level.ALL);
   }
 
   /**
