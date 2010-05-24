@@ -41,7 +41,7 @@ public class PrintFamilyBook extends FrameAccessAction
 
   public void actionPerformed(ActionEvent e)
   {
-    PrintManagerFactory factory = Lookup.lookup(PrintManagerFactory.class);
+    PrintManagerFactory factory = Lookup.getGlobal().lookup(PrintManagerFactory.class);
     
     GedPainter document = DocumentManager.getActiveDocument();
     PrintManager manager = factory.createPrintManager();
