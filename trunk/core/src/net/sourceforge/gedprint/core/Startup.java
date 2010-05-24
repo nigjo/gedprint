@@ -13,8 +13,13 @@ public class Startup
   private static final String DEFAULT_MAIN =
       "net.sourceforge.gedprint.gui.core.GuiStartup"; //$NON-NLS-1$
 
+  private Startup()
+  {
+  }
+
   /**
    * Startet die Initialisierung.
+   * @param args Kommandozeilenargumente
    */
   public static void main(String[] args)
   {
@@ -30,7 +35,6 @@ public class Startup
    */
   private static class StartupRunner implements Runnable
   {
-
     private String starterClassName;
     private String[] args;
 
@@ -44,7 +48,7 @@ public class Startup
     {
       try
       {
-        Class starterClass = Class.forName(starterClassName);
+        Class<?> starterClass = Class.forName(starterClassName);
         Object starterObject = starterClass.newInstance();
         GedPrintStarter starter = (GedPrintStarter)starterObject;
 
@@ -125,6 +129,5 @@ public class Startup
       Logger.getLogger(getClass().getName()).log(Level.SEVERE,
           e.getLocalizedMessage(), e);
     }
-
   }
 }
