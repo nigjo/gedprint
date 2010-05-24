@@ -96,7 +96,7 @@ public class CommandLinePrinter implements GedPrintStarter
         throw new IllegalArgumentException("record_is_no_family"); //$NON-NLS-1$
 
       Family family = (Family) id;
-      PrintManagerFactory factory = Lookup.lookup(PrintManagerFactory.class);
+      PrintManagerFactory factory = Lookup.getGlobal().lookup(PrintManagerFactory.class);
       PrintManager manager = factory.createPrintManager();
 
       manager.setTitleFamily(family);
