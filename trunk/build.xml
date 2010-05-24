@@ -14,12 +14,15 @@
     <fail unless="module.exist">script can be executed in module directory only.
       Missing messages.properties in ${basedir}
     </fail>
+    <property file="module-private.properties" />
     <property file="module.properties" />
     <fail unless="suite.dir" message="no suite.dir is set in module.properties" />
+    <property file="${suite.dir}/suite-private.properties" />
     <property file="${suite.dir}/suite.properties" />
   </target>
 
   <target name="-init-suite" if="suite.exist">
+    <property file="suite-private.properties" />
     <property file="suite.properties" />
   </target>
   <target name="-init-buildpath" depends="-init,-init-anttasks" if="suite.exist">
