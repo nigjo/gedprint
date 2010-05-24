@@ -30,16 +30,13 @@ import net.sourceforge.gedprint.gui.action.BasicAction;
  */
 public class GuiStartup implements GedPrintStarter
 {
-  private static final int CMD_OK = 0;
-  private static final int CMD_FILE = 1;
-  private static final int CMD_INDI = 2;
-  private static final int CMD_FAM = 3;
+  //<editor-fold defaultstate="collapsed" desc="implementation details">
   // File infile;
   private static final String ARG_FILENAME = "filename"; //$NON-NLS-1$
   private static final String ARG_INDIVIDUAL = "individual"; //$NON-NLS-1$
   private static final String ARG_FAMILY = "family"; //$NON-NLS-1$
   Properties arguments;
-  
+
   static
   {
     // Protokollierung initialisieren
@@ -62,10 +59,6 @@ public class GuiStartup implements GedPrintStarter
       // dann halt nicht.
     }
     Properties defaults = new Properties();
-    // defaults.setProperty(ARG_FILENAME, "");
-    // defaults.setProperty(ARG_INDIVIDUAL, "");
-    // defaults.setProperty(ARG_FAMILY, "");
-
     arguments = new Properties(defaults);
   }
 
@@ -78,8 +71,8 @@ public class GuiStartup implements GedPrintStarter
     Logger.getLogger(getClass().getName()).finer(sw.toString());
     // DEBUG end
 
-    Collection<? extends GedDocumentFactory> factories = Lookup
-        .lookupAll(GedDocumentFactory.class);
+    Collection<? extends GedDocumentFactory> factories =
+        Lookup.getGlobal().lookupAll(GedDocumentFactory.class);
     if(factories.size() == 0)
     {
       String msg = Messages.getString("err.no_painter"); //$NON-NLS-1$
@@ -154,57 +147,111 @@ public class GuiStartup implements GedPrintStarter
   {
     String title = Messages.getString(GedFrame.class, "frame.title"); //$NON-NLS-1$
     String message = MessageFormat.format(pattern, new Object[]
-    { arg
-    });
+        {
+          arg
+        });
     JOptionPane.showMessageDialog(null, message, title,
         JOptionPane.ERROR_MESSAGE);
+  }
+  //</editor-fold>
+
+  enum CommandlineArgument
+  {
+    indi('i'), family('f'), debug;
+    //<editor-fold defaultstate="collapsed" desc="implementation details">
+    private Character shortSymbol;
+
+    private CommandlineArgument()
+    {
+      this(null);
+    }
+
+    private CommandlineArgument(Character shortSymbol)
+    {
+      this.shortSymbol = shortSymbol;
+    }
+
+    public Character getShortOption()
+    {
+      return shortSymbol;
+    }
+    //</editor-fold>
   }
 
   public boolean parseCommandline(String[] args)
   {
-    int status = CMD_OK;
+    //<editor-fold defaultstate="collapsed" desc="implementation details">
+    CommandlineArgument lastOption = null;
     for(String arg : args)
     {
-      if(arg == null || arg.length() == 0)
-        continue;
       if(arg.charAt(0) == '-')
       {
-        if(status != CMD_OK)
+        if(lastOption != null)
         {
           illegalArg(Messages.getString("err.missingargument"), arg); //$NON-NLS-1$
           return false;
         }
-        else if(arg.length() == 1)
+        CommandlineArgument option = null;
+        if(arg.charAt(1) == '-')
         {
-          illegalArg(Messages.getString("err.invalidarg"), arg); //$NON-NLS-1$
-          return false;
+          try
+          {
+            // Langversion
+            option = CommandlineArgument.valueOf(arg.substring(2));
+          }
+          catch(IllegalArgumentException e)
+          {
+            illegalArg(Messages.getString("err.invalidarg"), arg); //$NON-NLS-1$
+            return false;
+          }
+        }
+        else
+        {
+          // Kurzversion
+          char optionChar = arg.charAt(1);
+          for(CommandlineArgument commandlineArg :
+              CommandlineArgument.values())
+          {
+            Character shortOption =
+                commandlineArg.getShortOption();
+            if(shortOption != null
+                && shortOption == optionChar)
+            {
+              option = commandlineArg;
+              break;
+            }
+          }
+          if(option == null)
+          {
+            illegalArg(Messages.getString("err.unknownoption"), arg); //$NON-NLS-1$
+            return false;
+          }
         }
 
-        switch(arg.charAt(1))
+        lastOption = null;
+        switch(option)
         {
-        case 'i':
-          status = CMD_INDI;
-          break;
-        case 'f':
-          status = CMD_FAM;
-          break;
-        default:
-          illegalArg(Messages.getString("err.unknownoption"), arg); //$NON-NLS-1$
-          return false;
+          //</editor-fold>
+          //
+          // OPTIONS
+          //
+          case debug:
+            arguments.setProperty("debug", Boolean.TRUE.toString());
+            break;
+          //<editor-fold defaultstate="collapsed" desc="implementation details">
+          default:
+            lastOption = option;
+            break;
         }
       }
       else
       {
-        switch(status)
+        if(lastOption == null)
         {
-        case CMD_INDI:
-          arguments.setProperty(ARG_INDIVIDUAL, arg);
-          break;
-        case CMD_FAM:
-          arguments.setProperty(ARG_FAMILY, arg);
-          break;
-        case CMD_FILE:
-        default:
+          //</editor-fold>
+          //
+          // Parameter ohne Option.
+          //
           String infile = arguments.getProperty(ARG_FILENAME);
           if(infile != null && infile.length() > 0)
           {
@@ -212,13 +259,33 @@ public class GuiStartup implements GedPrintStarter
             return false;
           }
           arguments.setProperty(ARG_FILENAME, arg);
+          //<editor-fold defaultstate="collapsed" desc="implementation details">
           break;
         }
-        status = CMD_OK;
+        switch(lastOption)
+        {
+          //</editor-fold>
+          //
+          // PARAMETERS
+          //
+          case indi:
+            arguments.setProperty(ARG_INDIVIDUAL, arg);
+            break;
+          case family:
+            arguments.setProperty(ARG_FAMILY, arg);
+            break;
+          //<editor-fold defaultstate="collapsed" desc="implementation details">
+        }
+        lastOption = null;
       }
+    }
+    if(lastOption != null)
+    {
+      illegalArg(Messages.getString("err.missingargument"), args[args.length - 1]); //$NON-NLS-1$
+      return false;
     }
 
     return true;
+    //</editor-fold>
   }
-
 }
