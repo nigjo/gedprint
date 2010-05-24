@@ -8,12 +8,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
 import net.sourceforge.gedprint.gui.GedPrintGui;
 
 /**
@@ -25,6 +25,11 @@ import net.sourceforge.gedprint.gui.GedPrintGui;
  */
 public class GuiLogger
 {
+
+  private GuiLogger()
+  {
+  }
+
   public static void initLogger()
   {
     String packName = GedPrintGui.class.getPackage().getName();
@@ -74,10 +79,10 @@ public class GuiLogger
       }
 
     };
-    ConsoleHandler chandler = new ConsoleHandler();
-    chandler.setLevel(Level.ALL);
-    chandler.setFormatter(formatter);
-    logger.addHandler(chandler);
+//    ConsoleHandler chandler = new ConsoleHandler();
+//    chandler.setLevel(Level.ALL);
+//    chandler.setFormatter(formatter);
+//    logger.addHandler(chandler);
 
     // Protokollausgabe auch in Datei
     try

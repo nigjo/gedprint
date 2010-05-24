@@ -73,7 +73,7 @@ public class GuiStartup implements GedPrintStarter
 
     Collection<? extends GedDocumentFactory> factories =
         Lookup.getGlobal().lookupAll(GedDocumentFactory.class);
-    if(factories.size() == 0)
+    if(factories == null || factories.size() == 0)
     {
       String msg = Messages.getString("err.no_painter"); //$NON-NLS-1$
       Logger.getLogger(getClass().getName()).warning(msg);
