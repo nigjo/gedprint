@@ -7,14 +7,14 @@ import java.util.NoSuchElementException;
  * 
  * @author nigjo
  */
-public class EmptyEnumeration implements Enumeration
+public class EmptyEnumeration<E> implements Enumeration<E>
 {
   public boolean hasMoreElements()
   {
     return false;
   }
 
-  public Object nextElement()
+  public E nextElement()
   {
     throw new NoSuchElementException("empty enumeration"); //$NON-NLS-1$
   }

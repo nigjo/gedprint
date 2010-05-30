@@ -127,6 +127,7 @@ public class Individual extends Record
    *  Die Gleichheit wird nur anhand einer UID geprueft. Ist bei einem der
    *  Personen keine UID vorhanden gelten sie nicht als gleich.
    */
+  @Override
   public boolean equals(Object obj)
   {
     if(super.equals(obj))

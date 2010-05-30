@@ -7,13 +7,13 @@ import java.util.NoSuchElementException;
  * 
  * @author nigjo
  */
-public abstract class AbstractEnumeration implements Enumeration
+public abstract class AbstractEnumeration<E> implements Enumeration<E>
 {
   protected static final int START = -1;
   protected static final int STOP = -2;
   protected static final int RUNNING = 0;
   
-  protected Object nextElement;
+  protected E nextElement;
   protected int index = START;
 
   public boolean hasMoreElements()
@@ -25,14 +25,14 @@ public abstract class AbstractEnumeration implements Enumeration
     return nextElement != null;
   }
 
-  public Object nextElement()
+  public E nextElement()
   {
     if (index == START)
       findNextElement();
     if (index == STOP)
       throw new NoSuchElementException();
 
-    Object rc = nextElement;
+    E rc = nextElement;
     findNextElement();
     return rc;
   }
