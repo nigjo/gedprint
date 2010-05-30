@@ -54,12 +54,12 @@ public class Family extends Record
   /**
    * liefert die Records der Kinder.
    */
-  public Enumeration getChildren()
+  public Enumeration<Record> getChildren()
   {
     final Record[] children = getSubRecords(Tag.CHILDREN);
     if(children.length > 0)
     {
-      return new AbstractEnumeration() {
+      return new AbstractEnumeration<Record>() {
         protected void findNextElement()
         {
           if(index == START)
@@ -75,7 +75,7 @@ public class Family extends Record
       };
     }
     else
-      return new EmptyEnumeration();
+      return new EmptyEnumeration<Record>();
   }
 
   /**
@@ -91,14 +91,13 @@ public class Family extends Record
     return getChildFamilies(false);
   }
 
-  @SuppressWarnings("unchecked")
   public Vector<Family> getChildFamilies(boolean deepSearch)
   {
     Vector<Family> harvester = new Vector<Family>();
-    Enumeration children = getChildren();
+    Enumeration<Record> children = getChildren();
     while(children.hasMoreElements())
     {
-      Record child = (Record) children.nextElement();
+      Record child = children.nextElement();
       Record[] spouseFamilies = child.getSubRecords(Tag.FAM_SPOUSE);
       for(int i = 0; i < spouseFamilies.length; i++)
       {
@@ -108,13 +107,17 @@ public class Family extends Record
 
     if(deepSearch)
     {
-      Vector<Family> parents = (Vector<Family>) harvester.clone();
+      Object clone = harvester.clone();
+      @SuppressWarnings("unchecked")
+      Vector<Family> parents = (Vector<Family>) clone;
       for(Family family : parents)
       {
         Vector<Family> childFamilies = family.getChildFamilies(true);
 
         // doppelte Elemente suchen und entfernen
-        Vector<Family> doubles = (Vector<Family>) childFamilies.clone();
+        Object childClone = childFamilies.clone();
+        @SuppressWarnings("unchecked")
+        Vector<Family> doubles = (Vector<Family>) clone;
         doubles.retainAll(harvester);
         childFamilies.removeAll(doubles);
 

@@ -14,12 +14,12 @@ public class GedFileMerger
   //private GedFile master;
   private GedFile result;
 
-  LinkedList check;
+  //LinkedList check;
   LinkedList<Individual> unchecked;
 
   private GedFileMerger()
   {
-    check = new LinkedList();
+    //check = new LinkedList();
     unchecked = new LinkedList<Individual>();
   }
 
@@ -32,10 +32,10 @@ public class GedFileMerger
     
     GedFile kopie = renum.getFile();
     
-    Enumeration recs = kopie.records.elements();
+    Enumeration<Record> recs = kopie.records.elements();
     while(recs.hasMoreElements())
     {
-      Record rec = (Record) recs.nextElement();
+      Record rec = recs.nextElement();
       if(!"HEAD".equals(rec.getType()) && //$NON-NLS-1$
           !"TRLR".equals(rec.getType())) //$NON-NLS-1$
       {
