@@ -1,11 +1,10 @@
 package net.sourceforge.gedprint.gui.action;
 
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
 
 import javax.swing.KeyStroke;
 
-import net.sourceforge.gedprint.core.Lookup;
+import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Record;
@@ -25,19 +24,19 @@ public class PrintFamilyBook extends FrameAccessAction
     setEnabled(false);
   }
 
-  @Override
-  public void propertyChange(PropertyChangeEvent evt)
-  {
-    String name = evt.getPropertyName();
-    if(name.equals(PROPERTY_FILE))
-    {
-      setEnabled(evt.getNewValue() != null);
-    }
-    else
-    {
-      super.propertyChange(evt);
-    }
-  }
+//  @Override
+//  public void propertyChange(PropertyChangeEvent evt)
+//  {
+//    String name = evt.getPropertyName();
+//    if(name.equals(PROPERTY_FILE))
+//    {
+//      setEnabled(evt.getNewValue() != null);
+//    }
+//    else
+//    {
+//      super.propertyChange(evt);
+//    }
+//  }
 
   public void actionPerformed(ActionEvent e)
   {

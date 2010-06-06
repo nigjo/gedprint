@@ -17,7 +17,7 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 import net.sourceforge.gedprint.core.ExceptionEcho;
-import net.sourceforge.gedprint.core.Lookup;
+import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.core.DocumentManager;
@@ -40,58 +40,82 @@ public class OpenGedcom extends FrameAccessAction
 
   public void actionPerformed(ActionEvent ae)
   {
-    JFileChooser chooser = new JFileChooser(lastdir);
-    FileFilter gedfilter = new GedFileFilter();
-    chooser.addChoosableFileFilter(gedfilter);
+    File selected = null;
 
-    chooser.setAcceptAllFileFilterUsed(true);
-    chooser.setFileFilter(gedfilter);
+    Object data = getValue(ACTION_DATA);
+    if(data instanceof GedFile)
+    {
+      GedPainter doc = createDocument((GedFile)data);
+      if(doc != null)
+        DocumentManager.addDocument(doc);
+      return;
+    }
 
     Object source = ae.getSource();
-    Component owner = (Component)source;
-    int erg = chooser.showOpenDialog(owner);
-    if(erg == JFileChooser.APPROVE_OPTION)
+    Component owner;
+    if(!(source instanceof Component))
+      owner = getFrame(source);
+    else
+      owner = (Component)source;
+
+    if(data instanceof File)
     {
-      File selected = chooser.getSelectedFile();
-      if(chooser.getFileFilter() == gedfilter)
+      selected = (File)data;
+    }
+    else
+    {
+      JFileChooser chooser = new JFileChooser(lastdir);
+      FileFilter gedfilter = new GedFileFilter();
+      chooser.addChoosableFileFilter(gedfilter);
+
+      chooser.setAcceptAllFileFilterUsed(true);
+      chooser.setFileFilter(gedfilter);
+
+      int erg = chooser.showOpenDialog(owner);
+      lastdir = chooser.getCurrentDirectory();
+      if(erg == JFileChooser.APPROVE_OPTION)
       {
-        // pruefen, ob der Dateiname die korrekte Dateiendung hat.
-        String name = selected.getName();
-        if(!name.toLowerCase().endsWith(EXT))
+        selected = chooser.getSelectedFile();
+        if(chooser.getFileFilter() == gedfilter)
         {
-          selected = new File(selected.getParentFile(), name + EXT);
+          // pruefen, ob der Dateiname die korrekte Dateiendung hat.
+          String name = selected.getName();
+          if(!name.toLowerCase().endsWith(EXT))
+          {
+            selected = new File(selected.getParentFile(), name + EXT);
+          }
         }
       }
-
-      try
-      {
-        GedPainter doc = createDocument(selected);
-        if(doc != null)
-          DocumentManager.addDocument(doc);
-      }
-      catch(FileNotFoundException fnfe)
-      {
-        String msg = Messages.getString("action.err.file_not_found"); //$NON-NLS-1$
-        JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
-            JOptionPane.WARNING_MESSAGE);
+      else
         return;
-      }
-      catch(IOException ioe)
-      {
-        String msg = Messages.getString("action.err.io-error.read"); //$NON-NLS-1$
-        JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
-            JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-      catch(Exception unexpected)
-      {
-        String pattern = Messages.getString("OpenGedcom.err.unexpected"); //$NON-NLS-1$
-        ExceptionEcho.show(unexpected, pattern, 3);
-      }
-      finally
-      {
-        lastdir = chooser.getCurrentDirectory();
-      }
+    }
+    try
+    {
+      GedPainter doc = createDocument(selected);
+      if(doc != null)
+        DocumentManager.addDocument(doc);
+    }
+    catch(FileNotFoundException fnfe)
+    {
+      String msg = Messages.getString("action.err.file_not_found"); //$NON-NLS-1$
+      JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
+          JOptionPane.WARNING_MESSAGE);
+      return;
+    }
+    catch(IOException ioe)
+    {
+      String msg = Messages.getString("action.err.io-error.read"); //$NON-NLS-1$
+      JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
+          JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    catch(Exception unexpected)
+    {
+      String pattern = Messages.getString("OpenGedcom.err.unexpected"); //$NON-NLS-1$
+      ExceptionEcho.show(unexpected, pattern, 3);
+    }
+    finally
+    {
     }
   }
 
@@ -100,6 +124,11 @@ public class OpenGedcom extends FrameAccessAction
   {
     GedFile gedFile = new GedFile(selected.getAbsolutePath());
     // setProperty(PROPERTY_FILE, gedFile);
+    return createDocument(gedFile);
+  }
+
+  private GedPainter createDocument(GedFile gedFile)
+  {
     Collection<? extends GedDocumentFactory> factories =
         Lookup.getGlobal().lookupAll(GedDocumentFactory.class);
     GedDocumentFactory factory = null;
@@ -134,6 +163,7 @@ public class OpenGedcom extends FrameAccessAction
       }
     }
     GedPainter doc = factory.createDocument();
+
     doc.setGedFile(gedFile);
     return doc;
   }
@@ -156,6 +186,5 @@ public class OpenGedcom extends FrameAccessAction
       String name = f.getName();
       return name.toLowerCase().endsWith(EXT);
     }
-
   }
 }

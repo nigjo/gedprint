@@ -19,7 +19,7 @@ import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.GedPrintGui;
-import net.sourceforge.gedprint.gui.action.BasicAction;
+import net.sourceforge.gedprint.gui.action.OpenGedcom;
 
 /**
  * Neue Klasse erstellt von hof. Erstellt am Jun 25, 2009, 1:51:32 PM
@@ -110,7 +110,8 @@ public class GuiStartup implements GedPrintStarter
       try
       {
         GedFile gedfile = new GedFile(file);
-        ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, gedfile);
+        //ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, gedfile);
+        ActionManager.performAction(OpenGedcom.class, gedfile);
       }
       catch(FileNotFoundException ex)
       {
@@ -128,8 +129,9 @@ public class GuiStartup implements GedPrintStarter
       if(startid == null)
         startid = arguments.getProperty(ARG_FAMILY);
 
-      // TODO: frame.setStartID('@' + startid + '@');
-      ActionManager.performAction("AddRecordAction", '@' + startid + '@'); //$NON-NLS-1$
+      if(startid != null)
+        // TODO: frame.setStartID('@' + startid + '@');
+        ActionManager.performAction("AddRecordAction", '@' + startid + '@'); //$NON-NLS-1$
     }
   }
 
@@ -184,6 +186,9 @@ public class GuiStartup implements GedPrintStarter
     CommandlineArgument lastOption = null;
     for(String arg : args)
     {
+      if(arg == null)
+        continue;
+      Logger.getLogger(getClass().getName()).fine("> " + arg);
       if(arg.charAt(0) == '-')
       {
         if(lastOption != null)

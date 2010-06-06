@@ -1,11 +1,9 @@
 package net.sourceforge.gedprint.gui.core;
 
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.logging.Logger;
+import net.sourceforge.gedprint.core.lookup.Lookup;
 
 import net.sourceforge.gedprint.gui.action.BasicAction;
 
@@ -18,17 +16,24 @@ public class ActionManager
   }
 
   private static ActionManager globalManager;
+  private Lookup actionLookup;
+
+  public static synchronized Lookup getLookup()
+  {
+    return getManager().actionLookup;
+  }
 
   Hashtable<String, BasicAction> cache;
-  PropertyChangeSupport pcSupport;
+//  PropertyChangeSupport pcSupport;
 
-  private final Object propMutex = new Object();
-  private HashMap<String, Object> properties;
+//  private final Object propMutex = new Object();
+//  private HashMap<String, Object> properties;
 
   private ActionManager()
   {
     checkValidCreation();
-    pcSupport = new PropertyChangeSupport(this);
+    actionLookup = new Lookup();
+//    pcSupport = new PropertyChangeSupport(this);
   }
 
   private void checkValidCreation()
@@ -70,7 +75,7 @@ public class ActionManager
 
     try
     {
-      Class actionClass = Class.forName(ACTION_PACKAGE + '.' + actionName);
+      Class<?> actionClass = Class.forName(ACTION_PACKAGE + '.' + actionName);
       action = (BasicAction) actionClass.newInstance();
     }
     catch(ClassNotFoundException e)
@@ -83,82 +88,8 @@ public class ActionManager
     }
 
     cache.put(actionName, action);
-    Object value = action.getValue("listened_properties"); //$NON-NLS-1$
-    if(value != null && value instanceof String)
-    {
-      String[] properties = ((String) value).split(","); //$NON-NLS-1$
-      for(String property : properties)
-      {
-        addPropertyChangeListener(property, action);
-      }
-    }
 
     return action;
-  }
-
-  public static Object getActionProperty(String property)
-  {
-    ActionManager manager = getManager();
-    return manager.getProperty(property);
-  }
-
-  public static void setActionProperty(String property, Object newValue)
-  {
-    ActionManager manager = getManager();
-    manager.firePropertyChange(property, newValue);
-  }
-
-  public Object getProperty(String key)
-  {
-    synchronized(propMutex)
-    {
-      if(properties == null)
-        return null;
-      return properties.get(key);
-    }
-  }
-
-  public Object setProperty(String key, Object value)
-  {
-    synchronized(propMutex)
-    {
-      if(properties == null)
-        properties = new HashMap<String, Object>();
-      return properties.put(key, value);
-    }
-  }
-
-  private void firePropertyChange(String property, Object newValue)
-  {
-    Object oldValue = setProperty(property, newValue);
-    pcSupport.firePropertyChange(property, oldValue, newValue);
-  }
-
-  public static void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    ActionManager manager = getManager();
-    manager.pcSupport.addPropertyChangeListener(listener);
-  }
-
-  public static void removePropertyChangeListener(
-      PropertyChangeListener listener)
-  {
-    ActionManager manager = getManager();
-    manager.pcSupport.removePropertyChangeListener(listener);
-  }
-
-  public static void addPropertyChangeListener(String property,
-      PropertyChangeListener listener)
-  {
-    ActionManager manager = getManager();
-    manager.pcSupport.addPropertyChangeListener(property, listener);
-  }
-
-  public static void removePropertyChangeListener(String property,
-      PropertyChangeListener listener)
-  {
-    ActionManager manager = getManager();
-    manager.pcSupport.removePropertyChangeListener(property, listener);
   }
 
   /**
@@ -167,8 +98,6 @@ public class ActionManager
    * @param actionClass
    * @param data
    */
-
-
   public static void performAction(Class<? extends BasicAction> actionClass,
       Object data)
   {
