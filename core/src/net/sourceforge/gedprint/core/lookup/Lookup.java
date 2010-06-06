@@ -1,4 +1,4 @@
-package net.sourceforge.gedprint.core;
+package net.sourceforge.gedprint.core.lookup;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,9 +14,11 @@ public class Lookup
 {
   private static Lookup global;
   private List<Object> storage;
+  private final LookupChangeSupport changeSupport;
 
   public Lookup()
   {
+    changeSupport = new LookupChangeSupport(this);
   }
 
   /**
@@ -40,8 +42,11 @@ public class Lookup
       storage = new ArrayList<Object>();
     if(!storage.contains(o))
     {
-      return storage.add(o);
-      // change event
+      boolean added = storage.add(o);
+      if(added)
+        // change event
+        changeSupport.fireElementAddedEvent(o);
+      return added;
     }
     return false;
   }
@@ -52,10 +57,33 @@ public class Lookup
       return false;
     if(storage.contains(o))
     {
-      return storage.remove(o);
+      boolean removed = storage.remove(o);
+      if(removed)
+        changeSupport.fireElementRemovedEvent(o);
+      return removed;
       // change event
     }
     return false;
+  }
+
+  public boolean removeLookupListener(Class<?> lookupClass, LookupListener l)
+  {
+    return changeSupport.removeLookupListener(lookupClass, l);
+  }
+
+  public boolean removeLookupListener(LookupListener l)
+  {
+    return changeSupport.removeLookupListener(l);
+  }
+
+  public void addLookupListener(Class<?> lookupClass, LookupListener l)
+  {
+    changeSupport.addLookupListener(lookupClass, l);
+  }
+
+  public void addLookupListener(LookupListener l)
+  {
+    changeSupport.addLookupListener(l);
   }
 
   public <T> T lookup(Class<T> clazz)

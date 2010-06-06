@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 
 import net.sourceforge.gedprint.core.ExceptionEcho;
 import net.sourceforge.gedprint.core.GedPrintStarter;
-import net.sourceforge.gedprint.core.Lookup;
+import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.core.Messages;
 import net.sourceforge.gedprint.core.MissingArgumentException;
 import net.sourceforge.gedprint.gedcom.Family;
@@ -18,6 +18,8 @@ import net.sourceforge.gedprint.gedcom.Record;
  * Hilfsklasse um ein Familienbuch direkt von der Kommandozeile aus zu drucken.
  * 
  * @author nigjo
+ * @see PrintManager
+ * @see PrintManagerFactory
  */
 public class CommandLinePrinter implements GedPrintStarter
 {

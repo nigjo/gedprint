@@ -1,5 +1,8 @@
 package net.sourceforge.gedprint.core;
 
+import net.sourceforge.gedprint.core.lookup.Lookup;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -35,25 +38,16 @@ public class Startup
   {
     ConsoleHandler console = new ConsoleHandler();
     console.setLevel(Level.ALL);
-    console.setFormatter(new Formatter()
-    {
-      @Override
-      public String format(LogRecord record)
-      {
-        StringBuilder builder = new StringBuilder();
-        String source = record.getSourceClassName();
-        builder.append(source.substring(source.lastIndexOf('.') + 1));
-        builder.append(": ");
-        builder.append(record.getMessage());
-        builder.append("\n");
-        return builder.toString();
-      }
-    });
+    AppLogHelper logHelper = new AppLogHelper();
+    console.setFormatter(logHelper);
+    console.setFilter(logHelper);
 
     appglobal = Logger.getLogger("net.sourceforge.gedprint");
     appglobal.setUseParentHandlers(false);
     appglobal.addHandler(console);
     appglobal.setLevel(Level.ALL);
+
+    Lookup.getGlobal().put(appglobal);
   }
 
   /**
@@ -158,6 +152,52 @@ public class Startup
 
       Logger.getLogger(getClass().getName()).log(Level.SEVERE,
           e.getLocalizedMessage(), e);
+    }
+  }
+
+  private static class AppLogHelper extends Formatter
+      implements java.util.logging.Filter
+  {
+    public AppLogHelper()
+    {
+    }
+
+    public boolean isLoggable(LogRecord record)
+    {
+      if(record.getLoggerName().startsWith("java"))
+        return false;
+      if(record.getLoggerName().startsWith("sun.awt"))
+        return false;
+      return true;
+    }
+
+    @Override
+    public String format(LogRecord record)
+    {
+      StringBuilder builder = new StringBuilder();
+      String source = record.getSourceClassName();
+      builder.append(source.substring(source.lastIndexOf('.') + 1));
+      builder.append(": ");
+      builder.append(getMessage(record));
+      builder.append("\n");
+      return builder.toString();
+    }
+
+    private String getMessage(LogRecord record)
+    {
+      String message = record.getMessage();
+
+      ResourceBundle resourceBundle = record.getResourceBundle();
+      if(record.getResourceBundleName() != null)
+        resourceBundle = ResourceBundle.getBundle(record.getResourceBundleName());
+      if(resourceBundle != null)
+        message = resourceBundle.getString(message);
+
+      Object[] params = record.getParameters();
+      if(params != null)
+        message = MessageFormat.format(message, params);
+
+      return message;
     }
   }
 }
