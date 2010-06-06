@@ -165,6 +165,7 @@
     <fail unless="build.classpath" message="no classpath"/>
     <javac source="${source}" target="${target}"
            srcdir="${src.dir}" destdir="${build.classes.dir}"
+           deprecation="true"
            classpath="${build.classpath}" debug="${debug}">
     </javac>
     <copy todir="${build.classes.dir}">
