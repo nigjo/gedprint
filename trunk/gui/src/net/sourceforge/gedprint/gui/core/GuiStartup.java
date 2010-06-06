@@ -15,8 +15,8 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import net.sourceforge.gedprint.core.GedPrintStarter;
-import net.sourceforge.gedprint.core.Lookup;
 import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.GedPrintGui;
 import net.sourceforge.gedprint.gui.action.BasicAction;
