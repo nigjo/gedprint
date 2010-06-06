@@ -17,7 +17,7 @@ public class AddRecordAction extends BasicAction
       return;
     Logger.getLogger(getClass().getName()).fine(data.toString());
 
-    GedFile file = (GedFile) getProperty(PROPERTY_FILE);
+    GedFile file = lookup(GedFile.class);
     if(file == null)
       return;
     if(data instanceof String)

@@ -35,8 +35,6 @@ public abstract class FrameAccessAction extends BasicAction
 
   protected GedFrame getFrame(Object source)
   {
-    if(source instanceof GedFrame)
-      return (GedFrame) source;
     if(source instanceof ActionEvent)
       source = ((ActionEvent) source).getSource();
     if(source instanceof JMenuItem)
@@ -49,6 +47,8 @@ public abstract class FrameAccessAction extends BasicAction
           source = ((JPopupMenu) source).getInvoker();
       }
     }
+    if(source instanceof GedFrame)
+      return (GedFrame) source;
     if(source instanceof JComponent)
     {
       JRootPane rootPane = ((JComponent) source).getRootPane();
