@@ -69,7 +69,8 @@
   <target name="-do-ant-compile" unless="doanttasks">
     <mkdir dir="${build.anttasks.dir.resolved}"/>
     <javac srcdir="${src.anttasks.dir.resolved}" debug="true"
-           destdir="${build.anttasks.dir.resolved}"/>
+           destdir="${build.anttasks.dir.resolved}"
+           includeantruntime="false"/>
     <jar basedir="${build.anttasks.dir.resolved}"
          destfile="${anttasks.jar.resolved}"/>
   </target>
@@ -165,7 +166,7 @@
     <fail unless="build.classpath" message="no classpath"/>
     <javac source="${source}" target="${target}"
            srcdir="${src.dir}" destdir="${build.classes.dir}"
-           deprecation="true"
+           deprecation="true" includeantruntime="false"
            classpath="${build.classpath}" debug="${debug}">
     </javac>
     <copy todir="${build.classes.dir}">
