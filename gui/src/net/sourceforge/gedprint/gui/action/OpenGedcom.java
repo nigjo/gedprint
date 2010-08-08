@@ -42,10 +42,11 @@ public class OpenGedcom extends FrameAccessAction
   {
     File selected = null;
 
-    Object data = getValue(ACTION_DATA);
+    Object data = getLookup().getProperty("openfile");
     if(data instanceof GedFile)
     {
-      GedPainter doc = createDocument((GedFile)data);
+      Lookup l = Lookup.create(data);
+      GedPainter doc = createDocument(l);
       if(doc != null)
         DocumentManager.addDocument(doc);
       return;
@@ -124,10 +125,24 @@ public class OpenGedcom extends FrameAccessAction
   {
     GedFile gedFile = new GedFile(selected.getAbsolutePath());
     // setProperty(PROPERTY_FILE, gedFile);
-    return createDocument(gedFile);
+    return createDocument(Lookup.create(gedFile));
   }
 
-  private GedPainter createDocument(GedFile gedFile)
+  private GedPainter createDocument(Lookup lookup)
+  {
+    GedFile gedFile = lookup.lookup(GedFile.class);
+
+    GedDocumentFactory factory;
+    factory = lookup.lookup(GedDocumentFactory.class);
+    if(factory == null)
+      factory = queryFactory();
+    GedPainter doc = factory.createDocument();
+
+    doc.setGedFile(gedFile);
+    return doc;
+  }
+
+  private GedDocumentFactory queryFactory()
   {
     Collection<? extends GedDocumentFactory> factories =
         Lookup.getGlobal().lookupAll(GedDocumentFactory.class);
@@ -162,10 +177,7 @@ public class OpenGedcom extends FrameAccessAction
         }
       }
     }
-    GedPainter doc = factory.createDocument();
-
-    doc.setGedFile(gedFile);
-    return doc;
+    return factory;
   }
 
   private static class GedFileFilter extends FileFilter

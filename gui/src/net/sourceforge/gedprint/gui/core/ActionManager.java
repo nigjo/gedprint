@@ -1,7 +1,8 @@
 package net.sourceforge.gedprint.gui.core;
 
 import java.awt.event.ActionEvent;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import net.sourceforge.gedprint.core.lookup.Lookup;
 
@@ -18,12 +19,12 @@ public class ActionManager
   private static ActionManager globalManager;
   private Lookup actionLookup;
 
-  public static synchronized Lookup getLookup()
+  private static synchronized Lookup getLookup()
   {
     return getManager().actionLookup;
   }
 
-  Hashtable<String, BasicAction> cache;
+  Map<String, BasicAction> cache;
 //  PropertyChangeSupport pcSupport;
 
 //  private final Object propMutex = new Object();
@@ -32,7 +33,7 @@ public class ActionManager
   private ActionManager()
   {
     checkValidCreation();
-    actionLookup = new Lookup();
+    actionLookup = Lookup.create(this);
 //    pcSupport = new PropertyChangeSupport(this);
   }
 
@@ -67,7 +68,7 @@ public class ActionManager
     BasicAction action;
 
     if(cache == null)
-      cache = new Hashtable<String, BasicAction>();
+      cache = new HashMap<String, BasicAction>();
 
     action = cache.get(actionName);
     if(action != null)
@@ -99,37 +100,37 @@ public class ActionManager
    * @param data
    */
   public static void performAction(Class<? extends BasicAction> actionClass,
-      Object data)
+     String key, Object data)
   {
     String actionName = actionClass.getSimpleName();
     BasicAction action = getAction(actionName);
     if(!actionClass.isInstance(action))
       throw new IllegalStateException("action name already used."); //$NON-NLS-1$
-    perform(action, data);
+    perform(action, key, data);
   }
 
   public static void performAction(String actionName)
   {
-    performAction(actionName, null);
+    performAction(actionName, null, null);
   }
 
-  public static void performAction(String actionName, Object data)
+  public static void performAction(String actionName, String key, Object data)
   {
     BasicAction action = getAction(actionName);
-    perform(action, data);
+    perform(action, key, data);
   }
 
-  private static void perform(BasicAction action, Object data)
+  private static void perform(BasicAction action, String key, Object data)
   {
     ActionEvent evt = new ActionEvent(getManager(),
         ActionEvent.ACTION_PERFORMED, (String) action
             .getValue(BasicAction.ACTION_COMMAND_KEY));
     // Daten uebergeben
-    action.putValue(BasicAction.ACTION_DATA, data);
+    action.setProperty(key, data);
     // Aktion ausfuehren
     action.actionPerformed(evt);
     // Daten wieder loeschen
-    action.putValue(BasicAction.ACTION_DATA, null);
+    //action.putValue(BasicAction.ACTION_DATA, null);
   }
   
   private static class AbstractBasicAction extends BasicAction
