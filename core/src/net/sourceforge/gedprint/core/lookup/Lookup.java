@@ -16,7 +16,7 @@ public class Lookup
   private List<Object> storage;
   private final LookupChangeSupport changeSupport;
 
-  public Lookup()
+  private Lookup()
   {
     changeSupport = new LookupChangeSupport(this);
   }
@@ -34,6 +34,24 @@ public class Lookup
     if(global == null)
       global = new GlobalLookup();
     return global;
+  }
+
+  public static Lookup create(Object... data)
+  {
+    Lookup l = new Lookup();
+    for(Object object : data)
+      l.put(object);
+    return l;
+  }
+
+  public static Lookup duplicate(Lookup original)
+  {
+    if(original instanceof GlobalLookup)
+      throw new IllegalArgumentException();
+    Lookup copy = new Lookup();
+    for(Object object : original.storage)
+      copy.put(object);
+    return copy;
   }
 
   public boolean put(Object o)
@@ -100,15 +118,71 @@ public class Lookup
 
   public <T> Collection<? extends T> lookupAll(Class<T> clazz)
   {
-    if(storage == null)
-      return null;
     ArrayList<T> result = new ArrayList<T>();
+    if(storage == null)
+      return result;
     for(Object object : storage)
     {
       if(clazz.isInstance(object))
         result.add(clazz.cast(object));
     }
     return result;
+  }
+
+  public void setProperty(String key, Object value)
+  {
+    LookupProperty p = getLookupProperty(key, true);
+    p.setValue(value);
+  }
+
+  public Object getProperty(String key)
+  {
+    LookupProperty p = getLookupProperty(key, false);
+    return p == null ? null : p.getValue();
+  }
+
+  protected LookupProperty getLookupProperty(String key, boolean autoCreate)
+  {
+    Collection<? extends LookupProperty> properties =
+        lookupAll(LookupProperty.class);
+    for(LookupProperty property : properties)
+    {
+      if(key.equals(property.getName()))
+        return property;
+    }
+    if(autoCreate)
+    {
+      LookupProperty property = new LookupProperty(key);
+      put(property);
+      return property;
+    }
+    return null;
+  }
+
+  public static class LookupProperty
+  {
+    private final String name;
+    private Object value;
+
+    public LookupProperty(String name)
+    {
+      this.name = name;
+    }
+
+    private void setValue(Object value)
+    {
+      this.value = value;
+    }
+
+    public String getName()
+    {
+      return name;
+    }
+
+    public Object getValue()
+    {
+      return value;
+    }
   }
 
   private static class GlobalLookup extends Lookup
@@ -120,7 +194,9 @@ public class Lookup
     {
       ServiceLoader<?> loader = getLoader(clazz);
       Iterator<?> iterator = loader.iterator();
-      return iterator.hasNext() ? clazz.cast(iterator.next()) : super.lookup(clazz);
+      return iterator.hasNext()
+          ? clazz.cast(iterator.next())
+          : super.lookup(clazz);
     }
 
     private synchronized ServiceLoader<?> getLoader(Class<?> clazz)
@@ -146,7 +222,7 @@ public class Lookup
       Collection<T> result = new ArrayList<T>();
       for(Object e : getLoader(clazz))
         result.add(clazz.cast(e));
-      if(result.size() == 0)
+      if(result.isEmpty())
         return super.lookupAll(clazz);
       return result;
     }
