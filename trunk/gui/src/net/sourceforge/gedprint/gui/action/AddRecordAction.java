@@ -12,7 +12,7 @@ public class AddRecordAction extends BasicAction
 
   public void actionPerformed(ActionEvent e)
   {
-    Object data = getValue(ACTION_DATA);
+    Object data = getLookup().getProperty("id");
     if(data == null)
       return;
     Logger.getLogger(getClass().getName()).fine(data.toString());

@@ -12,7 +12,7 @@ import net.sourceforge.gedprint.gui.core.GuiThreadGroup;
  */
 public class GedPrintGui
 {
-  public static final void main(String[] args)
+  public static void main(String[] args)
   {
     GuiStartup gui = new GuiStartup();
     if(gui.parseCommandline(args))
@@ -20,6 +20,10 @@ public class GedPrintGui
       // Programm starten
       GuiThreadGroup.execute(gui);
     }
+  }
+
+  private GedPrintGui()
+  {
   }
 
 }

@@ -1,9 +1,9 @@
 package net.sourceforge.gedprint.gui.action;
 
-
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
+import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gui.core.ActionManager;
 import net.sourceforge.gedprint.gui.core.GedPainter;
 
@@ -13,18 +13,8 @@ import net.sourceforge.gedprint.gui.core.GedPainter;
  * @author nigjo
  */
 public abstract class BasicAction extends AbstractAction
-    //implements PropertyChangeListener
 {
-  /**
-   * Die aktuelle GEDCOM Datei der Anwendung.  
-   */
-  @Deprecated
-  public static final String PROPERTY_FILE = "gedcom.file"; //$NON-NLS-1$
-  @Deprecated
-  public static final String PROPERTY_RECORD = "gedcom.record"; //$NON-NLS-1$
-  @Deprecated
-  public static final String PROPERTY_SELECTION = "selection"; //$NON-NLS-1$
-  public static final String ACTION_DATA = "action.data"; //$NON-NLS-1$
+  public static final String ACTION_LOOKUP = "action.lookup"; //$NON-NLS-1$
   private static final long serialVersionUID = 51080980824162277L;
 
   protected BasicAction()
@@ -79,23 +69,38 @@ public abstract class BasicAction extends AbstractAction
     putValue(NAME, name);
   }
 
-//  @Override
-//  public void propertyChange(PropertyChangeEvent evt)
-//  {
-//    String pattern = "changing property {0} in {1}"; //$NON-NLS-1$
-//    Object[] args = new Object[]
-//    {
-//      evt.getPropertyName(), getClass().getSimpleName()
-//    };
-//    if(getClass().equals(BasicAction.class))
-//      args[1] = getValue(NAME);
-//    String message = MessageFormat.format(pattern, args);
-//    Logger.getLogger(getClass().getName()).fine(message);
-//  }
+  protected synchronized Lookup getLookup()
+  {
+    Lookup lookup = (Lookup)getValue(ACTION_LOOKUP);
+    if(lookup == null)
+    {
+      lookup = Lookup.create(this);
+      putValue(ACTION_LOOKUP, lookup);
+    }
+    return lookup;
+  }
 
   protected <L> L lookup(Class<L> type)
   {
-    return ActionManager.getLookup().lookup(type);
+    Lookup lookup = getLookup();
+    return lookup.lookup(type);
+  }
+
+  public void addValue(Object o)
+  {
+    Lookup lookup = getLookup();
+    lookup.put(o);
+  }
+
+  protected void removeValue(Object o)
+  {
+    Lookup lookup = getLookup();
+    lookup.remove(o);
+  }
+
+  public void setProperty(String key, Object data)
+  {
+    getLookup().setProperty(key, data);
   }
 
   protected GedPainter getPainter()
