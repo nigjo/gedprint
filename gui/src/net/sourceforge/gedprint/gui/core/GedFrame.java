@@ -13,6 +13,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -47,9 +48,10 @@ public class GedFrame extends JFrame
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
     // Anzeigeklasse
-    desktop = new GedDesktop();
-    //desktop = new JDesktopPane();
+    desktop = new JDesktopPane();
+    desktop.setBackground(Color.LIGHT_GRAY);
     setContentPane(desktop);
+    DocumentManager.init(desktop);
 
     // Icons setzen
     ArrayList<Image> icons = new ArrayList<Image>();
@@ -76,7 +78,7 @@ public class GedFrame extends JFrame
     }
     catch(InterruptedException e)
     {
-      e.printStackTrace();
+      Logger.getLogger(getClass().getName()).log(Level.FINE, e.toString(), e);
     }
     setIconImages(icons);
 
@@ -171,16 +173,4 @@ public class GedFrame extends JFrame
     dispose();
   }
 
-  public class GedDesktop extends JDesktopPane
-  {
-    private static final long serialVersionUID = -1454766223860345991L;
-    DocumentManager manager;
-
-    public GedDesktop()
-    {
-      super();
-      manager = new DocumentManager(this);
-      setBackground(Color.LIGHT_GRAY);
-    }
-  }
 }

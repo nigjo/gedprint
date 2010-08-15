@@ -11,13 +11,17 @@ public class DocumentManager
   private static DocumentManager manager;
   private final JDesktopPane gedDesktop;
 
-  public DocumentManager(JDesktopPane gedDesktop)
+  private DocumentManager(JDesktopPane gedDesktop)
   {
     super();
     this.gedDesktop = gedDesktop;
+  }
+
+  public static void init(JDesktopPane gedDesktop)
+  {
     if(manager != null)
       throw new IllegalStateException("already initialized"); //$NON-NLS-1$
-    manager = this;
+    manager = new DocumentManager(gedDesktop);
   }
 
   public static DocumentManager getManager()
