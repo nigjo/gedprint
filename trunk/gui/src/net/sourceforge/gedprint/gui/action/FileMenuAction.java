@@ -2,7 +2,7 @@ package net.sourceforge.gedprint.gui.action;
 
 import java.beans.PropertyChangeEvent;
 
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class FileMenuAction extends BasicMenu
 {
@@ -10,7 +10,7 @@ public class FileMenuAction extends BasicMenu
 
   public FileMenuAction()
   {
-    super(Messages.getString("FileMenuAction.title")); //$NON-NLS-1$
+    super(Bundle.getString("FileMenuAction.title", FileMenuAction.class)); //$NON-NLS-1$
     
   }
   

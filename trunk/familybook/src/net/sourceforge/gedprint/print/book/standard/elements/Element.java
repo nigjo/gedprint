@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.print.BasicElement;
-import net.sourceforge.gedprint.print.book.standard.properties.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 abstract public class Element extends BasicElement
 {
@@ -104,10 +104,10 @@ abstract public class Element extends BasicElement
   protected int getGivnIndent(int res)
   {
     String[] testStrings = new String[]
-    { Messages.getString("print.data.given_names"), //$NON-NLS-1$
-        Messages.getString("print.data.Father"), //$NON-NLS-1$
-        Messages.getString("print.data.Mother"), //$NON-NLS-1$
-        Messages.getString("print.data.spouse") //$NON-NLS-1$
+    { Bundle.getString("print.data.given_names", getClass()), //$NON-NLS-1$
+        Bundle.getString("print.data.Father", getClass()), //$NON-NLS-1$
+        Bundle.getString("print.data.Mother", getClass()), //$NON-NLS-1$
+        Bundle.getString("print.data.spouse", getClass()) //$NON-NLS-1$
     };
 
     return getMaxWidth(res, testStrings, getFont(FONT_TITLE));
@@ -116,7 +116,7 @@ abstract public class Element extends BasicElement
   protected int getSurnIndent(int res)
   {
     String[] testStrings = new String[]
-    { Messages.getString("print.data.sure_names.short") //$NON-NLS-1$
+    { Bundle.getString("print.data.sure_names.short", getClass()) //$NON-NLS-1$
     };
 
     return getMaxWidth(res, testStrings, getFont(FONT_TITLE));

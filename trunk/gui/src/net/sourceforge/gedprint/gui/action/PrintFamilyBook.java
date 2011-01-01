@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.KeyStroke;
 
 import net.sourceforge.gedprint.core.lookup.Lookup;
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.core.DocumentManager;
@@ -19,7 +19,7 @@ public class PrintFamilyBook extends FrameAccessAction
 
   public PrintFamilyBook()
   {
-    super(Messages.getString("PrintFamilyBook.title")); //$NON-NLS-1$
+    super(Bundle.getString("PrintFamilyBook.title", PrintFamilyBook.class)); //$NON-NLS-1$
     putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl P")); //$NON-NLS-1$
     setEnabled(false);
   }

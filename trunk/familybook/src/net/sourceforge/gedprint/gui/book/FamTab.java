@@ -15,7 +15,7 @@ import net.sourceforge.gedprint.print.book.standard.elements.Element;
 import net.sourceforge.gedprint.print.book.standard.elements.HeaderElement;
 import net.sourceforge.gedprint.print.book.standard.elements.ParentElement;
 import net.sourceforge.gedprint.print.book.standard.elements.WeddingElement;
-import net.sourceforge.gedprint.print.book.standard.properties.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class FamTab extends JPanel
 {
@@ -37,18 +37,18 @@ public class FamTab extends JPanel
     // this.fam = fam;
     elements = new ArrayList<Element>();
 
-    elements.add(new HeaderElement(Messages.getString("print.data.parents"))); //$NON-NLS-1$
+    elements.add(new HeaderElement(Bundle.getString("print.data.parents", getClass()))); //$NON-NLS-1$
     elements.add(new ParentElement(
-        Messages.getString("print.data.husband"), fam.getHusband())); //$NON-NLS-1$
+        Bundle.getString("print.data.husband", getClass()), fam.getHusband())); //$NON-NLS-1$
     elements.add(new ParentElement(
-        Messages.getString("print.data.wife"), fam.getWife())); //$NON-NLS-1$
+        Bundle.getString("print.data.wife", getClass()), fam.getWife())); //$NON-NLS-1$
 
     // Hochzeit
-    elements.add(new HeaderElement(Messages.getString("print.data.marriage"))); //$NON-NLS-1$
+    elements.add(new HeaderElement(Bundle.getString("print.data.marriage", getClass()))); //$NON-NLS-1$
     elements.add(new WeddingElement(fam));
 
     // Kinder
-    elements.add(new HeaderElement(Messages.getString("print.data.children"))); //$NON-NLS-1$
+    elements.add(new HeaderElement(Bundle.getString("print.data.children", getClass()))); //$NON-NLS-1$
     List<Individual> children = fam.getChildren();
     for(Individual child : children)
       elements.add(new ChildElement(child));

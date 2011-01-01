@@ -13,7 +13,7 @@ import net.sourceforge.gedprint.print.BasicElement;
 import net.sourceforge.gedprint.print.BasicPage;
 import net.sourceforge.gedprint.print.book.standard.elements.Element;
 import net.sourceforge.gedprint.print.book.standard.elements.ParentElement;
-import net.sourceforge.gedprint.print.book.standard.properties.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class Page extends BasicPage
 {
@@ -51,7 +51,7 @@ public class Page extends BasicPage
     Font titleFont = new Font(DEFAULT_FONT, Font.BOLD, Element
         .convertCmToPt(.75));
     g.setFont(titleFont);
-    String title = spread(Messages.getString("print.page.header_title")); //$NON-NLS-1$
+    String title = spread(Bundle.getString("print.page.header_title", getClass())); //$NON-NLS-1$
     int textPos = left + Element.center(title, g, printSize.width);
     int baseline = Element.convertCmToPixel(top * 2 / 3, res);
     g.drawString(title, textPos, baseline);
@@ -59,7 +59,7 @@ public class Page extends BasicPage
     Font countFont = new Font(DEFAULT_FONT, Font.PLAIN, Element
         .convertCmToPt(.25));
     g.setFont(countFont);
-    title = Messages.getString("print.page.sheet_number"); //$NON-NLS-1$
+    title = Bundle.getString("print.page.sheet_number", getClass()); //$NON-NLS-1$
     if(getFamily() != null)
     {
       title = MessageFormat.format(title, new Object[] { getFamily()
@@ -85,7 +85,7 @@ public class Page extends BasicPage
         .convertCmToPt(.5));
     g.setFont(countFont);
 
-    String text = Messages.getString("print.page.page_number"); //$NON-NLS-1$
+    String text = Bundle.getString("print.page.page_number", getClass()); //$NON-NLS-1$
     text = MessageFormat.format(text, new Object[] { new Integer(
         getPageNumber()) });
 

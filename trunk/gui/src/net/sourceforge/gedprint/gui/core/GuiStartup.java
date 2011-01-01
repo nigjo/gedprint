@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import net.sourceforge.gedprint.core.GedPrintStarter;
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.GedPrintGui;
@@ -54,6 +54,7 @@ public class GuiStartup implements GedPrintStarter
 //    arguments = new Properties(defaults);
   }
 
+  @Override
   public void run()
   {
     // DEBUG start
@@ -72,9 +73,9 @@ public class GuiStartup implements GedPrintStarter
         Lookup.getGlobal().lookupAll(GedDocumentFactory.class);
     if(factories == null || factories.isEmpty())
     {
-      String msg = Messages.getString("err.no_painter"); //$NON-NLS-1$
+      String msg = Bundle.getString("err.no_painter", getClass()); //$NON-NLS-1$
       Logger.getLogger(getClass().getName()).warning(msg);
-      String title = Messages.getString("frame.title"); //$NON-NLS-1$
+      String title = Bundle.getString("frame.title", getClass()); //$NON-NLS-1$
       JOptionPane.showMessageDialog(null, msg, title,
           JOptionPane.WARNING_MESSAGE);
       exit(1);
@@ -89,7 +90,7 @@ public class GuiStartup implements GedPrintStarter
     }
     catch(IllegalStateException e)
     {
-      illegalArg(Messages.getString("err.painterclass"), //$NON-NLS-1$ 
+      illegalArg(Bundle.getString("err.painterclass", getClass()), //$NON-NLS-1$
           e.getCause().toString());
       return;
     }
@@ -101,7 +102,7 @@ public class GuiStartup implements GedPrintStarter
 
   public static void illegalArg(String pattern, Object... arg)
   {
-    String title = Messages.getString(GedFrame.class, "frame.title"); //$NON-NLS-1$
+    String title = Bundle.getString("frame.title", GedFrame.class); //$NON-NLS-1$
     String message = MessageFormat.format(pattern, arg);
     JOptionPane.showMessageDialog(null, message, title,
         JOptionPane.ERROR_MESSAGE);
@@ -126,12 +127,12 @@ public class GuiStartup implements GedPrintStarter
       }
       catch(FileNotFoundException ex)
       {
-        illegalArg(Messages.getString("err.filenotfound"), file); //$NON-NLS-1$
+        illegalArg(Bundle.getString("err.filenotfound", getClass()), file); //$NON-NLS-1$
         return;
       }
       catch(IOException ex)
       {
-        illegalArg(Messages.getString("err.ioerror"), file); //$NON-NLS-1$
+        illegalArg(Bundle.getString("err.ioerror", getClass()), file); //$NON-NLS-1$
         return;
       }
 
@@ -160,6 +161,7 @@ public class GuiStartup implements GedPrintStarter
     System.exit(rc);
   }
 
+  @Override
   public boolean parseCommandline(String[] args)
   {
     try

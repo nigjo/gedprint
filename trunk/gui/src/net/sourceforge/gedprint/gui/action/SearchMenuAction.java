@@ -1,6 +1,6 @@
 package net.sourceforge.gedprint.gui.action;
 
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class SearchMenuAction extends BasicMenu
 {
@@ -8,8 +8,6 @@ public class SearchMenuAction extends BasicMenu
 
   public SearchMenuAction()
   {
-    super(Messages.getString("SearchMenuAction.title")); //$NON-NLS-1$
+    super(Bundle.getString("SearchMenuAction.title", SearchMenuAction.class)); //$NON-NLS-1$
   }
-
-
 }
