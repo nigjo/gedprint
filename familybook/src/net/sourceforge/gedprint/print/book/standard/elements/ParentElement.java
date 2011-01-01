@@ -7,7 +7,7 @@ import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gedcom.Tag;
-import net.sourceforge.gedprint.print.book.standard.properties.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class ParentElement extends Element
 {
@@ -168,7 +168,7 @@ public class ParentElement extends Element
     {
       g.setFont(getFont(FONT_TITLE));
       fontline = getFontline(g);
-      String more = Messages.getString("print.data.further_marriages"); //$NON-NLS-1$
+      String more = Bundle.getString("print.data.further_marriages", getClass()); //$NON-NLS-1$
       setChecked(g, indent, more, tabs[TAB_RIGHT] - indent, lines[0], fontline);
     }
   }
@@ -182,35 +182,35 @@ public class ParentElement extends Element
     g.drawString(title, tabs[TAB_LEFT] + indent, lines[0] + fontline);
 
     g.setFont(getFont(FONT_TITLE));
-    String text = Messages.getString("print.data.given_names"); //$NON-NLS-1$
+    String text = Bundle.getString("print.data.given_names", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_LEFT] + indent, lines[0] + fontline, fontline);
-    text = Messages.getString("print.data.sure_names.short");//$NON-NLS-1$
+    text = Bundle.getString("print.data.sure_names.short", getClass());//$NON-NLS-1$
     drawString(g, text, tabs[TAB_SURNAME] + indent, lines[0], fontline);
 
     fontline = getFontline(g);
-    text = Messages.getString("print.data.date_of_birth");//$NON-NLS-1$
+    text = Bundle.getString("print.data.date_of_birth", getClass());//$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[1], fontline);
-    text = Messages.getString("print.data.date_of_death"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.date_of_death", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[2], fontline);
-    text = Messages.getString("print.data.place"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.place", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_PLACE] + indent, lines[1], fontline);
     drawString(g, text, tabs[TAB_PLACE] + indent, lines[2], fontline);
-    text = Messages.getString("print.data.cause_of_death"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.cause_of_death", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[3], fontline);
 
-    text = Messages.getString("print.data.Father"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.Father", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[4], fontline);
-    text = Messages.getString("print.data.Mother"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.Mother", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[5], fontline);
 
-    text = Messages.getString("print.data.given_names"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.given_names", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[4] + fontline, fontline);
     drawString(g, text, tabs[TAB_DATA] + indent, lines[5] + fontline, fontline);
-    text = Messages.getString("print.data.sure_names");//$NON-NLS-1$
+    text = Bundle.getString("print.data.sure_names", getClass());//$NON-NLS-1$
     drawString(g, text, tabs[TAB_SURNAME] + indent, lines[4], fontline);
     drawString(g, text, tabs[TAB_SURNAME] + indent, lines[5], fontline);
 
-    String more = Messages.getString("print.data.further_marriages"); //$NON-NLS-1$
+    String more = Bundle.getString("print.data.further_marriages", getClass()); //$NON-NLS-1$
     drawCheckboxString(g, more, tabs[TAB_RIGHT] - indent, lines[0], fontline,
         indent);
   }

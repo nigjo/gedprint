@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import net.sourceforge.gedprint.core.ExceptionEcho;
 import net.sourceforge.gedprint.core.GedPrintStarter;
 import net.sourceforge.gedprint.core.lookup.Lookup;
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.core.MissingArgumentException;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.GedFile;
@@ -110,7 +110,7 @@ public class CommandLinePrinter implements GedPrintStarter
     }
     catch(IllegalArgumentException e)
     {
-      String pattern = Messages.getString(e.getMessage());
+      String pattern = Bundle.getString(e.getMessage(), CommandLinePrinter.class);
       Object[] arguments = new Object[1];
       arguments[0] = record;
       Throwable t = new IllegalArgumentException(MessageFormat.format(pattern,

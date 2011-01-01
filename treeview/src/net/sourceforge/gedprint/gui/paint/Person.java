@@ -9,7 +9,7 @@ import java.awt.Rectangle;
 
 import java.text.DateFormat;
 import java.util.Date;
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.gedcom.Individual;
 
 /** Neue Klasse erstellt am 07.02.2005.
@@ -35,7 +35,7 @@ public class Person extends BasicObject
     builder.append('\n');
     if(d != null)
     {
-      builder.append(Messages.getString("BIRT.title")); //$NON-NLS-1$
+      builder.append(Bundle.getString("BIRT.title", getClass())); //$NON-NLS-1$
       builder.append(' ');
       builder.append(fmt.format(d));
     }
@@ -43,7 +43,7 @@ public class Person extends BasicObject
     builder.append('\n');
     if(d != null)
     {
-      builder.append(Messages.getString("DEAT.title")); //$NON-NLS-1$
+      builder.append(Bundle.getString("DEAT.title", getClass())); //$NON-NLS-1$
       builder.append(' ');
       builder.append(fmt.format(d));
     }
@@ -51,6 +51,7 @@ public class Person extends BasicObject
 
   }
 
+  @Override
   public void paint(Graphics g)
   {
     Dimension s = getSize(g);
@@ -75,6 +76,7 @@ public class Person extends BasicObject
     g.setColor(old);
   }
 
+  @Override
   public Dimension getSize(Graphics g)
   {
     if(g==null)

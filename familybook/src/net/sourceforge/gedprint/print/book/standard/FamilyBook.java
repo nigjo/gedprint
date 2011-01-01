@@ -12,7 +12,7 @@ import net.sourceforge.gedprint.print.book.standard.elements.HeaderElement;
 import net.sourceforge.gedprint.print.book.standard.elements.InfoElement;
 import net.sourceforge.gedprint.print.book.standard.elements.ParentElement;
 import net.sourceforge.gedprint.print.book.standard.elements.WeddingElement;
-import net.sourceforge.gedprint.print.book.standard.properties.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class FamilyBook extends PrintManager
 {
@@ -40,20 +40,20 @@ public class FamilyBook extends PrintManager
 
     // Eltern
     currentPage
-        .add(new HeaderElement(Messages.getString("print.data.parents"))); //$NON-NLS-1$
+        .add(new HeaderElement(Bundle.getString("print.data.parents", getClass()))); //$NON-NLS-1$
     currentPage.add(new ParentElement(
-        Messages.getString("print.data.husband"), fam.getHusband())); //$NON-NLS-1$
+        Bundle.getString("print.data.husband", getClass()), fam.getHusband())); //$NON-NLS-1$
     currentPage.add(new ParentElement(
-        Messages.getString("print.data.wife"), fam.getWife())); //$NON-NLS-1$
+        Bundle.getString("print.data.wife", getClass()), fam.getWife())); //$NON-NLS-1$
 
     // Hochzeit
     currentPage
-        .add(new HeaderElement(Messages.getString("print.data.marriage"))); //$NON-NLS-1$
+        .add(new HeaderElement(Bundle.getString("print.data.marriage", getClass()))); //$NON-NLS-1$
     currentPage.add(new WeddingElement(fam));
 
     // Kinder
     currentPage
-        .add(new HeaderElement(Messages.getString("print.data.children"))); //$NON-NLS-1$
+        .add(new HeaderElement(Bundle.getString("print.data.children", getClass()))); //$NON-NLS-1$
     int count = 3;
     for(Individual individual : fam.getChildren())
     {
@@ -77,20 +77,20 @@ public class FamilyBook extends PrintManager
     // Infobloecke
     if(count < 5)
     {
-      currentPage.add(new HeaderElement(Messages
-          .getString("print.data.further_marriages"))); //$NON-NLS-1$
+      currentPage.add(new HeaderElement(Bundle
+          .getString("print.data.further_marriages", getClass()))); //$NON-NLS-1$
       InfoElement info = new InfoElement();
-      info.setDescription(Messages
-          .getString("print.data.further_marriages.description")); //$NON-NLS-1$
+      info.setDescription(Bundle
+          .getString("print.data.further_marriages.description", getClass())); //$NON-NLS-1$
       currentPage.add(info);
     }
     if(count < 4)
     {
-      currentPage.add(new HeaderElement(Messages
-          .getString("print.data.additional_information"))); //$NON-NLS-1$
+      currentPage.add(new HeaderElement(Bundle
+          .getString("print.data.additional_information", getClass()))); //$NON-NLS-1$
       InfoElement info = new InfoElement();
-      info.setDescription(Messages
-          .getString("print.data.additional_information.description")); //$NON-NLS-1$
+      info.setDescription(Bundle
+          .getString("print.data.additional_information.description", getClass())); //$NON-NLS-1$
       currentPage.add(info);
     }
 

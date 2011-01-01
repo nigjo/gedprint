@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gedcom.Tag;
-import net.sourceforge.gedprint.print.book.standard.properties.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 /**
  * Eine neue Klasse von hof. Erstellt am 10.05.2007, 15:49:41
@@ -91,9 +91,9 @@ public class WeddingElement extends Element
 
     String text;
 
-    text = Messages.getString("print.data.date"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.date", getClass()); //$NON-NLS-1$
     g.drawString(text, tabs[TAB_DATA] + indent, lines[0] + fontline);
-    text = Messages.getString("print.data.place"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.place", getClass()); //$NON-NLS-1$
     g.drawString(text, tabs[TAB_PLACE] + indent, lines[0] + fontline);
   }
 }

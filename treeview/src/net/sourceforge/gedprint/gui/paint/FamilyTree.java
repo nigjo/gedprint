@@ -4,10 +4,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sourceforge.gedprint.gedcom.Family;
@@ -25,9 +27,9 @@ public class FamilyTree extends BasicObject
   private static final boolean DEBUG = false;
   private Family fam;
   //
-  Hashtable<Individual, Point> relativePos;
-  Hashtable<Individual, BasicObject> elements;
-  Vector<RelationLine> lines;
+  Map<Individual, Point> relativePos;
+  Map<Individual, BasicObject> elements;
+  List<RelationLine> lines;
   //
   boolean updateLayout;
   private Dimension layoutsize;
@@ -77,6 +79,7 @@ public class FamilyTree extends BasicObject
     }
   }
 
+  @Override
   public void paint(Graphics g)
   {
     if(updateLayout)
@@ -125,7 +128,7 @@ public class FamilyTree extends BasicObject
     if(size.width < nextPos.x)
       size.width = nextPos.x;
 
-    relativePos.put(indi, (Point) nextPos.clone());
+    relativePos.put(indi, (Point)nextPos.clone());
 
     Point fampos = getLocation();
     iPos.translate(fampos.x, fampos.y);
@@ -143,9 +146,9 @@ public class FamilyTree extends BasicObject
   {
     Logger.getLogger(getClass().getName()).fine("updateLayout"); //$NON-NLS-1$
     Logger.getLogger(getClass().getName()).fine(fam.toString());
-    elements = new Hashtable<Individual, BasicObject>();
-    relativePos = new Hashtable<Individual, Point>();
-    lines = new Vector<RelationLine>();
+    elements = new HashMap<Individual, BasicObject>();
+    relativePos = new HashMap<Individual, Point>();
+    lines = new ArrayList<RelationLine>();
 
     int parentGap = 2 * BORDER;
 
@@ -159,9 +162,9 @@ public class FamilyTree extends BasicObject
     Individual wife = fam.getWife();
 
     // Eltern positionieren
-    Person er = (Person) layoutPerson(husband, null, relPos, psize, g);
+    Person er = (Person)layoutPerson(husband, null, relPos, psize, g);
     relPos.x += parentGap;
-    Person sie = (Person) layoutPerson(wife, null, relPos, psize, g);
+    Person sie = (Person)layoutPerson(wife, null, relPos, psize, g);
 
     int childCount = fam.getChildrenCount();
     if(childCount == 0)
@@ -169,8 +172,8 @@ public class FamilyTree extends BasicObject
       Point fampos = getLocation();
       int erx = er.getLocation().x + er.getSize(null).width;
       int siex = sie.getLocation().x;
-      int miny = er.getSize(null).height < sie.getSize(null).height ? er
-          .getSize(null).height : sie.getSize(null).height;
+      int miny = er.getSize(null).height < sie.getSize(null).height ? er.getSize(
+          null).height : sie.getSize(null).height;
       famCenter = new Point((erx + siex) / 2, miny / 2 + BORDER);
       famCenter.translate(0, fampos.y);
     }
@@ -182,18 +185,17 @@ public class FamilyTree extends BasicObject
       relPos.y += psize.height + parentChildrenGap;
       Dimension csize = new Dimension();
 
-      Enumeration children = fam.getChildren();
-      while(children.hasMoreElements())
+      List<Individual> children = fam.getChildren();
+      for(Individual child : children)
       {
-        Individual child = (Individual) children.nextElement();
         BasicObject obj = null;
         if(showChildrenFamily)
         {
-          Family[] dataSpouceFamilies = child.getDataSpouceFamilies();
-          if(dataSpouceFamilies.length > 0)
+          List<Family> dataSpouceFamilies = child.getDataSpouceFamilies();
+          for(Family family : dataSpouceFamilies)
           {
             // erstmal nur die erste Ehe
-            obj = new FamilyTree(dataSpouceFamilies[0]);
+            obj = new FamilyTree(family);
             elements.put(child, obj);
           }
         }
@@ -216,9 +218,8 @@ public class FamilyTree extends BasicObject
         int left = (psize.width - csize.width - BORDER) / 2;
         left += left % 2;
         children = fam.getChildren();
-        while(children.hasMoreElements())
+        for(Individual child : children)
         {
-          Individual child = (Individual) children.nextElement();
           translate(child, left, 0);
         }
       }
@@ -229,20 +230,19 @@ public class FamilyTree extends BasicObject
 
       // Alle Kinder mit dem Familienpunkt verbinden
       children = fam.getChildren();
-      while(children.hasMoreElements())
+      for(Individual child : children)
       {
-        Individual child = (Individual) children.nextElement();
         BasicObject bo = elements.get(child);
         if(bo instanceof FamilyTree)
         {
-          FamilyTree subtree = (FamilyTree) bo;
+          FamilyTree subtree = (FamilyTree)bo;
           BasicObject parent = subtree.elements.get(child);
           bo = new Person(child);
           bo.getSize(g);
           bo.setLocation(parent.getLocation());
           bo.translate(fampos.x, fampos.y);
         }
-        lines.add(new RelationLine((Person) bo, famCenter));
+        lines.add(new RelationLine((Person)bo, famCenter));
       }
 
       psize.height += csize.height + parentChildrenGap;
@@ -256,7 +256,8 @@ public class FamilyTree extends BasicObject
     lines.add(new RelationLine(er, famCenter));
     lines.add(new RelationLine(sie, famCenter));
 
-    Logger.getLogger(getClass().getName()).fine("done " + fam.toString()); //$NON-NLS-1$
+    Logger.getLogger(getClass().getName()).log(
+        Level.FINE, "done {0}", fam.toString()); //$NON-NLS-1$
   }
 
   public Family getFamily()
@@ -277,5 +278,4 @@ public class FamilyTree extends BasicObject
       return null;
     return elements.get(indi);
   }
-
 }

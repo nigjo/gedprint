@@ -5,7 +5,7 @@ import java.beans.PropertyChangeEvent;
 
 import javax.swing.KeyStroke;
 
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.gui.core.GedFrame;
 
 public class Exit extends FrameAccessAction
@@ -14,10 +14,11 @@ public class Exit extends FrameAccessAction
 
   public Exit()
   {
-    super(Messages.getString("Exit.title")); //$NON-NLS-1$
+    super(Bundle.getString("Exit.title", Exit.class)); //$NON-NLS-1$
     putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("alt F4")); //$NON-NLS-1$
   }
 
+  @Override
   public void actionPerformed(ActionEvent e)
   {
     GedFrame frame = getFrame(e);

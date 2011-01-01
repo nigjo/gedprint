@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
-import net.sourceforge.gedprint.print.book.standard.properties.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class ChildElement extends Element
 {
@@ -86,12 +86,12 @@ public class ChildElement extends Element
       if("M".equals(content.toUpperCase())) //$NON-NLS-1$
       {
         gender = MALE;
-        content = Messages.getString("print.data.male"); //$NON-NLS-1$
+        content = Bundle.getString("print.data.male", getClass()); //$NON-NLS-1$
       }
       else
       {
         gender = FEMALE;
-        content = Messages.getString("print.data.female"); //$NON-NLS-1$
+        content = Bundle.getString("print.data.female", getClass()); //$NON-NLS-1$
       }
       left = center(content, g, tabs, 0);
       g.drawString(content, left, lines[1] + fontline);
@@ -176,30 +176,30 @@ public class ChildElement extends Element
     g.setFont(getFont(FONT_TITLE));
     int fontline = getFontline(g);
 
-    String text = Messages.getString("print.data.given_names.short"); //$NON-NLS-1$
+    String text = Bundle.getString("print.data.given_names.short", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_LEFT] + indent, lines[0], fontline);
-    text = Messages.getString("print.data.sure_names.short");//$NON-NLS-1$
+    text = Bundle.getString("print.data.sure_names.short", getClass());//$NON-NLS-1$
     drawString(g, text, tabs[TAB_SURNAME] + indent, lines[0], fontline);
 
-    text = Messages.getString("print.data.date_of_birth");//$NON-NLS-1$
+    text = Bundle.getString("print.data.date_of_birth", getClass());//$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[1], fontline);
-    text = Messages.getString("print.data.place"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.place", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_PLACE] + indent, lines[1], fontline);
-    text = Messages.getString("print.data.date_of_death"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.date_of_death", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[2], fontline);
-    text = Messages.getString("print.data.place"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.place", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_PLACE] + indent, lines[2], fontline);
-    text = Messages.getString("print.data.cause_of_death"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.cause_of_death", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[3], fontline);
 
-    text = Messages.getString("print.data.spouse"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.spouse", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[4], fontline);
-    text = Messages.getString("print.data.given_names"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.given_names", getClass()); //$NON-NLS-1$
     drawString(g, text, tabs[TAB_DATA] + indent, lines[4] + fontline, fontline);
-    text = Messages.getString("print.data.sure_names");//$NON-NLS-1$
+    text = Bundle.getString("print.data.sure_names", getClass());//$NON-NLS-1$
     drawString(g, text, tabs[TAB_SURNAME] + indent, lines[4], fontline);
 
-    text = Messages.getString("print.data.sex"); //$NON-NLS-1$
+    text = Bundle.getString("print.data.sex", getClass()); //$NON-NLS-1$
     drawString(g, text, center(text, g, tabs, 0), lines[1], fontline);
   }
 

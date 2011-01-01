@@ -12,7 +12,7 @@ import java.util.Date;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.print.PrintManager;
 import net.sourceforge.gedprint.print.book.standard.elements.Element;
-import net.sourceforge.gedprint.print.book.standard.properties.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class TitlePage extends Page
 {
@@ -23,19 +23,20 @@ public class TitlePage extends Page
   public TitlePage()
   {
     super();
-    setTitle(Messages.getString("print.page.header_title")); //$NON-NLS-1$
+    setTitle(Bundle.getString("print.page.header_title", TitlePage.class)); //$NON-NLS-1$
   }
 
+  @Override
   public void setFamily(Family family)
   {
     super.setFamily(family);
 
-    setTitle(Messages.getString("print.page.title")); //$NON-NLS-1$
+    setTitle(Bundle.getString("print.page.title", getClass())); //$NON-NLS-1$
 
     Object[] arguments = { family.getHusband().getClearedFullName(),
         family.getWife().getClearedFullName() };
 
-    String subtitle = Messages.getString("print.page.couple"); //$NON-NLS-1$
+    String subtitle = Bundle.getString("print.page.couple", getClass()); //$NON-NLS-1$
     subtitle = MessageFormat.format(subtitle, arguments);
 
     String[] lines = subtitle.split("\r\n|\n|\r"); //$NON-NLS-1$
@@ -43,6 +44,7 @@ public class TitlePage extends Page
       addSubTitle(lines[i]);
   }
 
+  @Override
   protected void paintPageContent(Graphics g, int res, int left, int top,
       Dimension printSize)
   {
@@ -95,11 +97,11 @@ public class TitlePage extends Page
       for(int i = 0; i < titles.length; i++)
       {
         x = left + Element.center(titles[i], g, width);
-        g.drawString(titles[i], x, firstline + (int) (i * (fontline / 2)));
+        g.drawString(titles[i], x, firstline + (i * (fontline / 2)));
       }
     }
 
-    String pattern = Messages.getString("print.page.state"); //$NON-NLS-1$
+    String pattern = Bundle.getString("print.page.state", getClass()); //$NON-NLS-1$
     Object[] arguments = new Object[] { new Date() };
 
     text = MessageFormat.format(pattern, arguments);
@@ -157,12 +159,14 @@ public class TitlePage extends Page
     }
   }
 
+  @Override
   protected void paintPageHeader(Graphics g, int left, int top, Dimension size,
       Dimension printSize, int res)
   {
     // keine Kopfzeile
   }
 
+  @Override
   protected void paintPageFooter(Graphics g, int left, int top, Dimension size,
       Dimension printSize, int res)
   {
@@ -181,7 +185,7 @@ public class TitlePage extends Page
 
   public static String getPoweredString()
   {
-    String text = Messages.getString("print.page.powered_by"); //$NON-NLS-1$
+    String text = Bundle.getString("print.page.powered_by", TitlePage.class); //$NON-NLS-1$
     Object[] args = { PrintManager.VERSION_STRING };
     text = MessageFormat.format(text, args);
     return text;

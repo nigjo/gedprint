@@ -1,6 +1,6 @@
 package net.sourceforge.gedprint.gui.action;
 
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 
 public class ViewMenuAction extends BasicMenu
 {
@@ -8,7 +8,7 @@ public class ViewMenuAction extends BasicMenu
 
   public ViewMenuAction()
   {
-    super(Messages.getString("ViewMenuAction.title")); //$NON-NLS-1$
+    super(Bundle.getString("ViewMenuAction.title", ViewMenuAction.class)); //$NON-NLS-1$
   }
 
 

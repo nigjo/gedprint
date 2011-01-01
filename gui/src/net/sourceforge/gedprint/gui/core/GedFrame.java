@@ -23,7 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
-import net.sourceforge.gedprint.core.Messages;
+import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.GedPrintGui;
@@ -42,7 +42,7 @@ public class GedFrame extends JFrame
 
   public GedFrame(String painterClassName)
   {
-    super(Messages.getString("frame.title")); //$NON-NLS-1$
+    super(Bundle.getString("frame.title", GedFrame.class)); //$NON-NLS-1$
     setSize(new Dimension(1024, 768));
     setLocationByPlatform(true);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -149,6 +149,7 @@ public class GedFrame extends JFrame
       add(text);
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
       String cmd = evt.getPropertyName();

@@ -3,7 +3,7 @@ package net.sourceforge.gedprint.gui.cmdline;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
 
-import net.sourceforge.gedprint.gui.core.Bundle;
+import net.sourceforge.gedprint.core.Bundle;
 
 public enum CommandlineArgument
 {
