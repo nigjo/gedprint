@@ -9,26 +9,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.Enumeration;
-import java.util.Vector;
-
-import net.sourceforge.gedprint.core.AbstractEnumeration;
-import net.sourceforge.gedprint.core.EmptyEnumeration;
-import net.sourceforge.gedprint.core.Filter;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Neue Klasse erstellt am 16.01.2005.
  * 
  * @author nigjo
  */
-public class GedFile implements Cloneable
+public final class GedFile implements Cloneable
 {
-  Record records;
+  private Record root;
   private File gedfile;
   private int otherCount;
   private int individualCount;
   private int familyCount;
-  private Vector<IDData> ids;
+  private List<IDData> ids;
 
   /*****************************************************************************
    * ==================================================
@@ -41,7 +41,7 @@ public class GedFile implements Cloneable
   {
     super();
 
-    records = new BaseRecord();
+    root = new BaseRecord();
   }
 
   public GedFile(String infilename) throws FileNotFoundException, IOException
@@ -49,7 +49,8 @@ public class GedFile implements Cloneable
     this(infilename, null);
   }
 
-  public GedFile(String infilename, Filter f) throws FileNotFoundException,
+  public GedFile(String infilename, GedFileFilter f) throws
+      FileNotFoundException,
       IOException
   {
     this(new File(infilename), f);
@@ -60,7 +61,7 @@ public class GedFile implements Cloneable
     this(infile, null);
   }
 
-  public GedFile(File infile, Filter f) throws FileNotFoundException,
+  public GedFile(File infile, GedFileFilter f) throws FileNotFoundException,
       IOException
   {
     this();
@@ -94,7 +95,7 @@ public class GedFile implements Cloneable
     read(infile, null);
   }
 
-  public void read(String infile, Filter f) throws FileNotFoundException,
+  public void read(String infile, GedFileFilter f) throws FileNotFoundException,
       IOException
   {
     read(new File(infile), f);
@@ -105,14 +106,14 @@ public class GedFile implements Cloneable
     read(file, null);
   }
 
-  public void read(File file, Filter filter) throws FileNotFoundException,
-      IOException
+  public final void read(File file, GedFileFilter filter)
+      throws FileNotFoundException, IOException
   {
     setFile(file);
 
     // alte Daten loeschen
-    records.clear();
-    Record lastRecord = records;
+    root.clear();
+    Record lastRecord = root;
 
     // Datei als UTF-8 Datei oeffnen...
     BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -126,7 +127,7 @@ public class GedFile implements Cloneable
       if(firstline)
       {
         firstline = false;
-        // WORKAROUND fuer defekte UTF-8 mit BOM Erkennung
+        // WORKAROUND fuer defekte "UTF-8 mit BOM" Erkennung
         // Siehe Bug ID 4508058
         char firstchar = zeile.charAt(0);
         if(firstchar == 0xFEFF)
@@ -170,7 +171,7 @@ public class GedFile implements Cloneable
     in.close();
 
     // Dateiende pruefen
-    if(!lastRecord.isTag(Tag.TRLR))
+    if(!lastRecord.isTag(Tag.END_OF_FILE_MARK))
     {
       throw new InvalidSyntaxException("missing trailer"); //$NON-NLS-1$
     }
@@ -209,39 +210,27 @@ public class GedFile implements Cloneable
 
       findRecord(Tag.HEAD).print(out);
 
-      Enumeration<Record> e;
-      e = getIndividuals();
-      while(e.hasMoreElements())
-      {
-        Record r = e.nextElement();
+      for(Record r : getIndividuals())
         r.print(out);
-      }
 
-      e = getFamilies();
-      while(e.hasMoreElements())
-      {
-        Record r = e.nextElement();
+      for(Record r : getFamilies())
         r.print(out);
-      }
 
       Tag[] exclude =
       {
-        Tag.HEAD, Tag.INDI, Tag.FAM, Tag.TRLR
+        Tag.HEAD, Tag.INDIVIDUAL, Tag.FAMILY, Tag.END_OF_FILE_MARK
       };
-      e = getRecordsExcluded(exclude);
-      while(e.hasMoreElements())
-      {
-        Record r = e.nextElement();
+      for(Record r : getRecordsExcluded(exclude))
         r.print(out);
-      }
 
-      out.println("0 " + Tag.TRLR); //$NON-NLS-1$
+      out.println("0 " + Tag.END_OF_FILE_MARK); //$NON-NLS-1$
 
       out.close();
     }
     catch(IOException e)
     {
-      e.printStackTrace();
+      Logger.getLogger(getClass().getName()).log(Level.FINE,
+          e.toString(), e);
     }
   }
 
@@ -252,13 +241,11 @@ public class GedFile implements Cloneable
 
   public Record findRecord(String type)
   {
-    if(records == null)
+    if(root == null)
       return null;
 
-    Enumeration<Record> e = records.elements();
-    while(e.hasMoreElements())
+    for(Record r : root)
     {
-      Record r = e.nextElement();
       if(type.equals(r.getType()))
         return r;
     }
@@ -267,13 +254,11 @@ public class GedFile implements Cloneable
 
   public Record findID(String id)
   {
-    if(records == null)
+    if(root == null)
       return null;
 
-    Enumeration<Record> e = records.elements();
-    while(e.hasMoreElements())
+    for(Record r : root)
     {
-      Record r = e.nextElement();
       if(id.equals(r.getID()))
         return r;
     }
@@ -282,10 +267,9 @@ public class GedFile implements Cloneable
 
   public Individual findUID(String uid)
   {
-    Enumeration<Record> e = getIndividuals();
-    while(e.hasMoreElements())
+    for(Record rec : getIndividuals())
     {
-      Individual i = (Individual)e.nextElement();
+      Individual i = (Individual)rec;
       if(uid.equals(i.getUID()))
         return i;
     }
@@ -297,18 +281,18 @@ public class GedFile implements Cloneable
     return this.gedfile;
   }
 
-  public Enumeration<Record> getIndividuals()
+  public List<Record> getIndividuals()
   {
-    return getRecords(Tag.INDI);
+    return getRecords(Tag.INDIVIDUAL);
   }
 
-  public Enumeration<Record> getFamilies()
+  public List<Record> getFamilies()
   {
-    return getRecords(Tag.FAM);
+    return getRecords(Tag.FAMILY);
   }
 
   @Override
-  public Object clone()
+  public GedFile clone()
   {
     try
     {
@@ -319,13 +303,11 @@ public class GedFile implements Cloneable
       copy.familyCount = 0;
 
       // Beim Erstellen der Kopie werden die Zaehler aktualisiert
-      copy.cloneBase(records);
+      copy.cloneBase(root);
 
-      copy.ids = new Vector<IDData>();
-      Enumeration<IDData> iddata = ids.elements();
-      while(iddata.hasMoreElements())
+      copy.ids = new ArrayList<IDData>();
+      for(IDData nextElement : ids)
       {
-        IDData nextElement = iddata.nextElement();
         IDData clone = (IDData)nextElement.clone();
         copy.ids.add(clone);
       }
@@ -341,13 +323,9 @@ public class GedFile implements Cloneable
   private void cloneBase(Record original)
   {
     // records = (Record) original.clone();
-    records = new BaseRecord();
-    Enumeration<Record> recs = original.elements();
-    while(recs.hasMoreElements())
-    {
-      Record rec = recs.nextElement();
-      records.addSubRecord((Record)rec.clone());
-    }
+    root = new BaseRecord();
+    for(Record rec : original)
+      root.addSubRecord(rec.clone());
   }
 
   /**
@@ -357,10 +335,10 @@ public class GedFile implements Cloneable
    */
   public boolean contains(Individual indi)
   {
-    Record[] indis = records.getSubRecords(Tag.INDI);
-    for(int i = 0; i < indis.length; i++)
+    List<Record> indis = root.getSubRecords(Tag.INDIVIDUAL);
+    for(Record record : indis)
     {
-      if(indi.equals(indis[i]))
+      if(indi.equals(record))
         return true;
     }
     return false;
@@ -368,7 +346,7 @@ public class GedFile implements Cloneable
 
   public void sort()
   {
-    records.sort();
+    root.sort();
   }
 
   /*****************************************************************************
@@ -393,37 +371,17 @@ public class GedFile implements Cloneable
   /**
    * liefert alle Records der Datei mit dem angegeben Typ.
    */
-  private Enumeration<Record> getRecords(Tag tag)
+  private List<Record> getRecords(Tag tag)
   {
     return getRecords(tag.toString());
   }
 
-  private Enumeration<Record> getRecords(final String type)
+  private List<Record> getRecords(String type)
   {
+    if(root == null)
+      return Collections.emptyList();
 
-    if(records == null)
-      return new EmptyEnumeration<Record>();
-    return new AbstractEnumeration<Record>()
-    {
-      String searchType = type.toUpperCase();
-      Enumeration<Record> e = records.elements();
-
-      protected void findNextElement()
-      {
-        index = RUNNING;
-        while(index == RUNNING && e.hasMoreElements())
-        {
-          Record r = e.nextElement();
-          if(searchType.equals(r.getType()))
-          {
-            nextElement = r;
-            return;
-          }
-        }
-        nextElement = null;
-        index = STOP;
-      }
-    };
+    return root.getSubRecords(type);
   }
 
   /**
@@ -431,7 +389,7 @@ public class GedFile implements Cloneable
    * 
    * @param exclude Feld mit Record-Typen
    */
-  private Enumeration<Record> getRecordsExcluded(Tag[] exclude)
+  private List<Record> getRecordsExcluded(Tag... exclude)
   {
     String[] types = new String[exclude.length];
     for(int i = 0; i < exclude.length; i++)
@@ -441,40 +399,18 @@ public class GedFile implements Cloneable
     return getRecordsExcluded(types);
   }
 
-  private Enumeration<Record> getRecordsExcluded(final String[] exclude)
+  private List<Record> getRecordsExcluded(String... exclude)
   {
-    if(records == null)
-      return new EmptyEnumeration<Record>();
-    return new AbstractEnumeration<Record>()
+    if(root == null)
+      return Collections.emptyList();
+    List<String> tags = Arrays.asList(exclude);
+    List<Record> harvester = new ArrayList<Record>();
+    for(Record record : root)
     {
-      Enumeration<Record> e = records.elements();
-
-      protected void findNextElement()
-      {
-        index = RUNNING;
-        while(index == RUNNING && e.hasMoreElements())
-        {
-          Record r = e.nextElement();
-          for(int i = 0; i < exclude.length; i++)
-          {
-            if(exclude[i].equals(r.getType()))
-            {
-              // Schleife abbrechen
-              r = null;
-              break;
-            }
-          }
-          if(r != null)
-          {
-            // keiner der Typen passte.
-            nextElement = r;
-            return;
-          }
-        }
-        nextElement = null;
-        index = STOP;
-      }
-    };
+      if(!tags.contains(record.getType()))
+        harvester.add(record);
+    }
+    return harvester;
   }
 
   /*****************************************************************************
@@ -489,10 +425,10 @@ public class GedFile implements Cloneable
    * Record ist dringend notwendig, da er einige Daten des eigentlichen GedFile
    * steuert.
    */
-  class BaseRecord extends Record
+  private class BaseRecord extends Record
   {
     @Override
-    public Object clone()
+    public Record clone()
     {
       BaseRecord kopie = (BaseRecord)super.clone();
       // kopie.BaseRecord.this = BaseRecord.this;
@@ -528,12 +464,12 @@ public class GedFile implements Cloneable
       {
         switch(tag)
         {
-          case FAM:
+          case FAMILY:
             familyCount++;
             rec = new Family(rec);
             break;
 
-          case INDI:
+          case INDIVIDUAL:
             individualCount++;
             rec = new Individual(rec);
             break;
@@ -590,11 +526,9 @@ public class GedFile implements Cloneable
   private IDData findIdData(String type)
   {
     if(ids == null)
-      ids = new Vector<IDData>();
-    Enumeration<IDData> e = ids.elements();
-    while(e.hasMoreElements())
+      ids = new ArrayList<IDData>();
+    for(IDData data : ids)
     {
-      IDData data = e.nextElement();
       if(data.type.equals(type))
         return data;
     }
@@ -638,25 +572,25 @@ public class GedFile implements Cloneable
 
   public int getMaxIndividualId()
   {
-    IDData data = findIdData(Tag.INDI);
+    IDData data = findIdData(Tag.INDIVIDUAL);
     return data.next - 1;
   }
 
   public int getMaxFamilyId()
   {
-    IDData data = findIdData(Tag.FAM);
+    IDData data = findIdData(Tag.FAMILY);
     return data.next - 1;
   }
 
-  public Filter updateFilter(Filter f)
+  public GedFileFilter updateFilter(GedFileFilter f)
   {
-    f.learn(records);
+    f.learn(root);
     return f;
   }
 
-  public void apply(Filter f)
+  public void apply(GedFileFilter f)
   {
-    f.apply(records);
+    f.apply(root);
   }
 
   /*

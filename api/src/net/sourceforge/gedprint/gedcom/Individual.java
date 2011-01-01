@@ -1,7 +1,9 @@
 package net.sourceforge.gedprint.gedcom;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /** Ein Individuum.
  * 
@@ -13,7 +15,7 @@ public class Individual extends Record
 
   public Individual(String id)
   {
-    super(Tag.INDI, id);
+    super(Tag.INDIVIDUAL, id);
   }
 
   /** erstellt ein Individuum anhand eines vorhandenen Records.
@@ -24,12 +26,12 @@ public class Individual extends Record
   {
     this(rec.getID());
 
-    if(!rec.isTag(Tag.INDI))
+    if(!rec.isTag(Tag.INDIVIDUAL))
       throw new InvalidDataException("not an Individual"); //$NON-NLS-1$
 
     setLevel(rec.getLevel());
     setContent(rec.getContent());
-    addSubRecords(rec.elements());
+    addSubRecords(rec.asList());
   }
 
   public String getFullName()
@@ -39,7 +41,7 @@ public class Individual extends Record
     if(name.getContent() != null)
       return name.getContent();
 
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
 
     if(name.getSubRecord(Tag.NAME_PREFIX) != null)
       buf.append(name.getSubRecord(Tag.NAME_PREFIX));
@@ -54,7 +56,9 @@ public class Individual extends Record
     {
       if(buf.length() > 0)
         buf.append(' ');
-      buf.append('/' + name.getSubRecord(Tag.SURNAME).toString() + '/');
+      buf.append('/');
+      buf.append(name.getSubRecord(Tag.SURNAME).toString());
+      buf.append('/');
     }
     if(buf.length() > 0)
       return buf.toString();
@@ -69,7 +73,7 @@ public class Individual extends Record
 
   public boolean isDead()
   {
-    if(getSubRecord(Tag.DEAT) != null)
+    if(getSubRecord(Tag.DEATH) != null)
       return true;
 
     return getAge() > MAX_LIVING_AGE;
@@ -86,9 +90,9 @@ public class Individual extends Record
       Calendar dDate = null;
       if(birth.getSubRecord(Tag.DATE) != null)
         bDate = parseDate(birth.getSubRecord(Tag.DATE).getContent());
-      if(getSubRecord(Tag.DEAT) != null)
+      if(getSubRecord(Tag.DEATH) != null)
       {
-        Record death = getSubRecord(Tag.DEAT);
+        Record death = getSubRecord(Tag.DEATH);
         if(death.getSubRecord(Tag.DATE) != null)
           dDate = parseDate(death.getSubRecord(Tag.DATE).getContent());
       }
@@ -107,7 +111,7 @@ public class Individual extends Record
 
   public Date getDeathDate()
   {
-    return getDate(Tag.DEAT);
+    return getDate(Tag.DEATH);
   }
 
   private Date getDate(Tag tag)
@@ -139,7 +143,8 @@ public class Individual extends Record
       {
         return getUID().equals(i.getUID());
       }
-      else if(getID()!=null && i.getID()!=null){
+      else if(getID() != null && i.getID() != null)
+      {
         return getID().equals(i.getID());
       }
     }
@@ -201,20 +206,19 @@ public class Individual extends Record
    */
   public Family getDataChildFamily()
   {
-    Record subRecord = getSubRecord(Tag.FAMC);
+    Record subRecord = getSubRecord(Tag.FAMILY_AS_CHILD);
     subRecord = findID(subRecord.getContent());
     return (Family)subRecord;
 
   }
 
-  public Family[] getDataSpouceFamilies()
+  public List<Family> getDataSpouceFamilies()
   {
-    Record[] subRecords = getSubRecords(Tag.FAM_SPOUSE);
-    Family[] fams = new Family[subRecords.length];
-    for(int i = 0; i < subRecords.length; i++)
-    {
-      fams[i] = (Family)findID(subRecords[i].getContent());
-    }
+    List<Record> subRecords = getSubRecords(Tag.FAMILY_AS_SPOUSE);
+    List<Family> fams = new ArrayList<Family>();
+    for(Record record : subRecords)
+      fams.add(findID(record.getContent(), Family.class));
+
     return fams;
   }
 

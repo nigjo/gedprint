@@ -1,3 +1,0 @@
-<project name="fambook" basedir=".">
-  <import file="../build.xml"/>
-</project>

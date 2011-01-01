@@ -5,10 +5,11 @@ import java.text.DateFormatSymbols;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Eine Zeile innhalb einer Gedcom-Datei. Alle Folgezeilen der Gedcom-Datei mit
@@ -17,20 +18,14 @@ import java.util.Vector;
  * 
  * @author nigjo
  */
-public class Record implements Cloneable, Comparable<Record>
+public class Record implements Cloneable, Comparable<Record>, Iterable<Record>
 {
   private static String[] months;
-
   private Record parent;
-
-  private Vector<Record> entries;
-
+  private List<Record> entries;
   private String type;
-
   private String content;
-
-  private String ID;
-
+  private String recordID;
   private int level = -1;
 
   public Record()
@@ -50,21 +45,16 @@ public class Record implements Cloneable, Comparable<Record>
     setID(id);
   }
 
-  public Enumeration<Record> elements()
+  public List<Record> asList()
   {
-    if(entries != null)
-      return entries.elements();
-    return new Enumeration<Record>() {
-      public boolean hasMoreElements()
-      {
-        return false;
-      }
+    if(entries == null)
+      return Collections.emptyList();
+    return entries;
+  }
 
-      public Record nextElement()
-      {
-        throw new NoSuchElementException();
-      }
-    };
+  public Iterator<Record> iterator()
+  {
+    return asList().iterator();
   }
 
   /**
@@ -88,10 +78,8 @@ public class Record implements Cloneable, Comparable<Record>
     }
     else
     {
-      Enumeration<Record> e = elements();
-      while(e.hasMoreElements())
+      for(Record r : this)
       {
-        Record r = e.nextElement();
         if(r.getType().equals(type))
           return r;
       }
@@ -106,22 +94,27 @@ public class Record implements Cloneable, Comparable<Record>
    *         Record keine Untereintraege vom gesuchten Typ hat das Feld die
    *         Laenge 0.
    */
-  public Record[] getSubRecords(Tag tag)
+  public List<Record> getSubRecords(Tag tag)
   {
     return getSubRecords(tag.toString());
   }
 
-  public Record[] getSubRecords(String type)
+  public <R extends Record> List<R> getSubRecords(String tag, Class<R> type)
   {
-    Vector<Record> found = new Vector<Record>();
-    Enumeration<Record> e = elements();
-    while(e.hasMoreElements())
+    List<R> found = new ArrayList<R>();
+    for(Record r : this)
     {
-      Record r = e.nextElement();
-      if(r.getType().equals(type))
-        found.add(r);
+      if(!type.isInstance(r))
+        continue;
+      if(r.getType().equals(tag))
+        found.add(type.cast(r));
     }
-    return found.toArray(new Record[found.size()]);
+    return found;
+  }
+
+  public List<Record> getSubRecords(String type)
+  {
+    return getSubRecords(type, Record.class);
   }
 
   public int getSubRecordCount(Tag tag)
@@ -131,11 +124,9 @@ public class Record implements Cloneable, Comparable<Record>
 
   public int getSubRecordCount(String string)
   {
-    Enumeration<Record> e = elements();
     int counter = 0;
-    while(e.hasMoreElements())
+    for(Record r : this)
     {
-      Record r = e.nextElement();
       if(r.getType().equals(string))
         counter++;
     }
@@ -165,7 +156,7 @@ public class Record implements Cloneable, Comparable<Record>
       throw new InvalidDataException("Level jump"); //$NON-NLS-1$
 
     if(entries == null)
-      entries = new Vector<Record>();
+      entries = new ArrayList<Record>();
 
     if(!entries.contains(rec))
     {
@@ -179,10 +170,10 @@ public class Record implements Cloneable, Comparable<Record>
     return rec;
   }
 
-  public void addSubRecords(Enumeration<Record> recs)
+  public void addSubRecords(List<Record> recs)
   {
-    while(recs.hasMoreElements())
-      addSubRecord(recs.nextElement());
+    for(Record record : recs)
+      addSubRecord(record);
   }
 
   /**
@@ -207,6 +198,11 @@ public class Record implements Cloneable, Comparable<Record>
       return getFile().findID(id);
     }
     return null;
+  }
+
+  public <R extends Record> R findID(String content, Class<R> recordClass)
+  {
+    return recordClass.cast(findID(content));
   }
 
   /**
@@ -234,7 +230,7 @@ public class Record implements Cloneable, Comparable<Record>
 
   public String getID()
   {
-    return ID;
+    return recordID;
   }
 
   public String getIDCleared()
@@ -280,9 +276,9 @@ public class Record implements Cloneable, Comparable<Record>
     content = string;
   }
 
-  public void setID(String string)
+  public final void setID(String string)
   {
-    ID = string;
+    recordID = string;
   }
 
   public void setLevel(int i)
@@ -295,7 +291,7 @@ public class Record implements Cloneable, Comparable<Record>
     parent = record;
   }
 
-  public void setType(String string)
+  public final void setType(String string)
   {
     type = string;
   }
@@ -304,12 +300,10 @@ public class Record implements Cloneable, Comparable<Record>
   {
     if(entries != null)
     {
-      Enumeration<Record> e = entries.elements();
-      while(e.hasMoreElements())
-      {
-        e.nextElement().clear();
-      }
-      entries.removeAllElements();
+      for(Record record : entries)
+        record.clear();
+      entries.clear();
+      entries = null;
     }
   }
 
@@ -317,10 +311,14 @@ public class Record implements Cloneable, Comparable<Record>
   @Override
   public String toString()
   {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append(getType());
     if(getID() != null)
-      buf.append(" (" + getID() + ')'); //$NON-NLS-1$
+    {
+      buf.append(" (");//$NON-NLS-1$
+      buf.append(getID());
+      buf.append(')');
+    }
     return buf.toString();
   }
 
@@ -333,8 +331,8 @@ public class Record implements Cloneable, Comparable<Record>
   {
     String space = String.valueOf(' ');
     out.print(level + space);
-    if(level == 0 && ID != null)
-      out.print(ID + space);
+    if(level == 0 && recordID != null)
+      out.print(recordID + space);
 
     out.print(type);
 
@@ -345,9 +343,8 @@ public class Record implements Cloneable, Comparable<Record>
 
     if(entries != null)
     {
-      Enumeration<Record> e = entries.elements();
-      while(e.hasMoreElements())
-        e.nextElement().print(out);
+      for(Record record : entries)
+        record.print(out);
     }
   }
 
@@ -355,29 +352,25 @@ public class Record implements Cloneable, Comparable<Record>
    * erstellt eine Kopie des Records und aller seiner Untereintraege.
    */
   @Override
-  public Object clone()
+  public Record clone()
   {
     try
     {
-      Record r = (Record) super.clone();
+      Record r = (Record)super.clone();
 
       r.parent = null;
 
-      if(this.type != null)
-        r.type = new String(this.type);
-      if(this.content != null)
-        r.content = new String(this.content);
-      if(this.ID != null)
-        r.ID = new String(this.ID);
+      r.type = this.type;
+      r.content = this.content;
+      r.recordID = this.recordID;
       r.level = this.level;
 
       if(entries != null)
       {
-        r.entries = new Vector<Record>();
+        r.entries = new ArrayList<Record>();
 
-        Enumeration<Record> e = entries.elements();
-        while(e.hasMoreElements())
-          r.entries.add((Record) e.nextElement().clone());
+        for(Record record : entries)
+          r.entries.add(record.clone());
       }
 
       return r;
@@ -441,39 +434,39 @@ public class Record implements Cloneable, Comparable<Record>
       boolean found = false;
       switch(date.length)
       {
-      case 1:
-        c.set(Calendar.YEAR, Integer.parseInt(date[0]));
-        found = true;
-        break;
-      case 2:
-        for(int i = 0; i < months.length; i++)
-        {
-          if(months[i].equals(date[0].toUpperCase()))
+        case 1:
+          c.set(Calendar.YEAR, Integer.parseInt(date[0]));
+          found = true;
+          break;
+        case 2:
+          for(int i = 0; i < months.length; i++)
           {
-            c.set(Calendar.MONTH, i);
-            c.set(Calendar.YEAR, Integer.parseInt(date[1]));
-            found = true;
-            break;
+            if(months[i].equals(date[0].toUpperCase()))
+            {
+              c.set(Calendar.MONTH, i);
+              c.set(Calendar.YEAR, Integer.parseInt(date[1]));
+              found = true;
+              break;
+            }
           }
-        }
-        break;
-      case 3:
-        for(int i = 0; i < months.length; i++)
-        {
-          if(months[i].equals(date[1].toUpperCase()))
+          break;
+        case 3:
+          for(int i = 0; i < months.length; i++)
           {
-            c.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date[0]));
-            c.set(Calendar.MONTH, i);
-            c.set(Calendar.YEAR, Integer.parseInt(date[2]));
-            found = true;
-            break;
+            if(months[i].equals(date[1].toUpperCase()))
+            {
+              c.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date[0]));
+              c.set(Calendar.MONTH, i);
+              c.set(Calendar.YEAR, Integer.parseInt(date[2]));
+              found = true;
+              break;
+            }
           }
-        }
-        break;
+          break;
       }
 
       if(!found)
-        System.out.println(geddate);
+        Logger.getLogger(Record.class.getName()).fine(geddate);
     }
 
     return c;
@@ -494,12 +487,6 @@ public class Record implements Cloneable, Comparable<Record>
       return;
 
     Collections.sort(entries);
-  }
-
-  /** @deprecated */
-  public String getClearedID()
-  {
-    return getIDCleared();
   }
 
   /**
@@ -529,5 +516,4 @@ public class Record implements Cloneable, Comparable<Record>
       return false;
     return tag.toString().equals(rtype);
   }
-
 }

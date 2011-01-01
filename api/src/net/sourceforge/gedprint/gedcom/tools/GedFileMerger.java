@@ -1,9 +1,14 @@
-package net.sourceforge.gedprint.gedcom;
+package net.sourceforge.gedprint.gedcom.tools;
 
-import java.util.Enumeration;
+import java.lang.reflect.Field;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import net.sourceforge.gedprint.core.Renumberer;
+import net.sourceforge.gedprint.gedcom.GedFile;
+import net.sourceforge.gedprint.gedcom.Individual;
+import net.sourceforge.gedprint.gedcom.Record;
+import net.sourceforge.gedprint.gedcom.Tag;
 
 /** Neue Klasse erstellt am 06.02.2005.
  * 
@@ -13,7 +18,6 @@ public class GedFileMerger
 {
   //private GedFile master;
   private GedFile result;
-
   //LinkedList check;
   LinkedList<Individual> unchecked;
 
@@ -25,24 +29,24 @@ public class GedFileMerger
 
   private void add(GedFile addon)
   {
-    
-    Renumberer renum = new Renumberer((GedFile) addon.clone());
-    renum.renumber(result.getMaxIndividualId() + 1, result
-        .getMaxFamilyId() + 1);
-    
+    Renumberer renum = new Renumberer(addon.clone());
+    renum.renumber(result.getMaxIndividualId() + 1, result.getMaxFamilyId() + 1);
+
     GedFile kopie = renum.getFile();
-    
-    Enumeration<Record> recs = kopie.records.elements();
-    while(recs.hasMoreElements())
+
+    kopie.findRecord(Tag.HEAD);
+
+    Record copyRoot = getRoot(kopie);
+    Record destRoot = getRoot(result);
+
+    for(Record rec : copyRoot)
     {
-      Record rec = recs.nextElement();
-      if(!"HEAD".equals(rec.getType()) && //$NON-NLS-1$
-          !"TRLR".equals(rec.getType())) //$NON-NLS-1$
-      {
-        result.records.addSubRecord(rec);
-      }
+      if(rec.isTag(Tag.HEAD) || rec.isTag(Tag.END_OF_FILE_MARK))
+        continue;
+
+      destRoot.addSubRecord(rec);
     }
-    
+
     if(true)
       return;
     //++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -106,7 +110,6 @@ public class GedFileMerger
 
     return merger.getMergedFile();
   }
-
   /** UIDs Stimmen ueberein. */
   public static int FULL_MATCH = 10;
   /** Lebensspannne (Geburt bis Tot) stimmen ueberein. */
@@ -115,6 +118,22 @@ public class GedFileMerger
   public static int BIRTH_MATCH = 8;
   /** keine Uebereinstimmung gefunden. */
   public static int NO_MATCH = 0;
+
+  private Record getRoot(GedFile file)
+  {
+    try
+    {
+      Field rootField = GedFile.class.getDeclaredField("root");
+      rootField.setAccessible(true);
+      return (Record)rootField.get(file);
+    }
+    catch(Exception ex)
+    {
+      Logger.getLogger(GedFileMerger.class.getName()).log(Level.SEVERE, null, ex);
+      return null;
+    }
+  }
+
   class MergeRecord
   {
     int grad;

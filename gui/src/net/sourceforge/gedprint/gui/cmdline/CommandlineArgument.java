@@ -2,7 +2,8 @@ package net.sourceforge.gedprint.gui.cmdline;
 
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+
+import net.sourceforge.gedprint.gui.core.Bundle;
 
 public enum CommandlineArgument
 {
@@ -187,10 +188,8 @@ public enum CommandlineArgument
     {
       try
       {
-        ResourceBundle bundle =
-            ResourceBundle.getBundle(CommandlineArgument.class.getName());
         String key = getMessage();
-        String pattern = bundle.getString(key);
+        String pattern = Bundle.getString(key, CommandlineArgument.class);
         if(args != null && args.length > 0)
           return MessageFormat.format(pattern, args);
         else

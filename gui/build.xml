@@ -1,3 +1,0 @@
-<project name="core.gui" basedir=".">
-  <import file="../build.xml"/>
-</project>
