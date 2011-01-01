@@ -3,9 +3,10 @@ package net.sourceforge.gedprint.print;
 import java.awt.Dimension;
 import java.awt.PrintJob;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
@@ -20,7 +21,7 @@ abstract public class PrintManager
 
   private JFrame owner;
 
-  private Vector<BasicPage> pages;
+  private List<BasicPage> pages;
 
   private JProgressBar progressBar;
   private Family family;
@@ -35,7 +36,7 @@ abstract public class PrintManager
     setOwner(owner);
   }
 
-  public void setOwner(JFrame owner)
+  public final void setOwner(JFrame owner)
   {
     this.owner = owner;
   }
@@ -49,7 +50,7 @@ abstract public class PrintManager
   public void add(BasicPage page)
   {
     if(pages == null)
-      pages = new Vector<BasicPage>();
+      pages = new ArrayList<BasicPage>();
     pages.add(page);
   }
 
@@ -184,7 +185,7 @@ abstract public class PrintManager
       // Familien der Nachfahren ausgeben
 
       // Familien suchen
-      Vector<Family> fams = record.getChildFamilies(fullTree);
+      List<Family> fams = record.getChildFamilies(fullTree);
       // ... und sortieren nach Bogennummer
       Collections.sort(fams, new Comparator<Family>() {
         public int compare(Family o1, Family o2)
@@ -199,10 +200,10 @@ abstract public class PrintManager
         }
       });
       // Alle Familien eintragen
-      for(Family family : fams)
+      for(Family fam : fams)
       {
         fill(PrintManager.EVEN);
-        add(createFamilyPages(family));
+        add(createFamilyPages(fam));
       }
     }
   }

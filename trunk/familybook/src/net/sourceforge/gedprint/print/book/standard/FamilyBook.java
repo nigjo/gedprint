@@ -1,7 +1,7 @@
 package net.sourceforge.gedprint.print.book.standard;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
@@ -36,7 +36,7 @@ public class FamilyBook extends PrintManager
   protected BasicPage[] createFamilyPages(Family fam)
   {
     BasicPage currentPage = new Page(fam);
-    Vector<BasicPage> pageHarvester = new Vector<BasicPage>();
+    List<BasicPage> pageHarvester = new ArrayList<BasicPage>();
 
     // Eltern
     currentPage
@@ -55,8 +55,7 @@ public class FamilyBook extends PrintManager
     currentPage
         .add(new HeaderElement(Messages.getString("print.data.children"))); //$NON-NLS-1$
     int count = 3;
-    Enumeration children = fam.getChildren();
-    while(children.hasMoreElements())
+    for(Individual individual : fam.getChildren())
     {
       if(count % 5 == 0)
       {
@@ -65,7 +64,7 @@ public class FamilyBook extends PrintManager
         currentPage = new Page(fam);
         count = 0;
       }
-      currentPage.add(new ChildElement((Individual) children.nextElement()));
+      currentPage.add(new ChildElement(individual));
       count++;
     }
     // Auffuellen

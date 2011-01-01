@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JMenu;
@@ -280,8 +281,8 @@ public class MenuGenerator
 
   private static JMenu createSubMenu(String actionName)
   {
-    Logger.getLogger(MenuGenerator.class.getName()).fine(
-        "submenu " + actionName); //$NON-NLS-1$
+    Logger.getLogger(MenuGenerator.class.getName()).log(
+        Level.FINE, "submenu {0}", actionName); //$NON-NLS-1$
     JMenu current = new JMenu();
     BasicAction action = getAction(actionName);
     current.setAction(action);

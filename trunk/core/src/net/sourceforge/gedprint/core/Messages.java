@@ -10,7 +10,9 @@ import java.util.ResourceBundle;
  * @todo Hier fehlt die Beschreibung der Klasse.
  *
  * @author hof
+ * @deprecated use Bundle instead.
  */
+@Deprecated
 public class Messages
 {
   private Messages()

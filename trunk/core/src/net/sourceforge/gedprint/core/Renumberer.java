@@ -1,6 +1,6 @@
 package net.sourceforge.gedprint.core;
 
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 import net.sourceforge.gedprint.gedcom.Family;
@@ -27,26 +27,25 @@ public class Renumberer
     //
     // Individuen
     //
-    Enumeration individuals = data.getIndividuals();
-    while(individuals.hasMoreElements())
+    List<Record> individuals = data.getIndividuals();
+    for(Record record : individuals)
     {
-      Individual in = (Individual) individuals.nextElement();
+      Individual in = (Individual) record;
       String old = in.getID();
       String neu = indiNum.getProperty(old);
       in.setID(neu);
 
       // als Kind
-      changeIDs(in.getSubRecords(Tag.FAM_CHILD), famNum);
-      changeIDs(in.getSubRecords(Tag.FAM_SPOUSE), famNum);
+      changeIDs(in.getSubRecords(Tag.FAMILY_AS_CHILD), famNum);
+      changeIDs(in.getSubRecords(Tag.FAMILY_AS_SPOUSE), famNum);
     }
 
     //
     // Familien
     //
-    Enumeration families = data.getFamilies();
-    while(families.hasMoreElements())
+    for(Record record : data.getFamilies())
     {
-      Family fam = (Family) families.nextElement();
+      Family fam = (Family) record;
       String old = fam.getID();
       String neu = famNum.getProperty(old);
       fam.setID(neu);
@@ -62,25 +61,24 @@ public class Renumberer
     //
 }
 
-  private void changeIDs(Record[] subRecords, Properties numbers)
+  private void changeIDs(List<Record> subRecords, Properties numbers)
   {
     String old;
     String neu;
-    for(int i = 0; i < subRecords.length; i++)
+    for(Record record : subRecords)
     {
-      old = subRecords[i].getContent();
+      old = record.getContent();
       neu = numbers.getProperty(old);
-      subRecords[i].setContent(neu);
+      record.setContent(neu);
     }
   }
 
-  private Properties findIds(Enumeration records, int startnum)
+  private Properties findIds(List<Record> records, int startnum)
   {
     String prefix = null;
     Properties numbers = new Properties();
-    while(records.hasMoreElements())
+    for(Record rec : records)
     {
-      Record rec = (Record) records.nextElement();
       String key = rec.getID();
       if (prefix == null)
       {

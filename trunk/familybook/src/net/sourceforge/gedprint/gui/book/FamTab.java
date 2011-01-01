@@ -3,8 +3,8 @@ package net.sourceforge.gedprint.gui.book;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -24,7 +24,7 @@ public class FamTab extends JPanel
   // private final Family fam;
   private boolean firstpaint = true;
 
-  Vector<Element> elements;
+  List<Element> elements;
 
   public FamTab(Family fam)
   {
@@ -35,7 +35,7 @@ public class FamTab extends JPanel
     setBackground(Color.WHITE);
 
     // this.fam = fam;
-    elements = new Vector<Element>();
+    elements = new ArrayList<Element>();
 
     elements.add(new HeaderElement(Messages.getString("print.data.parents"))); //$NON-NLS-1$
     elements.add(new ParentElement(
@@ -49,11 +49,9 @@ public class FamTab extends JPanel
 
     // Kinder
     elements.add(new HeaderElement(Messages.getString("print.data.children"))); //$NON-NLS-1$
-    Enumeration children = fam.getChildren();
-    while(children.hasMoreElements())
-    {
-      elements.add(new ChildElement((Individual) children.nextElement()));
-    }
+    List<Individual> children = fam.getChildren();
+    for(Individual child : children)
+      elements.add(new ChildElement(child));
     
     for(Element e : elements)
     {

@@ -164,7 +164,7 @@ public class ParentElement extends Element
     //
     // weitere Ehen
     //
-    if(record.getSubRecordCount(Tag.FAM_SPOUSE) > 1)
+    if(record.getSubRecordCount(Tag.FAMILY_AS_SPOUSE) > 1)
     {
       g.setFont(getFont(FONT_TITLE));
       fontline = getFontline(g);

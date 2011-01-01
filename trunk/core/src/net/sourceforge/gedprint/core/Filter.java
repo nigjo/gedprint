@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
 
 import net.sourceforge.gedprint.gedcom.Record;
 
@@ -25,7 +25,7 @@ public class Filter
   int level;
   String recType;
 
-  Vector<Filter> subfilter;
+  List<Filter> subfilter;
 
   String[] deny;
 
@@ -42,7 +42,7 @@ public class Filter
   public Filter add(Filter sub)
   {
     if (subfilter == null)
-      subfilter = new Vector<Filter>();
+      subfilter = new ArrayList<Filter>();
 
     if (!subfilter.contains(sub))
     {
@@ -90,10 +90,9 @@ public class Filter
 
     if (subfilter != null)
     {
-      Enumeration<Filter> e = subfilter.elements();
-      while (e.hasMoreElements())
+      for(Filter element : subfilter)
       {
-        e.nextElement().store(out);
+        element.store(out);
       }
     }
   }
@@ -131,17 +130,16 @@ public class Filter
           args[1] = deny[i].concat(new String(buffer));
         }
         else
-          args[1] = new String(deny[i]);
+          args[1] = deny[i];
         args[2] = prefix + recType + '/' + deny[i];
         out.println(MessageFormat.format(pattern, args));
       }
     }
     if (subfilter != null)
     {
-      Enumeration<Filter> e = subfilter.elements();
-      while (e.hasMoreElements())
+      for(Filter filter : subfilter)
       {
-        e.nextElement().storeDeny(out, prefix + recType + '/');
+        filter.storeDeny(out, prefix + recType + '/');
       }
     }
   }
@@ -204,10 +202,8 @@ public class Filter
       parent.learn(current);
       return;
     }
-    Enumeration<Record> e = current.elements();
-    while (e != null && e.hasMoreElements())
+    for(Record sub : current)
     {
-      Record sub = e.nextElement();
       if (accept(sub))
       {
         getSubFilter(sub.getType()).learn(sub);
@@ -220,7 +216,7 @@ public class Filter
         }
         else
         {
-          Vector<String> list = new Vector<String>(Arrays.asList(deny));
+          List<String> list = new ArrayList<String>(Arrays.asList(deny));
           String t = sub.getType();
           if (!list.contains(t))
           {
@@ -239,12 +235,10 @@ public class Filter
       parent.apply(current);
       return;
     }
-    Vector<Record> del=new Vector<Record>();
-    
-    Enumeration<Record> e = current.elements();
-    while (e != null && e.hasMoreElements())
+    List<Record> del=new ArrayList<Record>();
+
+    for(Record sub : current)
     {
-      Record sub = e.nextElement();
       if (accept(sub))
       {
         getSubFilter(sub.getType()).apply(sub);
@@ -256,10 +250,9 @@ public class Filter
       }
     }
     // Daten tatsaechlich loeschen
-    Enumeration<Record> recs = del.elements();
-    while(recs.hasMoreElements())
+    for(Record delRec : del)
     {
-      current.delSubRecord(recs.nextElement());
+      current.delSubRecord(delRec);
     }
   }
   
@@ -267,10 +260,8 @@ public class Filter
   {
     if (subfilter != null)
     {
-      Enumeration<Filter> e = subfilter.elements();
-      while (e.hasMoreElements())
+      for(Filter f : subfilter)
       {
-        Filter f = e.nextElement();
         if (f.getType().equals(string))
           return f;
       }
