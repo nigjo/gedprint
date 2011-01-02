@@ -17,20 +17,17 @@ abstract public class PrintManager
 {
   public static final int ODD = 1;
   public static final int EVEN = 0;
-  public static final String VERSION_STRING = "GEDPrint v0.1 alpha"; //$NON-NLS-1$
-
+  public static final String VERSION_STRING = "GEDPrint v0.2 alpha"; //$NON-NLS-1$
   private JFrame owner;
-
   private List<BasicPage> pages;
-
   private JProgressBar progressBar;
   private Family family;
-  
+
   public PrintManager()
   {
     super();
   }
-  
+
   public PrintManager(JFrame owner)
   {
     setOwner(owner);
@@ -149,7 +146,9 @@ abstract public class PrintManager
   public void fill(int evenodd)
   {
     while(getPageCount() % 2 != evenodd)
+    {
       add(new FillPage());
+    }
   }
 
   public int getPageCount()
@@ -187,14 +186,16 @@ abstract public class PrintManager
       // Familien suchen
       List<Family> fams = record.getChildFamilies(fullTree);
       // ... und sortieren nach Bogennummer
-      Collections.sort(fams, new Comparator<Family>() {
+      Collections.sort(fams, new Comparator<Family>()
+      {
+        @Override
         public int compare(Family o1, Family o2)
         {
-          int i1=o1.getIDNumber();
-          int i2=o2.getIDNumber();
-          if(i1==i2)
+          int i1 = o1.getIDNumber();
+          int i2 = o2.getIDNumber();
+          if(i1 == i2)
             return 0;
-          if(i1<i2)
+          if(i1 < i2)
             return -1;
           return 1;
         }
@@ -214,6 +215,7 @@ abstract public class PrintManager
   {
     this.family = family;
   }
+
   public Family getTitleFamily()
   {
     return family;

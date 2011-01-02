@@ -1,25 +1,28 @@
-package net.sourceforge.gedprint.gui.core;
+package net.sourceforge.gedprint.gui;
 
+import net.sourceforge.gedprint.gui.core.DocumentManager;
 import net.sourceforge.gedprint.ui.GedDocumentFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import net.sourceforge.gedprint.core.GedPrintStarter;
 import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gedcom.GedFile;
-import net.sourceforge.gedprint.gui.GedPrintGui;
+import net.sourceforge.gedprint.gui.action.AddRecordAction;
 import net.sourceforge.gedprint.gui.action.OpenGedcom;
 import net.sourceforge.gedprint.gui.cmdline.CommandlineArgument;
+import net.sourceforge.gedprint.gui.core.ActionManager;
+import net.sourceforge.gedprint.gui.core.GedFrame;
 import static net.sourceforge.gedprint.gui.cmdline.CommandlineArgument.*;
+import net.sourceforge.gedprint.ui.GedPainter;
 
 /**
  * Neue Klasse erstellt von hof. Erstellt am Jun 25, 2009, 1:51:32 PM
@@ -30,17 +33,6 @@ import static net.sourceforge.gedprint.gui.cmdline.CommandlineArgument.*;
  */
 public class GuiStartup implements GedPrintStarter
 {
-  static
-  {
-    // Protokollierung initialisieren
-    GuiLogger.initLogger();
-
-    // Programmstart in die Protokolldatei mit Zeitstempel
-    Logger logger = Logger.getLogger(GedPrintGui.class.getName());
-    logger.info("------------------------------"); //$NON-NLS-1$
-    logger.info(new SimpleDateFormat().format(new Date()));
-  }
-
   public GuiStartup()
   {
     try
@@ -115,17 +107,46 @@ public class GuiStartup implements GedPrintStarter
     if(_DEFAULT.isDefined())
     {
       String file = _DEFAULT.getArgument();
+      GedFile gedfile = null;
       try
       {
-        GedFile gedfile = new GedFile(file);
+        gedfile = new GedFile(file);
         //Lookup l = Lookup.create(gedfile);
 
-        //ActionManager.setActionProperty(BasicAction.PROPERTY_FILE, gedfile);
+        OpenGedcom action = ActionManager.getAction(OpenGedcom.class);
         if(type.isDefined())
         {
-          //TODO: add factory to lookup
+          String argument = type.getArgument();
+          int dot = argument.lastIndexOf('.');
+          Collection<? extends GedDocumentFactory> factories =
+              Lookup.getGlobal().lookupAll(GedDocumentFactory.class);
+          GedDocumentFactory typeFactory = null;
+          for(GedDocumentFactory factory : factories)
+          {
+            if(dot > 0)
+            {
+              if(argument.equals(factory.getClass().getName()))
+              {
+                typeFactory = factory;
+                break;
+              }
+            }
+            else
+            {
+              if(argument.equals(factory.getName()))
+              {
+                typeFactory = factory;
+                break;
+              }
+            }
+          }
+          if(typeFactory == null)
+            action.openFile(gedfile, false);
+          else
+            action.openFile(gedfile, typeFactory);
         }
-        ActionManager.performAction(OpenGedcom.class, "openfile", gedfile);
+        else
+          action.openFile(gedfile, true);
       }
       catch(FileNotFoundException ex)
       {
@@ -138,18 +159,36 @@ public class GuiStartup implements GedPrintStarter
         return;
       }
 
-      // StartID setzen, wenn Datei gelesen wurde
-      String startid = null;
-      if(indi.isDefined())
-        startid = indi.getArgument();
-      else if(family.isDefined())
-        startid = family.getArgument();
-
-      if(startid != null)
+      SwingUtilities.invokeLater(new Runnable()
       {
-        // TODO: frame.setStartID('@' + startid + '@');
-        ActionManager.performAction("AddRecordAction", "id", '@' + startid + '@'); //$NON-NLS-1$
-      }
+        @Override
+        public void run()
+        {
+          GedPainter painter = DocumentManager.getActiveDocument();
+          if(painter == null)
+            return;
+          GedFile activeFile = painter.getGedFile();
+          if(activeFile == null)
+            return;
+          // StartID setzen, wenn Datei gelesen wurde
+          String startid = null;
+          if(indi.isDefined())
+            startid = indi.getArgument();
+          else if(family.isDefined())
+            startid = family.getArgument();
+
+          if(startid != null)
+          {
+            // TODO: frame.setStartID('@' + startid + '@');
+            AddRecordAction action = ActionManager.getAction(
+                AddRecordAction.class);
+            action.setProperty("GedFile", activeFile);
+            action.setProperty("GedPainter", painter);
+            action.addId('@' + startid + '@');
+            //ActionManager.performAction("AddRecordAction", "id", '@' + startid + '@'); //$NON-NLS-1$
+          }
+        }
+      });
     }
   }
 

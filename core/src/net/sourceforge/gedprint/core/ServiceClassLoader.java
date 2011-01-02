@@ -7,6 +7,9 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -25,14 +28,20 @@ class ServiceClassLoader extends URLClassLoader
 
   public ServiceClassLoader(ClassLoader parent)
   {
-    super(new URL[0], parent);
+    super(getServiceJars(), parent);
+  }
 
+  private static URL[] getServiceJars()
+  {
     File appdir = findAppDir(ServiceClassLoader.class);
     if(appdir == null)
-      return;
-    findServiceJars(new File(appdir, "lib"));
-    findServiceJars(new File(appdir, "services"));
-    findServiceJars(new File(System.getProperty("user.dir")));
+      return new URL[0];
+    List<URL> harvester = new ArrayList<URL>();
+    harvester.addAll(findServiceJars(new File(appdir, "lib")));
+    harvester.addAll(findServiceJars(new File(appdir, "services")));
+    harvester.addAll(findServiceJars(new File(System.getProperty("user.dir"))));
+
+    return harvester.toArray(new URL[harvester.size()]);
   }
 
   private static File findAppDir(Class<?> aClass)
@@ -66,8 +75,8 @@ class ServiceClassLoader extends URLClassLoader
     // an dieser Stelle falsch. Lieber Protokollieren und abbrechen.
     if(!parentpath.endsWith("!/"))
     {
-      Logger.getLogger(ServiceClassLoader.class.getName()).warning(
-          "invalid jar locator: " + clazzLocation.toString());
+      Logger.getLogger(ServiceClassLoader.class.getName()).log(
+          Level.WARNING, "invalid jar locator: {0}", clazzLocation.toString());
       return null;
     }
     try
@@ -75,8 +84,8 @@ class ServiceClassLoader extends URLClassLoader
       URL jarpath = new URL(parentpath.substring(0, parentpath.length() - 2));
       if(!"file".equals(jarpath.getProtocol()))
       {
-        Logger.getLogger(ServiceClassLoader.class.getName()).warning(
-            "not a local jar file: " + jarpath.toString());
+        Logger.getLogger(ServiceClassLoader.class.getName()).log(
+            Level.WARNING, "not a local jar file: {0}", jarpath.toString());
         return null;
       }
       File jar = new File(jarpath.toURI());
@@ -98,31 +107,34 @@ class ServiceClassLoader extends URLClassLoader
     return null;
   }
 
-  private void findServiceJars(File servicedir)
+  private static List<URL> findServiceJars(File servicedir)
   {
     if(!servicedir.exists())
-      return;
+      return Collections.emptyList();
     File[] serviceFiles = servicedir.listFiles(new JarFilter());
 
+    List<URL> services = new ArrayList<URL>();
     for(File servicefile : serviceFiles)
     {
       try
       {
         URL serviceLocator = servicefile.toURI().toURL();
-        addURL(serviceLocator);
-        Logger.getLogger(getClass().getName()).config(
-            "added " + servicefile.getName());
+        services.add(serviceLocator);
+        Logger.getLogger(ServiceClassLoader.class.getName()).log(
+            Level.CONFIG, "added {0}", servicefile.getName());
       }
       catch(MalformedURLException ex)
       {
-        Logger.getLogger(getClass().getName()).log(Level.WARNING,
+        Logger.getLogger(ServiceClassLoader.class.getName()).log(Level.WARNING,
             servicefile.toString(), ex);
       }
     }
+    return services;
   }
 
   private static class JarFilter implements FileFilter
   {
+    @Override
     public boolean accept(File pathname)
     {
       try

@@ -28,7 +28,7 @@ import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
-import net.sourceforge.gedprint.gui.GedPrintGui;
+import net.sourceforge.gedprint.gui.GuiStartup;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.
@@ -123,8 +123,8 @@ public class GedFrame extends JFrame
       super.dispose();
 
       // wenn ich hier angekommen bin, ist kein Fenster mehr sichtbar.
-      Logger logger = Logger.getLogger(GedPrintGui.class.getName());
-      logger.info("quit application"); //$NON-NLS-1$
+      Logger logger = Logger.getLogger(GuiStartup.class.getName());
+      logger.info("Quit application"); //$NON-NLS-1$
       logger.info(new SimpleDateFormat().format(new Date()));
       logger.info("------------------------------"); //$NON-NLS-1$
     }

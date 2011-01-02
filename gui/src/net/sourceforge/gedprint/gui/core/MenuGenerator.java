@@ -25,7 +25,8 @@ public class MenuGenerator
 {
   private JMenuBar menubar;
   private URL resource;
-  private static final String DEFAULT_XML_READER = "org.apache.crimson.parser.XMLReaderImpl"; //$NON-NLS-1$
+  private static final String DEFAULT_XML_READER =
+      "org.apache.crimson.parser.XMLReaderImpl"; //$NON-NLS-1$
 
   private MenuGenerator()
   {
@@ -130,6 +131,7 @@ public class MenuGenerator
     private Locator locator;
     private String lastopen;
 
+    @Override
     public void characters(char[] ch, int start, int length)
         throws SAXException
     {
@@ -143,11 +145,13 @@ public class MenuGenerator
       return menubar;
     }
 
+    @Override
     public void startDocument() throws SAXException
     {
       menubar = null;
     }
 
+    @Override
     public void endDocument() throws SAXException
     {
       if(menubar == null)
@@ -158,6 +162,7 @@ public class MenuGenerator
       // nothing else to be done here
     }
 
+    @Override
     public void startElement(String uri, String localName, String qName,
         Attributes atts) throws SAXException
     {
@@ -181,6 +186,12 @@ public class MenuGenerator
           if(current == null)
             throwSAXException("missing 'submenu' element"); //$NON-NLS-1$
           BasicAction action = getAction(atts.getValue("action")); //$NON-NLS-1$
+          if(action == null)
+          {
+            Logger.getLogger(MenuContentHandler.class.getName()).log(
+                Level.WARNING, "action ''{0}'' not found.", atts.getValue("action"));
+            return;
+          }
           String name = (String)action.getValue(BasicAction.NAME);
           if(name == null || name.trim().length() == 0)
           {
@@ -217,6 +228,7 @@ public class MenuGenerator
       throw new SAXException(message + " in line " + locator.getLineNumber()); //$NON-NLS-1$
     }
 
+    @Override
     public void endElement(String uri, String localName, String qName)
         throws SAXException
     {
@@ -236,34 +248,40 @@ public class MenuGenerator
       }
     }
 
+    @Override
     public void processingInstruction(String target, String data)
         throws SAXException
     {
       Logger.getLogger(getClass().getName()).fine("processingInstruction"); //$NON-NLS-1$
     }
 
+    @Override
     public void setDocumentLocator(Locator locator)
     {
       this.locator = locator;
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException
     {
       Logger.getLogger(getClass().getName()).fine("skippedEntity"); //$NON-NLS-1$
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length)
         throws SAXException
     {
       // as the name says. ignore.
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri)
         throws SAXException
     {
       // We don't care about this.
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException
     {
       // We don't care about this.
@@ -272,6 +290,7 @@ public class MenuGenerator
 
   private static class MenuEntityResolver implements EntityResolver
   {
+    @Override
     public InputSource resolveEntity(String publicId, String systemId)
         throws SAXException, IOException
     {
@@ -291,6 +310,6 @@ public class MenuGenerator
 
   private static BasicAction getAction(String actionName)
   {
-    return ActionManager.getAction(actionName);
+    return ActionManager.getBasicAction(actionName);
   }
 }

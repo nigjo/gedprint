@@ -99,21 +99,24 @@ public class OpenGedcom extends FrameAccessAction
     }
     catch(FileNotFoundException fnfe)
     {
-      String msg = Bundle.getString("action.err.file_not_found", OpenGedcom.class); //$NON-NLS-1$
+      String msg = Bundle.getString("action.err.file_not_found",
+          OpenGedcom.class); //$NON-NLS-1$
       JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
           JOptionPane.WARNING_MESSAGE);
       return;
     }
     catch(IOException ioe)
     {
-      String msg = Bundle.getString("action.err.io-error.read", OpenGedcom.class); //$NON-NLS-1$
+      String msg =
+          Bundle.getString("action.err.io-error.read", OpenGedcom.class); //$NON-NLS-1$
       JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
           JOptionPane.ERROR_MESSAGE);
       return;
     }
     catch(Exception unexpected)
     {
-      String pattern = Bundle.getString("OpenGedcom.err.unexpected", OpenGedcom.class); //$NON-NLS-1$
+      String pattern = Bundle.getString("OpenGedcom.err.unexpected",
+          OpenGedcom.class); //$NON-NLS-1$
       ExceptionEcho.show(unexpected, pattern, 3);
     }
     finally
@@ -136,7 +139,11 @@ public class OpenGedcom extends FrameAccessAction
     GedDocumentFactory factory;
     factory = lookup.lookup(GedDocumentFactory.class);
     if(factory == null)
+    {
       factory = queryFactory();
+      if(factory == null)
+        return null;
+    }
     GedPainter doc = factory.createDocument();
 
     doc.setGedFile(gedFile);
@@ -161,9 +168,11 @@ public class OpenGedcom extends FrameAccessAction
         box.addItem(name);
       }
       JPanel wrapper = new JPanel(new GridLayout(2, 1));
-      wrapper.add(new JLabel(Bundle.getString("OpenGedcom.select_painter", OpenGedcom.class))); //$NON-NLS-1$
+      wrapper.add(new JLabel(Bundle.getString("OpenGedcom.select_painter",
+          OpenGedcom.class))); //$NON-NLS-1$
       wrapper.add(box);
-      String title = Bundle.getString("OpenGedcom.select_painter.title", OpenGedcom.class); //$NON-NLS-1$
+      String title = Bundle.getString("OpenGedcom.select_painter.title",
+          OpenGedcom.class); //$NON-NLS-1$
       int erg1 = JOptionPane.showConfirmDialog(null, wrapper, title,
           JOptionPane.OK_CANCEL_OPTION);
       if(erg1 != JOptionPane.YES_OPTION)
@@ -181,12 +190,36 @@ public class OpenGedcom extends FrameAccessAction
     return factory;
   }
 
+  public void openFile(GedFile gedfile, GedDocumentFactory factory)
+  {
+    Lookup l = Lookup.create(gedfile);
+    if(factory != null)
+      l.put(factory);
+    GedPainter doc = createDocument(l);
+    if(doc != null)
+      DocumentManager.addDocument(doc);
+  }
+
+  public void openFile(GedFile gedfile, boolean autoselect)
+  {
+    GedDocumentFactory painter = null;
+    if(autoselect)
+      painter = Lookup.getGlobal().lookup(GedDocumentFactory.class);
+    openFile(gedfile, painter);
+  }
+
+  public void openFile(GedFile gedfile)
+  {
+    openFile(gedfile, false);
+  }
+
   private static class GedFileFilter extends FileFilter
   {
     @Override
     public String getDescription()
     {
-      String desc = Bundle.getString("OpenGedcom.gedcom.description", OpenGedcom.class); //$NON-NLS-1$
+      String desc = Bundle.getString("OpenGedcom.gedcom.description",
+          OpenGedcom.class); //$NON-NLS-1$
       desc += " (*" + EXT + ')'; //$NON-NLS-1$
       return desc;
     }

@@ -8,8 +8,9 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sourceforge.gedprint.gedcom.Family;
@@ -25,7 +26,7 @@ import net.sourceforge.gedprint.ui.GedPainter;
 public class DrawPanel extends GedPainter
 {
   private static final long serialVersionUID = 1601760105575908398L;
-  Vector<DrawingObject> objects;
+  List<DrawingObject> objects;
   BufferedImage buffer;
 
   public DrawPanel()
@@ -70,7 +71,7 @@ public class DrawPanel extends GedPainter
   @Override
   public Record getRecord()
   {
-    if(objects == null || objects.size() == 0)
+    if(objects == null || objects.isEmpty())
       return null;
     DrawingObject drawingObject = objects.get(0);
     if(drawingObject instanceof FamilyTree)
@@ -170,10 +171,9 @@ public class DrawPanel extends GedPainter
       // alle Objekte zeichnen
       if(objects != null)
       {
-        Enumeration e = objects.elements();
-        while(e.hasMoreElements())
+        for(DrawingObject object : objects)
         {
-          ((DrawingObject) e.nextElement()).paint(bg);
+          object.paint(bg);
         }
       }
 
@@ -185,7 +185,7 @@ public class DrawPanel extends GedPainter
   public void add(DrawingObject obj)
   {
     if(objects == null)
-      objects = new Vector<DrawingObject>();
+      objects = new ArrayList<DrawingObject>();
     objects.add(obj);
     buffer = null;
   }
@@ -209,8 +209,8 @@ public class DrawPanel extends GedPainter
         Dimension size = bo.getSize(g);
         if(size == null)
         {
-          Logger.getLogger(DrawPanel.class.getName()).info(
-              "no size for " + bo.toString()); //$NON-NLS-1$
+          Logger.getLogger(DrawPanel.class.getName()).log(
+              Level.INFO, "no size for {0}", bo.toString()); //$NON-NLS-1$
         }
         else
         {
