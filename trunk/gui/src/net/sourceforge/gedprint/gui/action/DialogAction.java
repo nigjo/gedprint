@@ -21,15 +21,17 @@ import javax.swing.JPanel;
  *
  * @author nigjo
  */
-public abstract class DialogAction extends BasicAction
+public abstract class DialogAction<C extends JComponent> extends BasicAction
 {
+  @Override
   public void actionPerformed(ActionEvent e)
   {
-    ActionDialog dlg = new ActionDialog(this);
-    load();
+    ActionDialog<C> dlg = new ActionDialog<C>(this);
+    C content = dlg.getDialogContent();
+    load(content);
     dlg.setVisible(true);
     if(dlg.isApproveAction())
-      store();
+      store(content);
   }
 
   public String getApproveButtonText()
@@ -47,7 +49,7 @@ public abstract class DialogAction extends BasicAction
    *
    * @return Componente, die vom Dialog angezeigt werden soll.
    */
-  abstract public JComponent getContentPane();
+  abstract public C getContentPane();
 
   /**
    * Laed die Standardwerte fuer den Dialog. Die Methode wird aufgerufen,
@@ -57,7 +59,7 @@ public abstract class DialogAction extends BasicAction
    * @see #store()
    * @see #getContentPane()
    */
-  abstract protected void load();
+  abstract protected void load(C content);
 
   /**
    * Speichert die Werte der Dialogelemente in die Datenstruktur. Die Methode
@@ -68,19 +70,20 @@ public abstract class DialogAction extends BasicAction
    * @see #load()
    * @see #getContentPane()
    */
-  abstract protected void store();
+  abstract protected void store(C content);
 
   /**
    * Hilfsklasse fuer eine DialogAction.
    *
    * @author nigjo
    */
-  private static class ActionDialog extends JDialog
+  private static class ActionDialog<C extends JComponent> extends JDialog
   {
     private Action selected;
     private Action approveAction;
+    private C content;
 
-    public ActionDialog(DialogAction invoker)
+    public ActionDialog(DialogAction<C> invoker)
     {
       super(findOwner(invoker));
       setTitle((String)invoker.getValue(DialogAction.NAME));
@@ -97,10 +100,16 @@ public abstract class DialogAction extends BasicAction
         wrapper.add(new JButton(new DialogButton(text)));
       add(wrapper, BorderLayout.SOUTH);
 
-      add(invoker.getContentPane(), BorderLayout.CENTER);
+      content = invoker.getContentPane();
+      add(content, BorderLayout.CENTER);
     }
 
-    private static Frame findOwner(DialogAction action)
+    public C getDialogContent()
+    {
+      return content;
+    }
+
+    private static Frame findOwner(DialogAction<?> action)
     {
       Frame[] frames = Frame.getFrames();
       if(frames.length == 0)
@@ -133,6 +142,7 @@ public abstract class DialogAction extends BasicAction
         super(title);
       }
 
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         selected = this;
