@@ -6,6 +6,7 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.KeyStroke;
 
 import net.sourceforge.gedprint.core.Bundle;
+import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gui.core.GedFrame;
 
 public class Exit extends FrameAccessAction
@@ -21,7 +22,7 @@ public class Exit extends FrameAccessAction
   @Override
   public void actionPerformed(ActionEvent e)
   {
-    GedFrame frame = getFrame(e);
+    GedFrame frame = Lookup.getGlobal().lookup(GedFrame.class);
     if(frame == null)
       System.exit(1);
     else

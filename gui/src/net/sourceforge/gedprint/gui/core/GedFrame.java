@@ -24,6 +24,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 import net.sourceforge.gedprint.core.Bundle;
+import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.GedPrintGui;
@@ -147,6 +148,8 @@ public class GedFrame extends JFrame
       super(new FlowLayout(FlowLayout.LEFT, 2, 0));
       text = new JLabel(DEFAULT);
       add(text);
+
+      initListener();
     }
 
     @Override
@@ -166,6 +169,13 @@ public class GedFrame extends JFrame
         text.setText(rec.toString());
       else
         text.setText(DEFAULT);
+    }
+
+    private void initListener()
+    {
+      Lookup lookup = Lookup.getGlobal();
+      lookup.addPropertyChangeListener("status", this);
+      lookup.addPropertyChangeListener(GedPainter.PROPERTY_RECORD, this);
     }
   }
 

@@ -1,5 +1,7 @@
 package net.sourceforge.gedprint.core.lookup;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,10 +17,12 @@ public class Lookup
   private static Lookup global;
   private List<Object> storage;
   private final LookupChangeSupport changeSupport;
+  private final PropertyChangeSupport propChangeSupport;
 
   private Lookup()
   {
     changeSupport = new LookupChangeSupport(this);
+    propChangeSupport = new PropertyChangeSupport(this);
   }
 
   /**
@@ -104,6 +108,24 @@ public class Lookup
     changeSupport.addLookupListener(l);
   }
 
+  public synchronized void addPropertyChangeListener(
+      String propertyName, PropertyChangeListener listener)
+  {
+    propChangeSupport.addPropertyChangeListener(propertyName, listener);
+  }
+
+  public synchronized void removePropertyChangeListener(
+      String propertyName, PropertyChangeListener listener)
+  {
+    propChangeSupport.removePropertyChangeListener(propertyName, listener);
+  }
+
+  public synchronized void removePropertyChangeListener(
+      PropertyChangeListener listener)
+  {
+    propChangeSupport.removePropertyChangeListener(listener);
+  }
+
   public <T> T lookup(Class<T> clazz)
   {
     if(storage == null)
@@ -132,7 +154,9 @@ public class Lookup
   public void setProperty(String key, Object value)
   {
     LookupProperty p = getLookupProperty(key, true);
+    Object oldValue = p.getValue();
     p.setValue(value);
+    propChangeSupport.firePropertyChange(key, oldValue, value);
   }
 
   public Object getProperty(String key)
@@ -141,7 +165,7 @@ public class Lookup
     return p == null ? null : p.getValue();
   }
 
-  protected LookupProperty getLookupProperty(String key, boolean autoCreate)
+  private LookupProperty getLookupProperty(String key, boolean autoCreate)
   {
     Collection<? extends LookupProperty> properties =
         lookupAll(LookupProperty.class);
