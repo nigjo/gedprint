@@ -9,7 +9,7 @@ import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Record;
 import net.sourceforge.gedprint.gui.core.DocumentManager;
-import net.sourceforge.gedprint.gui.core.GedPainter;
+import net.sourceforge.gedprint.ui.GedPainter;
 import net.sourceforge.gedprint.print.PrintManager;
 import net.sourceforge.gedprint.print.PrintManagerFactory;
 

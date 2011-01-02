@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import net.sourceforge.gedprint.gedcom.Family;
 import net.sourceforge.gedprint.gedcom.Individual;
 import net.sourceforge.gedprint.gedcom.Record;
-import net.sourceforge.gedprint.gui.core.GedPainter;
+import net.sourceforge.gedprint.ui.GedPainter;
 
 /**
  * Neue Klasse erstellt am 07.02.2005.

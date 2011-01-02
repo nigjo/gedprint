@@ -5,7 +5,7 @@ import javax.swing.Icon;
 
 import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gui.core.ActionManager;
-import net.sourceforge.gedprint.gui.core.GedPainter;
+import net.sourceforge.gedprint.ui.GedPainter;
 
 /**
  * Grundklasse fuer alle Actions in diesem Paket.

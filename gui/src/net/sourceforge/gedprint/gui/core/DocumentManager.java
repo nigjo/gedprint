@@ -1,5 +1,6 @@
 package net.sourceforge.gedprint.gui.core;
 
+import net.sourceforge.gedprint.ui.GedPainter;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 

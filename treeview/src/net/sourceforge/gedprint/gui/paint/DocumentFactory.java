@@ -1,7 +1,7 @@
 package net.sourceforge.gedprint.gui.paint;
 
-import net.sourceforge.gedprint.gui.core.GedDocumentFactory;
-import net.sourceforge.gedprint.gui.core.GedPainter;
+import net.sourceforge.gedprint.ui.GedDocumentFactory;
+import net.sourceforge.gedprint.ui.GedPainter;
 
 public class DocumentFactory implements GedDocumentFactory
 {
