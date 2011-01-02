@@ -1,25 +1,26 @@
 package net.sourceforge.gedprint.gui.action;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+import net.sourceforge.gedprint.gedcom.Record;
 
-public class SearchIndividual extends DialogAction
+public class SearchIndividual extends DialogAction<SearchIndividualPanel>
 {
   private static final long serialVersionUID = 4316704368424658584L;
 
   @Override
-  public JComponent getContentPane()
+  public SearchIndividualPanel getContentPane()
   {
-    return new JLabel("Hallo Welt");
+    return new SearchIndividualPanel();
   }
 
   @Override
-  protected void load()
+  protected void load(SearchIndividualPanel content)
   {
+    //nothing special
   }
 
   @Override
-  protected void store()
+  protected void store(SearchIndividualPanel content)
   {
+    Record record = content.getSelectedRecord();
   }
 }
