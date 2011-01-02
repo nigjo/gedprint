@@ -51,7 +51,7 @@ public class GedFrame extends JFrame
     // Anzeigeklasse
     desktop = new JDesktopPane();
     desktop.setBackground(Color.LIGHT_GRAY);
-    setContentPane(desktop);
+    getContentPane().add(desktop);
     DocumentManager.init(desktop);
 
     // Icons setzen
