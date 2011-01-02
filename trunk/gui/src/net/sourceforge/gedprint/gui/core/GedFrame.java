@@ -1,5 +1,6 @@
 package net.sourceforge.gedprint.gui.core;
 
+import net.sourceforge.gedprint.ui.GedPainter;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

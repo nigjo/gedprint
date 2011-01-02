@@ -21,8 +21,8 @@ import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.core.DocumentManager;
-import net.sourceforge.gedprint.gui.core.GedDocumentFactory;
-import net.sourceforge.gedprint.gui.core.GedPainter;
+import net.sourceforge.gedprint.ui.GedDocumentFactory;
+import net.sourceforge.gedprint.ui.GedPainter;
 
 public class OpenGedcom extends FrameAccessAction
 {
