@@ -56,7 +56,7 @@ public class OpenGedcom extends FrameAccessAction
     Object source = ae.getSource();
     Component owner;
     if(!(source instanceof Component))
-      owner = getFrame(source);
+      owner = getOwner(ae);
     else
       owner = (Component)source;
 

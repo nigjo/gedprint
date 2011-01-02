@@ -1,16 +1,17 @@
 package net.sourceforge.gedprint.gui.action;
 
 import java.awt.Container;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRootPane;
 
+import net.sourceforge.gedprint.core.lookup.Lookup;
 import net.sourceforge.gedprint.gui.core.GedFrame;
 
 public abstract class FrameAccessAction extends BasicAction
@@ -32,39 +33,41 @@ public abstract class FrameAccessAction extends BasicAction
     super(name);
   }
 
-
+  /** @deprecated use Lookup or getOwner() */
+  @Deprecated
   protected GedFrame getFrame(Object source)
   {
-    if(source instanceof ActionEvent)
-      source = ((ActionEvent) source).getSource();
+    return Lookup.getGlobal().lookup(GedFrame.class);
+  }
+
+  protected JFrame getOwner(ActionEvent event)
+  {
+    Object source = event.getSource();
     if(source instanceof JMenuItem)
     {
       while(!(source instanceof JMenuBar))
       {
         while(source instanceof JMenuItem)
-          source = ((JMenuItem) source).getParent();
+        {
+          source = ((JMenuItem)source).getParent();
+        }
         while(source instanceof JPopupMenu)
-          source = ((JPopupMenu) source).getInvoker();
+        {
+          source = ((JPopupMenu)source).getInvoker();
+        }
       }
     }
-    if(source instanceof GedFrame)
-      return (GedFrame) source;
+    if(source instanceof JFrame)
+      return (JFrame)source;
     if(source instanceof JComponent)
     {
-      JRootPane rootPane = ((JComponent) source).getRootPane();
+      JRootPane rootPane = ((JComponent)source).getRootPane();
       Container parent = rootPane.getParent();
-      if(parent instanceof GedFrame)
-        return (GedFrame) parent;
-    }
-    // bisher nicht gefunden. Fallback: Global suchen
-    Frame[] frames = GedFrame.getFrames();
-    for(Frame frame : frames)
-    {
-      if(frame instanceof GedFrame)
-        return (GedFrame) frame;
+      if(parent instanceof JFrame)
+        return (JFrame)parent;
     }
 
-    // nichts gefunden.
-    return null;
+    // bisher nicht gefunden. Fallback: Global suchen
+    return Lookup.getGlobal().lookup(JFrame.class);
   }
 }

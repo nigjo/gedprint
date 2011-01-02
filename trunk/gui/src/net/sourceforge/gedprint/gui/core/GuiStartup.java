@@ -87,6 +87,7 @@ public class GuiStartup implements GedPrintStarter
     try
     {
       frame = new GedFrame(painterClassName);
+      Lookup.getGlobal().put(frame);
     }
     catch(IllegalStateException e)
     {

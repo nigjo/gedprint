@@ -1,13 +1,7 @@
 package net.sourceforge.gedprint.gui.core;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ResourceBundle;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -25,6 +19,8 @@ import net.sourceforge.gedprint.gui.GedPrintGui;
  */
 public class GuiLogger
 {
+  private static final Logger appLogger =
+      Logger.getLogger("net.sourceforge.gedprint");
 
   private GuiLogger()
   {
@@ -32,10 +28,7 @@ public class GuiLogger
 
   public static void initLogger()
   {
-    String packName = GedPrintGui.class.getPackage().getName();
-    String baselogger = packName.substring(0, packName.lastIndexOf('.'));
-    Logger logger = Logger.getLogger(baselogger);
-    logger.setLevel(Level.ALL);
+    appLogger.setLevel(Level.ALL);
     Formatter formatter = new Formatter()
     {
       String NL = System.getProperty("line.separator"); //$NON-NLS-1$
@@ -51,20 +44,7 @@ public class GuiLogger
         // bisheriges loeschen
         builder.setLength(0);
 
-        String message = record.getMessage();
-        if(record.getResourceBundle() != null)
-        {
-          message = record.getResourceBundle().getString(message);
-        }
-        else if(record.getResourceBundleName() != null)
-        {
-          message = ResourceBundle.getBundle(record.getResourceBundleName()).
-              getString(message);
-        }
-        Object[] params = record.getParameters();
-        if(params != null)
-          message = MessageFormat.format(message, params);
-        builder.append(message);
+        builder.append(formatMessage(record));
 
         String logtext = builder.toString();
         String[] lines = logtext.split(NL);
@@ -77,63 +57,26 @@ public class GuiLogger
         }
         return builder.toString();
       }
-
     };
-//    ConsoleHandler chandler = new ConsoleHandler();
-//    chandler.setLevel(Level.ALL);
-//    chandler.setFormatter(formatter);
-//    logger.addHandler(chandler);
+    ConsoleHandler chandler = new ConsoleHandler();
+    chandler.setLevel(Level.ALL);
+    chandler.setFormatter(formatter);
+    appLogger.addHandler(chandler);
+    appLogger.setUseParentHandlers(false);
 
     // Protokollausgabe auch in Datei
     try
     {
       File logfile = new File("GedPrint.log"); //$NON-NLS-1$
 
-      ensureMaxSize(logfile, 1024 * 1024l);
-
-      FileHandler handler = new FileHandler(logfile.getName(), true);
+      FileHandler handler = new FileHandler(logfile.getName(), 1<<20, 1, true);
       handler.setFormatter(formatter);
-      logger.addHandler(handler);
+      appLogger.addHandler(handler);
     }
     catch(Exception ex)
     {
       Logger.getLogger(GedPrintGui.class.getName()).log(Level.SEVERE, null, ex);
     }
-  }
-
-  private static void ensureMaxSize(File logfile, long maxlength)
-      throws IOException
-  {
-    if(!logfile.exists() || logfile.length() < maxlength)
-      return;
-
-    File tempFile = File.createTempFile("~prune", ".log"); //$NON-NLS-1$ //$NON-NLS-2$
-    BufferedReader in = new BufferedReader(new FileReader(logfile));
-    try
-    {
-      BufferedWriter out = new BufferedWriter(new FileWriter(tempFile));
-      try
-      {
-        in.skip(logfile.length() - maxlength);
-        String zeile;
-        while(null != (zeile = in.readLine()))
-        {
-          out.write(zeile);
-          out.newLine();
-        }
-      }
-      finally
-      {
-        out.close();
-      }
-    }
-    finally
-    {
-      in.close();
-    }
-    if(!logfile.delete())
-      return;
-    tempFile.renameTo(logfile);
   }
 
 }
