@@ -20,10 +20,8 @@ import net.sourceforge.gedprint.core.Bundle;
 public class FamTab extends JPanel
 {
   private static final long serialVersionUID = 6035893905021035607L;
-
-  // private final Family fam;
+  private final Family fam;
   private boolean firstpaint = true;
-
   List<Element> elements;
 
   public FamTab(Family fam)
@@ -34,25 +32,28 @@ public class FamTab extends JPanel
 
     setBackground(Color.WHITE);
 
-    // this.fam = fam;
+    this.fam = fam;
     elements = new ArrayList<Element>();
 
-    elements.add(new HeaderElement(Bundle.getString("print.data.parents", getClass()))); //$NON-NLS-1$
+    elements.add(new HeaderElement(Bundle.getString("print.data.parents",
+        getClass()))); //$NON-NLS-1$
     elements.add(new ParentElement(
         Bundle.getString("print.data.husband", getClass()), fam.getHusband())); //$NON-NLS-1$
     elements.add(new ParentElement(
         Bundle.getString("print.data.wife", getClass()), fam.getWife())); //$NON-NLS-1$
 
     // Hochzeit
-    elements.add(new HeaderElement(Bundle.getString("print.data.marriage", getClass()))); //$NON-NLS-1$
+    elements.add(new HeaderElement(Bundle.getString("print.data.marriage",
+        getClass()))); //$NON-NLS-1$
     elements.add(new WeddingElement(fam));
 
     // Kinder
-    elements.add(new HeaderElement(Bundle.getString("print.data.children", getClass()))); //$NON-NLS-1$
+    elements.add(new HeaderElement(Bundle.getString("print.data.children",
+        getClass()))); //$NON-NLS-1$
     List<Individual> children = fam.getChildren();
     for(Individual child : children)
       elements.add(new ChildElement(child));
-    
+
     for(Element e : elements)
     {
       e.setLineHeight(1.5);
@@ -65,16 +66,18 @@ public class FamTab extends JPanel
     super.paintComponent(g);
 
     int left, top;
-    Dimension size=getSize();
+    Dimension size = getSize();
 
     top = 0;
     if(firstpaint)
     {
-      left = (int) (size.width * .1);
+      left = (int)(size.width * .1);
       size.width *= .8;
-    }else{
+    }
+    else
+    {
       Dimension psize = getPreferredSize();
-      left = (size.width-psize.width)/2;
+      left = (size.width - psize.width) / 2;
       size = psize;
     }
 
@@ -88,7 +91,7 @@ public class FamTab extends JPanel
       firstpaint = false;
 
       // size = getSize();
-      size.height = top+1;
+      size.height = top + 1;
       //size.width+=20;
 
       // Groesse des Panel neu definieren
@@ -97,5 +100,15 @@ public class FamTab extends JPanel
       invalidate();
       getParent().validate();
     }
+  }
+
+  public List<Element> getElements()
+  {
+    return elements;
+  }
+
+  public Family getFamily()
+  {
+    return fam;
   }
 }

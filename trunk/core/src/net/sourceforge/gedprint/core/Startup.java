@@ -1,8 +1,8 @@
 package net.sourceforge.gedprint.core;
 
 import net.sourceforge.gedprint.core.lookup.Lookup;
-import java.text.MessageFormat;
-import java.util.ResourceBundle;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -17,8 +17,9 @@ import java.util.logging.Logger;
 public class Startup
 {
   private static final String DEFAULT_MAIN =
-      "net.sourceforge.gedprint.gui.core.GuiStartup"; //$NON-NLS-1$
-  private static Logger appglobal;
+      "net.sourceforge.gedprint.gui.GuiStartup"; //$NON-NLS-1$
+  private static final Logger appglobal =
+      Logger.getLogger("net.sourceforge.gedprint");
 
   private Startup()
   {
@@ -31,6 +32,9 @@ public class Startup
   public static void main(String[] args)
   {
     initGlobalLogger();
+    Logger logger = Logger.getLogger(Startup.class.getName());
+    logger.info("------------------------------"); //$NON-NLS-1$
+    logger.info(new SimpleDateFormat().format(new Date()));
     StartupRunner.startup(args);
   }
 
@@ -42,7 +46,6 @@ public class Startup
     console.setFormatter(logHelper);
     console.setFilter(logHelper);
 
-    appglobal = Logger.getLogger("net.sourceforge.gedprint");
     appglobal.setUseParentHandlers(false);
     appglobal.addHandler(console);
     appglobal.setLevel(Level.ALL);
@@ -68,6 +71,7 @@ public class Startup
       this.args = args;
     }
 
+    @Override
     public void run()
     {
       try
@@ -162,6 +166,7 @@ public class Startup
     {
     }
 
+    @Override
     public boolean isLoggable(LogRecord record)
     {
       if(record.getLoggerName().startsWith("java"))
@@ -175,29 +180,13 @@ public class Startup
     public String format(LogRecord record)
     {
       StringBuilder builder = new StringBuilder();
-      String source = record.getSourceClassName();
+      String source = record.getLoggerName();
       builder.append(source.substring(source.lastIndexOf('.') + 1));
       builder.append(": ");
-      builder.append(getMessage(record));
+      builder.append(formatMessage(record));
       builder.append("\n");
       return builder.toString();
     }
 
-    private String getMessage(LogRecord record)
-    {
-      String message = record.getMessage();
-
-      ResourceBundle resourceBundle = record.getResourceBundle();
-      if(record.getResourceBundleName() != null)
-        resourceBundle = ResourceBundle.getBundle(record.getResourceBundleName());
-      if(resourceBundle != null)
-        message = resourceBundle.getString(message);
-
-      Object[] params = record.getParameters();
-      if(params != null)
-        message = MessageFormat.format(message, params);
-
-      return message;
-    }
   }
 }

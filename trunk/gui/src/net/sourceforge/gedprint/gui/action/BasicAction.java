@@ -105,7 +105,14 @@ public abstract class BasicAction extends AbstractAction
 
   protected GedPainter getPainter()
   {
-    //TODO: return (GedPainter) getProperty("painter"); //$NON-NLS-1$
+    GedPainter painter = lookup(GedPainter.class);
+    if(painter != null)
+      return painter;
+
+    painter = (GedPainter)getLookup().getProperty("GedPainter"); //$NON-NLS-1$
+    if(painter != null)
+      return painter;
+
     return null;
   }
 }

@@ -57,24 +57,22 @@ public class TitlePage extends Page
     double cmY = Element.convertPixelToCm(height, res);
 
     int pt = Element.convertCmToPt(cmY / 8);
-    // Font title = new Font("Fantasy", Font.BOLD, pt);
-    Font title;
-    title = getTitleFont();
-    title = title.deriveFont(Font.BOLD, pt);
+    Font font = getTitleFont();
+    font = font.deriveFont(Font.BOLD, pt);
 
     int x;
     int fontline = Element.convertCmToPt(cmY / 8);
 
     String text = getTitle();
-    title = Element.fitFont(title, text, cmX, cmY / 8);
-    g.setFont(title);
+    font = Element.fitFont(font, text, cmX, cmY / 8);
+    g.setFont(font);
     x = left + Element.center(text, g, width);
     g.drawString(text, x, top + 1 * fontline);
 
-    pt = title.getSize() / 2;
+    pt = font.getSize() / 2;
     if(pt > fontline / 3)
       pt = fontline / 3;
-    Font subtitle = title.deriveFont(Font.PLAIN, pt);
+    Font subtitle = font.deriveFont(Font.PLAIN, pt);
     pt /= 3;
     Font comment = new Font(fontFamily, Font.PLAIN, pt);
 
@@ -115,7 +113,8 @@ public class TitlePage extends Page
     if(titleFont == null)
     {
       Class<? extends TitlePage> pageClass = getClass();
-      InputStream stream = pageClass.getResourceAsStream("fonts/oldengl.ttf"); //$NON-NLS-1$
+      //InputStream stream = pageClass.getResourceAsStream("fonts/oldengl.ttf"); //$NON-NLS-1$
+      InputStream stream = pageClass.getResourceAsStream("fonts/OldeEnglish.ttf"); //$NON-NLS-1$
       if(stream != null)
       {
         try

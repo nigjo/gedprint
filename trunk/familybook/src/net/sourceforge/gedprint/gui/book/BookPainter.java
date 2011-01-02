@@ -1,5 +1,6 @@
 package net.sourceforge.gedprint.gui.book;
 
+import java.awt.Component;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
@@ -14,7 +15,6 @@ import net.sourceforge.gedprint.ui.GedPainter;
 public class BookPainter extends GedPainter
 {
   private static final long serialVersionUID = -5599769299072911707L;
-
   JTabbedPane tabs;
 
   public BookPainter()
@@ -49,10 +49,19 @@ public class BookPainter extends GedPainter
     FamTab tab = new FamTab(fam);
     tabs.addTab(title, new JScrollPane(tab));
   }
-  
+
   @Override
   public Record getRecord()
   {
+    if(tabs == null)
+      return null;
+    Component selected = tabs.getSelectedComponent();
+    if(selected instanceof JScrollPane)
+      selected = ((JScrollPane)selected).getViewport().getView();
+    if(selected instanceof FamTab)
+    {
+      return ((FamTab)selected).getFamily();
+    }
     return null;
   }
 

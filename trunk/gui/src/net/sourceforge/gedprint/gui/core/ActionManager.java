@@ -4,37 +4,24 @@ import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import net.sourceforge.gedprint.core.lookup.Lookup;
+import javax.swing.Action;
 
 import net.sourceforge.gedprint.gui.action.BasicAction;
 
 public class ActionManager
 {
   private static final String ACTION_PACKAGE;
+
   static
   {
     ACTION_PACKAGE = BasicAction.class.getPackage().getName();
   }
-
   private static ActionManager globalManager;
-  private Lookup actionLookup;
-
-  private static synchronized Lookup getLookup()
-  {
-    return getManager().actionLookup;
-  }
-
-  Map<String, BasicAction> cache;
-//  PropertyChangeSupport pcSupport;
-
-//  private final Object propMutex = new Object();
-//  private HashMap<String, Object> properties;
+  Map<String, Action> cache;
 
   private ActionManager()
   {
     checkValidCreation();
-    actionLookup = Lookup.create(this);
-//    pcSupport = new PropertyChangeSupport(this);
   }
 
   private void checkValidCreation()
@@ -50,7 +37,13 @@ public class ActionManager
       throw new IllegalStateException("ActionManager not created by itself"); //$NON-NLS-1$
   }
 
-  public static BasicAction getAction(String actionName)
+  public static <A extends Action> A getAction(Class<A> actionClass)
+  {
+    ActionManager manager = getManager();
+    return manager.get(actionClass);
+  }
+
+  public static BasicAction getBasicAction(String actionName)
   {
     ActionManager manager = getManager();
     return manager.get(actionName);
@@ -63,76 +56,58 @@ public class ActionManager
     return globalManager;
   }
 
+  private <A extends Action> A get(Class<A> actionClass)
+  {
+    String actionName = actionClass.getName();
+    Action action = findAction(actionName);
+    if(action == null)
+    {
+      try
+      {
+        action = actionClass.newInstance();
+        cache.put(actionName, action);
+      }
+      catch(Exception ex)
+      {
+        throw new IllegalStateException(ex);
+      }
+    }
+    return actionClass.cast(action);
+  }
+
   private BasicAction get(String actionName)
   {
-    BasicAction action;
-
-    if(cache == null)
-      cache = new HashMap<String, BasicAction>();
-
-    action = cache.get(actionName);
-    if(action != null)
-      return action;
-
-    try
+    String actionClassName = ACTION_PACKAGE + '.' + actionName;
+    BasicAction action = (BasicAction)findAction(actionClassName);
+    if(action == null)
     {
-      Class<?> actionClass = Class.forName(ACTION_PACKAGE + '.' + actionName);
-      action = (BasicAction) actionClass.newInstance();
-    }
-    catch(ClassNotFoundException e)
-    {
-      action = new AbstractBasicAction(actionName);
-    }
-    catch(Exception e)
-    {
-      throw new IllegalStateException(e);
-    }
+      try
+      {
+        Class<?> actionClass = Class.forName(actionClassName);
+        action = (BasicAction)actionClass.newInstance();
+      }
+      catch(ClassNotFoundException e)
+      {
+        action = new AbstractBasicAction(actionName);
+      }
+      catch(Exception e)
+      {
+        throw new IllegalStateException(e);
+      }
 
-    cache.put(actionName, action);
-
+      cache.put(actionClassName, action);
+    }
     return action;
   }
 
-  /**
-   * fuehrt eine Action aus.
-   * 
-   * @param actionClass
-   * @param data
-   */
-  public static void performAction(Class<? extends BasicAction> actionClass,
-     String key, Object data)
+  private Action findAction(String actionClassName)
   {
-    String actionName = actionClass.getSimpleName();
-    BasicAction action = getAction(actionName);
-    if(!actionClass.isInstance(action))
-      throw new IllegalStateException("action name already used."); //$NON-NLS-1$
-    perform(action, key, data);
+    if(cache == null)
+      cache = new HashMap<String, Action>();
+
+    return cache.get(actionClassName);
   }
 
-  public static void performAction(String actionName)
-  {
-    performAction(actionName, null, null);
-  }
-
-  public static void performAction(String actionName, String key, Object data)
-  {
-    BasicAction action = getAction(actionName);
-    perform(action, key, data);
-  }
-
-  private static void perform(BasicAction action, String key, Object data)
-  {
-    ActionEvent evt = new ActionEvent(getManager(),
-        ActionEvent.ACTION_PERFORMED, (String) action
-            .getValue(BasicAction.ACTION_COMMAND_KEY));
-    // Daten uebergeben
-    action.setProperty(key, data);
-    // Aktion ausfuehren
-    action.actionPerformed(evt);
-    // Daten wieder loeschen
-    //action.putValue(BasicAction.ACTION_DATA, null);
-  }
-  
   private static class AbstractBasicAction extends BasicAction
   {
     private static final long serialVersionUID = -6203670363521467316L;
@@ -144,10 +119,67 @@ public class ActionManager
       Logger.getLogger(getClass().getName()).fine(actionName);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e)
     {
       // nothing to do in this action (always disabled)
     }
+  }
 
+
+  /*--------------------------------------------------*
+   *
+   *  D E P R E C A T E D
+   *
+   *--------------------------------------------------*/
+  /** @deprecated use getBasicAction() or getAction(Class)*/
+  @Deprecated
+  public static BasicAction getAction(String actionName)
+  {
+    return getBasicAction(actionName);
+  }
+
+  /**
+   * fuehrt eine Action aus.
+   *
+   * @param actionClass
+   * @param data
+   */
+  @Deprecated
+  public static void performAction(Class<? extends BasicAction> actionClass,
+      String key, Object data)
+  {
+    String actionName = actionClass.getSimpleName();
+    BasicAction action = getAction(actionName);
+    if(!actionClass.isInstance(action))
+      throw new IllegalStateException("action name already used."); //$NON-NLS-1$
+    perform(action, key, data);
+  }
+
+  @Deprecated
+  public static void performAction(String actionName)
+  {
+    performAction(actionName, null, null);
+  }
+
+  @Deprecated
+  public static void performAction(String actionName, String key, Object data)
+  {
+    BasicAction action = getAction(actionName);
+    perform(action, key, data);
+  }
+
+  @Deprecated
+  private static void perform(BasicAction action, String key, Object data)
+  {
+    ActionEvent evt = new ActionEvent(getManager(),
+        ActionEvent.ACTION_PERFORMED, (String)action.getValue(
+        BasicAction.ACTION_COMMAND_KEY));
+    // Daten uebergeben
+    action.setProperty(key, data);
+    // Aktion ausfuehren
+    action.actionPerformed(evt);
+    // Daten wieder loeschen
+    //action.putValue(BasicAction.ACTION_DATA, null);
   }
 }
