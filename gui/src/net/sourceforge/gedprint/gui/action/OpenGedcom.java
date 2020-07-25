@@ -1,12 +1,13 @@
 package net.sourceforge.gedprint.gui.action;
 
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
+
+import java.awt.Component;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -16,9 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
+import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.core.ExceptionEcho;
 import net.sourceforge.gedprint.core.lookup.Lookup;
-import net.sourceforge.gedprint.core.Bundle;
 import net.sourceforge.gedprint.gedcom.GedFile;
 import net.sourceforge.gedprint.gui.core.DocumentManager;
 import net.sourceforge.gedprint.ui.GedDocumentFactory;
@@ -33,7 +34,7 @@ public class OpenGedcom extends FrameAccessAction
   public OpenGedcom()
   {
     super(Bundle.getString("OpenGedcom.title", OpenGedcom.class)); //$NON-NLS-1$
-    putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl O")); //$NON-NLS-1$
+    super.putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl O")); //$NON-NLS-1$
 
     lastdir = new File(System.getProperty("user.dir")); //$NON-NLS-1$
   }
@@ -103,7 +104,6 @@ public class OpenGedcom extends FrameAccessAction
           OpenGedcom.class); //$NON-NLS-1$
       JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
           JOptionPane.WARNING_MESSAGE);
-      return;
     }
     catch(IOException ioe)
     {
@@ -111,7 +111,6 @@ public class OpenGedcom extends FrameAccessAction
           Bundle.getString("action.err.io-error.read", OpenGedcom.class); //$NON-NLS-1$
       JOptionPane.showMessageDialog(owner, msg, ae.getActionCommand(),
           JOptionPane.ERROR_MESSAGE);
-      return;
     }
     catch(Exception unexpected)
     {
@@ -161,7 +160,7 @@ public class OpenGedcom extends FrameAccessAction
     }
     else
     {
-      JComboBox box = new JComboBox();
+      JComboBox<String> box = new JComboBox<>();
       for(GedDocumentFactory factory2 : factories)
       {
         String name = factory2.getName();
